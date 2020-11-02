@@ -41,11 +41,11 @@ def main(argv, ac_repo, fenix_repo, author, debug=False):
     # Android Components
     if argv[1] == "android-components":
         if argv[2] == "update-geckoview-beta":
-            android_components.update_geckoview(ac_repo, "beta", author)
+            android_components.update_geckoview(ac_repo, fenix_repo, "beta", author, debug)
         elif argv[2] == "update-geckoview-release":
-            android_components.update_geckoview(ac_repo, "release", author)
-        elif argv[2] == "create-ac-release":
-            android_components.create_release(repo, "1.0.0", author)
+            android_components.update_geckoview(ac_repo, fenix_repo, "release", author, debug)
+        elif argv[2] == "create-release":
+            android_components.create_release(ac_repo, fenix_repo, author, debug)
         else:
             print("usage: relbot android-components <update-geckoview-beta|update-geckoview-release|create-release>")
             sys.exit(1)

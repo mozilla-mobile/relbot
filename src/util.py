@@ -15,6 +15,17 @@ import xmltodict
 AC_MAJOR_VERSION = 63 # TODO This should be discovered dynamically
 GV_MAJOR_VERSION = 83 # TODO This should be discovered dynamically
 
+FENIX_MAJOR_RELEASE_VERSION = 82 # TODO This should be discovered dynamically
+FENIX_MAJOR_BETA_VERSION = 83 # TODO This should be discovered dynamically
+
+
+def discover_fenix_major_version(channel):
+    if channel not in ("beta", "release"):
+        raise Exception(f"Invalid channel {channel}")
+    # TODO This should be discovered dynamically
+    versions = { "beta": FENIX_MAJOR_BETA_VERSION, "release": FENIX_MAJOR_RELEASE_VERSION }
+    return versions[channel]
+
 
 def discover_ac_major_version(repo):
     return AC_MAJOR_VERSION # TODO This should be discovered dynamically
@@ -36,6 +47,18 @@ def validate_gv_version(v):
     if not re.match(r"^\d{2,}\.\d\.\d{14}$", v):
         raise Exception(f"Invalid GV version {v}")
     return v
+
+
+def match_ac_version_in_fenix(src):
+    if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
+        return validate_ac_version(match[1])
+    raise Exception(f"Could not match the VERSION in AndroidComponents.kt")
+
+
+def get_current_ac_version_in_fenix(fenix_repo, release_branch_name):
+    """Return the current A-C version used on the given Fenix branch"""
+    content_file = fenix_repo.get_contents("buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name)
+    return match_ac_version_in_fenix(content_file.decoded_content.decode('utf8'))
 
 
 def match_gv_version(src, channel):
@@ -60,6 +83,10 @@ def get_current_ac_version(repo, release_branch_name):
     content_file = repo.get_contents(".buildconfig.yml", ref=release_branch_name)
     build_config = yaml.load(content_file.decoded_content.decode('utf8'), Loader=yaml.Loader)
     return build_config['componentsVersion']
+
+
+def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):
+    return get_current_ac_version(ac_repo, f"releases/{ac_major_version}.0")
 
 
 def get_latest_gv_version(gv_major_version, channel):
@@ -106,7 +133,10 @@ def ac_version_from_tag(tag):
 
 
 def get_recent_ac_releases(repo):
-    return [ac_version_from_tag(release.tag_name) for release in repo.get_releases()[:50]]
+    releases = repo.get_releases()
+    if releases.totalCount == 0:
+        return []
+    return [ac_version_from_tag(release.tag_name) for release in releases[:50]]
 
 
 def ts():

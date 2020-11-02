@@ -8,6 +8,7 @@ import pytest
 
 from util import *
 
+
 GECKO_KT = """
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +39,6 @@ object Gecko {
 }
 """
 
-
 def test_match_gv_version():
     assert match_gv_version(GECKO_KT, "release") == "81.0.20201012085804"
     assert match_gv_version(GECKO_KT, "beta") == "81.0.20200910180444"
@@ -48,6 +48,25 @@ def test_get_current_gv_version():
     repo = github.Github().get_repo(f"st3fan/android-components")
     assert get_current_gv_version(repo, "releases/57.0", "beta") == "81.0.20200910180444"
     assert get_current_gv_version(repo, "releases/57.0", "release") == "81.0.20201012085804"
+
+
+ANDROID_COMPONENTS_KT = """
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+object AndroidComponents {
+    const val VERSION = "64.0.20201027143116"
+}
+"""
+
+def test_match_as_version():
+    assert match_ac_version(ANDROID_COMPONENTS_KT) == "64.0.20201027143116"
+
+
+def test_get_current_ac_version():
+    repo = github.Github().get_repo(f"st3fan/fenix")
+    assert get_current_ac_version(repo, "releases/v82.0.0") == "60.0.5"
 
 
 def test_get_current_ac_version():
@@ -89,6 +108,7 @@ def test_validate_ac_version_bad():
 
 
 def test_validate_ac_version_good():
+    assert validate_ac_version("64.0.20201027143116") == "64.0.20201027143116"
     assert validate_ac_version("63.0.0") == "63.0.0"
     assert validate_ac_version("63.0.1") == "63.0.1"
     assert validate_ac_version("63.1.2") == "63.1.2"
@@ -137,8 +157,10 @@ def test_ac_version_from_tag_bad():
     with pytest.raises(Exception):
         ac_version_from_tag("63.0-beta.2")
 
-def test_get_all_ac_releases():
-    repo = github.Github().get_repo(f"st3fan/android-components")
-    releases = get_all_ac_releases(repo)
-    assert releases == []
+
+def test_get_recent_ac_releases():
+    # No releases on the test repo
+    assert get_recent_ac_releases(github.Github().get_repo(f"st3fan/android-components")) == []
+    # But plenty releases on the actual repo
+    assert get_recent_ac_releases(github.Github().get_repo(f"mozilla-mobile/android-components")) != []
 
