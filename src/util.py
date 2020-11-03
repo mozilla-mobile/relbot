@@ -141,3 +141,19 @@ def get_recent_ac_releases(repo):
 
 def ts():
     return str(datetime.datetime.now())
+
+
+def compare_ac_versions(a, b):
+    a = a.split(".")
+    a = int(a[0])*1000000 + int(a[1])*1000 + int(a[2])
+    b = b.split(".")
+    b = int(b[0])*1000000 + int(b[1])*1000 + int(b[2])
+    return a-b
+
+
+def compare_gv_versions(a, b):
+    a = a.split(".")
+    a = int(a[0])*10000000000000000000 + int(a[1])*1000000000000000 + int(a[2])
+    b = b.split(".")
+    b = int(b[0])*10000000000000000000 + int(b[1])*1000000000000000 + int(b[2])
+    return a-b

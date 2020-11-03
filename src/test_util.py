@@ -165,6 +165,22 @@ def test_get_recent_ac_releases():
     assert get_recent_ac_releases(github.Github().get_repo(f"mozilla-mobile/android-components")) != []
 
 
-def test_comparing_versions():
-    assert "63.0.3" > "63.0.2"
-    assert "63.0.10" > "63.0.9"
+def test_compare_ac_versions():
+    assert compare_ac_versions("63.0.0", "63.0.0") == 0
+    assert compare_ac_versions("63.0.1", "63.0.0") > 0
+    assert compare_ac_versions("63.0.1", "63.0.2") < 0
+    assert compare_ac_versions("63.0.10", "63.0.9") > 0
+    assert compare_ac_versions("63.0.9", "63.0.10") < 0
+
+
+def test_compare_gv_versions():
+    assert compare_gv_versions("82.0.20201008183927", "82.0.20201008183927") == 0
+    assert compare_gv_versions("82.0.20191008183927", "82.0.20201008183927") < 0
+    assert compare_gv_versions("82.0.20201008183927", "82.0.20191008183927") > 0
+    assert compare_gv_versions("82.9.20201008183927", "82.10.20191008183927") < 0
+    assert compare_gv_versions("82.10.20201008183927", "82.9.20201008183927") > 0
+    assert compare_gv_versions("123.567.20201008183927", "123.567.20191008183927") > 0
+    assert compare_gv_versions("123.567.20201008183927", "123.567.20201008183927") == 0
+    assert compare_gv_versions("123.567.20191008183927", "123.567.20201008183927") < 0
+
+

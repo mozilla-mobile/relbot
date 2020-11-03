@@ -53,7 +53,7 @@ def update_geckoview(ac_repo, fenix_repo, channel, author, debug):
         if not latest_gv_version.startswith(f"{gv_major_version}."):
             raise Exception(f"Latest GV {channel.capitalize()} is not same major release. Exiting.")
 
-        if latest_gv_version <= current_gv_version:
+        if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
             raise Exception(f"No newer GV {channel.capitalize()} release found. Exiting.")
 
         next_ac_version = get_next_ac_version(current_ac_version)
