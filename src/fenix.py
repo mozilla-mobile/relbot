@@ -6,18 +6,13 @@
 from util import *
 
 
-def _update_ac_version(fenix_repo, fenix_branch, old_ac_version, new_ac_version, author):
-    if channel not in ("beta", "release"):
-        raise Exception(f"Invalid channel {channel}")
-
-    contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
+def _update_ac_version(fenix_repo, branch, old_ac_version, new_ac_version, author):
+    contents = fenix_repo.get_contents("buildSrc/src/main/java/AndroidComponents.kt", ref=branch)
     content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f'{channel}_version = "{old_gv_version}"',
-                                  f'{channel}_version = "{new_gv_version}"')
+    new_content = content.replace(f'VERSION = "{old_ac_version}"', f'VERSION = "{new_ac_version}"')
     if content == new_content:
-        raise Exception("Update to Gecko.kt resulted in no changes: maybe the file was already up to date?")
-
-    ac_repo.update_file(contents.path, f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
+        raise Exception("Update to AndroidComponents.kt resulted in no changes: maybe the file was already up to date?")
+    fenix_repo.update_file(contents.path, f"Update to Android-Components {new_ac_version}.",
                      new_content, contents.sha, branch=branch, author=author)
 
 
@@ -27,23 +22,51 @@ def _update_ac_version(fenix_repo, fenix_branch, old_ac_version, new_ac_version,
 #
 
 def update_android_components(ac_repo, fenix_repo, author, debug):
-    print(f"{ts()} Updating A-C in Fenix")
     for channel in ("beta", "release"):
         fenix_major_version = discover_fenix_major_version(channel)
-        fenix_branch = f"releases/v{fenix_major_version}.0.0"
-        print(f"{ts()} Looking at Fenix {channel.capitalize()} on {fenix_branch}")
+        release_branch_name = f"releases/v{fenix_major_version}.0.0"
 
-        current_ac_version = get_current_ac_version_in_fenix(fenix_repo, fenix_branch)
+        print(f"{ts()} Looking at Fenix {channel.capitalize()} on {release_branch_name}")
+
+        current_ac_version = get_current_ac_version_in_fenix(fenix_repo, release_branch_name)
         print(f"{ts()} Current A-C version is {current_ac_version}")
 
         ac_major_version = int(current_ac_version[0:2]) # TODO Util & Test!
         latest_ac_version = get_latest_ac_version_for_major_version(ac_repo, ac_major_version)
 
-        if latest_ac_version > current_ac_version:
-            print(f"{ts()} Should upgrade to {latest_ac_version}")
-            #_update_ac_version(fenix_repo, fenix_branch, current_ac_version, latest_ac_version, author)
-        else:
+        # For testing on st3fan/fenix
+        #if channel == "beta":
+        #    latest_ac_version = "63.0.2"
+
+        if current_ac_version >= latest_ac_version:
             print(f"{ts()} No need to upgrade; Fenix {channel.capitalize()} is on A-C {current_ac_version}")
+            continue
+
+        print(f"{ts()} Should upgrade to {latest_ac_version}")
+
+        pr_branch_name = f"relbot/AC-{latest_ac_version}"
+
+        try:
+            pr_branch = fenix_repo.get_branch(pr_branch_name)
+            if pr_branch:
+                raise Exception(f"The PR branch {pr_branch_name} already exists. Exiting.")
+        except GithubException as e:
+            pass
+
+        release_branch = fenix_repo.get_branch(release_branch_name)
+        print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+
+        print(f"{ts()} Creating branch {pr_branch_name} on {release_branch.commit.sha}")
+        fenix_repo.create_git_ref(ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha)
+
+        print(f"{ts()} Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}")
+        _update_ac_version(fenix_repo, pr_branch_name, current_ac_version, latest_ac_version, author)
+
+        print(f"{ts()} Creating pull request")
+        pr = fenix_repo.create_pull(title=f"Update to Android-Components {latest_ac_version}.",
+                                 body=f"This (automated) patch updates Android-Components to {latest_ac_version}.",
+                                 head=pr_branch_name, base=release_branch_name)
+        print(f"{ts()} Pull request at {pr.html_url}")
 
 
 

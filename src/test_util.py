@@ -60,13 +60,13 @@ object AndroidComponents {
 }
 """
 
-def test_match_as_version():
-    assert match_ac_version(ANDROID_COMPONENTS_KT) == "64.0.20201027143116"
+def test_match_ac_version_in_fenix():
+    assert match_ac_version_in_fenix(ANDROID_COMPONENTS_KT) == "64.0.20201027143116"
 
 
-def test_get_current_ac_version():
+def test_get_current_ac_version_in_fenix():
     repo = github.Github().get_repo(f"st3fan/fenix")
-    assert get_current_ac_version(repo, "releases/v82.0.0") == "60.0.5"
+    assert get_current_ac_version_in_fenix(repo, "releases/v82.0.0") == "60.0.5"
 
 
 def test_get_current_ac_version():
@@ -164,3 +164,7 @@ def test_get_recent_ac_releases():
     # But plenty releases on the actual repo
     assert get_recent_ac_releases(github.Github().get_repo(f"mozilla-mobile/android-components")) != []
 
+
+def test_comparing_versions():
+    assert "63.0.3" > "63.0.2"
+    assert "63.0.10" > "63.0.9"
