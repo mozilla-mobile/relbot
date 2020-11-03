@@ -34,6 +34,8 @@ def update_android_components(ac_repo, fenix_repo, author, debug):
         ac_major_version = int(current_ac_version[0:2]) # TODO Util & Test!
         latest_ac_version = get_latest_ac_version_for_major_version(ac_repo, ac_major_version)
 
+        raise Exception("TODO This should look in Maven and not in GitHub")
+
         # For testing on st3fan/fenix
         #if channel == "beta":
         #    latest_ac_version = "63.0.2"
