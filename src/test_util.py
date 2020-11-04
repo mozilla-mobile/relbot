@@ -184,3 +184,9 @@ def test_compare_gv_versions():
     assert compare_gv_versions("123.567.20191008183927", "123.567.20201008183927") < 0
 
 
+def test_get_latest_ac_version():
+    assert get_latest_ac_version(56) == "56.0.0"
+    assert get_latest_ac_version(57) == "57.0.8"
+    assert get_latest_ac_version(58) == "58.0.0"
+    assert get_latest_ac_version(59) == "59.0.0"
+    assert get_latest_ac_version(60) == "60.0.7"

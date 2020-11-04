@@ -32,9 +32,7 @@ def update_android_components(ac_repo, fenix_repo, author, debug):
         print(f"{ts()} Current A-C version is {current_ac_version}")
 
         ac_major_version = int(current_ac_version[0:2]) # TODO Util & Test!
-        latest_ac_version = get_latest_ac_version_for_major_version(ac_repo, ac_major_version)
-
-        raise Exception("TODO This should look in Maven and not in GitHub")
+        latest_ac_version = get_latest_ac_version(ac_major_version)
 
         # For testing on st3fan/fenix
         #if channel == "beta":
@@ -44,7 +42,7 @@ def update_android_components(ac_repo, fenix_repo, author, debug):
             print(f"{ts()} No need to upgrade; Fenix {channel.capitalize()} is on A-C {current_ac_version}")
             continue
 
-        print(f"{ts()} Should upgrade to {latest_ac_version}")
+        print(f"{ts()} We should upgrade Fenix {fenix_major_version} {channel.capitalize()} to Android-Components {latest_ac_version}")
 
         pr_branch_name = f"relbot/AC-{latest_ac_version}"
 
@@ -68,6 +66,8 @@ def update_android_components(ac_repo, fenix_repo, author, debug):
         pr = fenix_repo.create_pull(title=f"Update to Android-Components {latest_ac_version}.",
                                  body=f"This (automated) patch updates Android-Components to {latest_ac_version}.",
                                  head=pr_branch_name, base=release_branch_name)
+        pr.add_to_labels("needs:review")
+        pr.add_to_labels("pr:needs-landing")
         print(f"{ts()} Pull request at {pr.html_url}")
 
 

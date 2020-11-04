@@ -120,6 +120,25 @@ def get_latest_gv_version(gv_major_version, channel):
     return versions[-1]
 
 
+def get_latest_ac_version(ac_major_version):
+    """Find the last android-components release on Maven for the given major version"""
+    r = requests.get("https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml")
+    r.raise_for_status()
+
+    metadata = xmltodict.parse(r.text)
+
+    versions = []
+    for version in metadata['metadata']['versioning']['versions']['version']:
+        if version.startswith(f"{ac_major_version}."):
+            versions.append(version)
+
+    if len(versions) == 0:
+        raise Exception(f"Could not find any Android-Components {ac_major_version} releases on maven.mozilla.org")
+
+    versions = sorted(versions)
+    return versions[-1]
+
+
 def get_next_ac_version(current_version):
     c = current_version.split(".")
     return f"{c[0]}.{c[1]}.{int(c[2])+1}"
