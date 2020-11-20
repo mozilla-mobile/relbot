@@ -71,9 +71,9 @@ if __name__ == "__main__":
     if debug:
         enable_console_debug_logging()
 
-    github_access_token = os.getenv("GITHUB_ACCESS_TOKEN")
+    github_access_token = os.getenv("GITHUB_TOKEN")
     if not github_access_token:
-        print("No GITHUB_ACCESS_TOKEN set. Exiting.")
+        print("No GITHUB_TOKEN set. Exiting.")
         sys.exit(1)
 
     github = Github(github_access_token)
