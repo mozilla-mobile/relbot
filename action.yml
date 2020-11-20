@@ -1,0 +1,16 @@
+name: 'Release Bot'
+description: 'Updates GV/AC & Creates Releases'
+inputs:
+  project:
+    description: 'The project to work on. Either android-components or fenix.'
+    required: true
+  command:
+    description: 'The command to execute. For android-components: update-geckoview-beta, update-geckoview-release, create-release. For fenix: update-android-compents.'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.project }}
+    - ${{ inputs.command }}
+
