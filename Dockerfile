@@ -7,5 +7,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/* ./
 
-ENTRYPOINT ["python", "./relbot.py"]
+ENTRYPOINT ["/usr/src/app/relbot.py"]
 
