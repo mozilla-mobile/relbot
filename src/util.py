@@ -12,11 +12,11 @@ import requests
 import xmltodict
 
 
-AC_MAJOR_VERSION = 63 # TODO This should be discovered dynamically
-GV_MAJOR_VERSION = 83 # TODO This should be discovered dynamically
+AC_MAJOR_VERSION = 67 # TODO This should be discovered dynamically
+GV_MAJOR_VERSION = 84 # TODO This should be discovered dynamically
 
-FENIX_MAJOR_RELEASE_VERSION = 82 # TODO This should be discovered dynamically
-FENIX_MAJOR_BETA_VERSION = 83 # TODO This should be discovered dynamically
+FENIX_MAJOR_RELEASE_VERSION = 83 # TODO This should be discovered dynamically
+FENIX_MAJOR_BETA_VERSION = 84 # TODO This should be discovered dynamically
 
 
 def discover_fenix_major_version(channel):

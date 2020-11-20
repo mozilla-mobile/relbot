@@ -34,11 +34,13 @@ def update_android_components(ac_repo, fenix_repo, author, debug):
         ac_major_version = int(current_ac_version[0:2]) # TODO Util & Test!
         latest_ac_version = get_latest_ac_version(ac_major_version)
 
+        print(current_ac_version)
+
         # For testing on st3fan/fenix
         #if channel == "beta":
-        #    latest_ac_version = "63.0.2"
+        #    latest_ac_version = "67.0.2"
 
-        if compare_ac_versions(current_ac_version, latest_ac_version) >= 0:
+        if len(current_ac_version) != 19 and compare_ac_versions(current_ac_version, latest_ac_version) >= 0:
             print(f"{ts()} No need to upgrade; Fenix {channel.capitalize()} is on A-C {current_ac_version}")
             continue
 
