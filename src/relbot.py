@@ -81,7 +81,7 @@ if __name__ == "__main__":
         print("Could not get authenticated user. Exiting.")
         sys.exit(1)
 
-    organization = os.getenv("GITHUB_ORGANIZATION") or DEFAULT_ORGANIZATION
+    organization = os.getenv("GITHUB_REPOSITORY_OWNER") or DEFAULT_ORGANIZATION
 
     ac_repo = github.get_repo(f"{organization}/android-components")
     fenix_repo = github.get_repo(f"{organization}/fenix")
