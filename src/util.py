@@ -88,18 +88,19 @@ def get_current_ac_version(repo, release_branch_name):
 def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):
     return get_current_ac_version(ac_repo, f"releases/{ac_major_version}.0")
 
+MAVEN = "https://maven.mozilla.org/maven2"
 
 def get_latest_gv_version(gv_major_version, channel):
     """Find the last geckoview beta release version on Maven for the given major version"""
     if channel not in ("beta", "release"):
         raise Exception(f"Invalid channel {channel}")
 
-    # Find the latest release for arm64-v8a
+    # Find the latest release in the multi-arch .aar
 
     name = "geckoview"
     if channel != "release":
         name += "-" + channel
-    r = requests.get(f"https://maven.mozilla.org/maven2/org/mozilla/geckoview/{name}-arm64-v8a/maven-metadata.xml")
+    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml")
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
 
@@ -112,12 +113,15 @@ def get_latest_gv_version(gv_major_version, channel):
         raise Exception(f"Could not find any GeckoView {channel.capitalize()} {gv_major_version} releases")
 
     versions = sorted(versions)
+    latest = versions[-1]
 
-    # TODO Make sure this release exists for all other architectures
+    # Make sure this release has been uploaded for all architectures.
 
-    # TODO Check to make sure they are all present and all the same
+    for arch in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64"):
+        r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom")
+        r.raise_for_status()
 
-    return versions[-1]
+    return latest
 
 
 def get_latest_ac_version(ac_major_version):
