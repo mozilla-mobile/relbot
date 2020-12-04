@@ -52,7 +52,8 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         latest_gv_version = get_latest_gv_version(current_gv_major_version, channel)
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
-            raise Exception(f"No newer GV {channel.capitalize()} release found. Exiting.")
+            print(f"{ts()} No newer GV {channel.capitalize()} release found. Exiting.")
+            return
 
         print(f"{ts()} We should update A-C with GV {channel.capitalize()} {latest_gv_version}")
 
@@ -119,7 +120,8 @@ def update_geckoview(ac_repo, fenix_repo, channel, author, debug):
             raise Exception(f"Latest GV {channel.capitalize()} is not same major release. Exiting.")
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
-            raise Exception(f"No newer GV {channel.capitalize()} release found. Exiting.")
+            print(f"{ts()} No newer GV {channel.capitalize()} release found. Exiting.")
+            return
 
         next_ac_version = get_next_ac_version(current_ac_version)
         print(f"{ts()} We should create an A-C {next_ac_version} release with GV {channel.capitalize()} {latest_gv_version}")
@@ -129,8 +131,10 @@ def update_geckoview(ac_repo, fenix_repo, channel, author, debug):
         try:
             pr_branch = ac_repo.get_branch(pr_branch_name)
             if pr_branch:
-                raise Exception(f"The PR branch {pr_branch_name} already exists. Exiting.")
+                print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+                return
         except GithubException as e:
+            # TODO Only ignore a 404 here, fail on others
             pass
         #
         # Create a new branch for this update
