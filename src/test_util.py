@@ -108,6 +108,25 @@ def test_validate_ac_version_bad():
         validate_ac_version("63.0-beta.2")
 
 
+def test_major_gv_version_from_version_bad():
+    with pytest.raises(Exception):
+        major_gv_version_from_version("")
+    with pytest.raises(Exception):
+        major_gv_version_from_version("lol")
+    with pytest.raises(Exception):
+        major_gv_version_from_version("81")
+    with pytest.raises(Exception):
+        major_gv_version_from_version("81.0")
+    with pytest.raises(Exception):
+        major_gv_version_from_version("81.0.20201012")
+    with pytest.raises(Exception):
+        major_gv_version_from_version("81.0.202010121122")
+
+def test_major_gv_version_from_version_good():
+    assert major_gv_version_from_version("81.0.20201012085804") == "81"
+    assert major_gv_version_from_version("123.0.20231012085804") == "123"
+
+
 def test_validate_ac_version_good():
     assert validate_ac_version("64.0.20201027143116") == "64.0.20201027143116"
     assert validate_ac_version("63.0.0") == "63.0.0"

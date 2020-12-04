@@ -48,7 +48,7 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         release_branch_name = "master"
 
         current_gv_version = get_current_gv_version(ac_repo, release_branch_name, channel)
-        current_gv_major_version = current_gv_version.split(".")[0]
+        current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, channel)
 
         #
@@ -74,10 +74,9 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         #
 
         print(f"{ts()} Creating pull request")
-        pr = ac_repo.create_pull(title=f"GeckoView update ({channel.capitalize()}) {latest_gv_version}.",
+        pr = ac_repo.create_pull(title=f"GeckoView ({channel.capitalize()}) {latest_gv_version}",
                                  body=f"This (automated) patch updates GV {channel.capitalize()} on master to {latest_gv_version}.",
                                  head=pr_branch_name, base=release_branch_name)
-        pr.add_to_labels("🛬 needs landing")
         print(f"{ts()} Pull request at {pr.html_url}")
     except Exception as e:
         print(f"{ts()} Exception: {str(e)}")

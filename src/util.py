@@ -48,6 +48,10 @@ def validate_gv_version(v):
         raise Exception(f"Invalid GV version {v}")
     return v
 
+def major_gv_version_from_version(v):
+    """Return the major version for the given GV version"""
+    c = validate_gv_version(v).split(".")
+    return c[0]
 
 def match_ac_version_in_fenix(src):
     if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
