@@ -46,6 +46,7 @@ def test_match_gv_version():
 
 def test_get_current_gv_version():
     repo = github.Github().get_repo(f"st3fan/android-components")
+    assert get_current_gv_version(repo, "master", "nightly") == "85.0.20201120094511"
     assert get_current_gv_version(repo, "releases/57.0", "beta") == "81.0.20200910180444"
     assert get_current_gv_version(repo, "releases/57.0", "release") == "81.0.20201012085804"
 
@@ -116,7 +117,7 @@ def test_validate_ac_version_good():
 
 
 def test_get_latest_gv_version_release():
-    assert get_latest_gv_version(81, "release") == "81.0.20201012085804"
+    assert get_latest_gv_version(81, "release") == "81.0.20201108175212"
 
 
 def test_get_latest_gv_version_beta():
@@ -186,7 +187,7 @@ def test_compare_gv_versions():
 
 def test_get_latest_ac_version():
     assert get_latest_ac_version(56) == "56.0.0"
-    assert get_latest_ac_version(57) == "57.0.8"
+    assert get_latest_ac_version(57) == "57.0.9"
     assert get_latest_ac_version(58) == "58.0.0"
     assert get_latest_ac_version(59) == "59.0.0"
-    assert get_latest_ac_version(60) == "60.0.7"
+    assert get_latest_ac_version(60) == "60.0.8"

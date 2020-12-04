@@ -63,7 +63,7 @@ def get_current_ac_version_in_fenix(fenix_repo, release_branch_name):
 
 def match_gv_version(src, channel):
     """Find the GeckoView Beta version in the contents of the given AndroidComponents.kt file."""
-    if channel not in ("beta", "release"):
+    if channel not in ("nightly", "beta", "release"):
         raise Exception(f"Invalid channel {channel}")
     if match := re.compile(fr'{channel}_version = "([^"]*)"', re.MULTILINE).search(src):
         return validate_gv_version(match[1])
@@ -72,7 +72,7 @@ def match_gv_version(src, channel):
 
 def get_current_gv_version(repo, release_branch_name, channel):
     """Return the current gv beta version used on the given release branch"""
-    if channel not in ("beta", "release"):
+    if channel not in ("nightly", "beta", "release"):
         raise Exception(f"Invalid channel {channel}")
     content_file = repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=release_branch_name)
     return match_gv_version(content_file.decoded_content.decode('utf8'), channel)
@@ -92,7 +92,7 @@ MAVEN = "https://maven.mozilla.org/maven2"
 
 def get_latest_gv_version(gv_major_version, channel):
     """Find the last geckoview beta release version on Maven for the given major version"""
-    if channel not in ("beta", "release"):
+    if channel not in ("nightly", "beta", "release"):
         raise Exception(f"Invalid channel {channel}")
 
     # Find the latest release in the multi-arch .aar
