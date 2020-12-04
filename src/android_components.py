@@ -37,9 +37,9 @@ def update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel, 
                      new_content, contents.sha, branch=branch, author=author)
 
 #
-# Update GeckoView Nightly on A-C master. This is a bit of a special case since it doesn't care about
-# release branches and looks in a different Maven repo. It can probably be refactored to share more
-# code with update_geckoview() though.
+# Update GeckoView Nightly on A-C master. This is a bit of a special
+# case since it doesn't care about release branches. It can probably
+# be refactored to share more code with update_geckoview() though.
 #
 
 def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
