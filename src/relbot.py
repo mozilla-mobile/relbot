@@ -57,7 +57,7 @@ def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False):
         if argv[2] == "update-android-components":
             reference_browser.update_android_components(ac_repo, rb_repo, author, debug)
         else:
-            print("usage: relbot fenix <update-android-components>")
+            print("usage: relbot reference-browser <update-android-components>")
             sys.exit(1)
 
     # Fenix
