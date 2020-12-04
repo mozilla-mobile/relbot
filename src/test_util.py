@@ -65,9 +65,28 @@ def test_match_ac_version_in_fenix():
     assert match_ac_version_in_fenix(ANDROID_COMPONENTS_KT) == "64.0.20201027143116"
 
 
+RB_ANDROID_COMPONENTS_KT = """
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+object AndroidComponents {
+    const val VERSION = "69.0.20201203202830"
+}
+"""
+
+def test_match_ac_version_in_reference_browser():
+    assert match_ac_version_in_reference_browser(RB_ANDROID_COMPONENTS_KT) == "69.0.20201203202830"
+
+
 def test_get_current_ac_version_in_fenix():
     repo = github.Github().get_repo(f"st3fan/fenix")
     assert get_current_ac_version_in_fenix(repo, "releases/v82.0.0") == "60.0.5"
+
+
+def test_get_current_ac_version_in_reference_browser():
+    repo = github.Github().get_repo(f"st3fan/reference-browser")
+    assert get_current_ac_version_in_fenix(repo, "for-relbot-tests") == "69.0.20201203202830"
 
 
 def test_get_current_ac_version():
@@ -133,6 +152,26 @@ def test_validate_ac_version_good():
     assert validate_ac_version("63.0.1") == "63.0.1"
     assert validate_ac_version("63.1.2") == "63.1.2"
     assert validate_ac_version("12.34.56") == "12.34.56"
+
+
+def test_major_ac_version_from_version_bad():
+    with pytest.raises(Exception):
+        major_ac_version_from_version("")
+    with pytest.raises(Exception):
+        major_ac_version_from_version("lol")
+    with pytest.raises(Exception):
+        major_ac_version_from_version("63")
+    with pytest.raises(Exception):
+        major_ac_version_from_version("63.0")
+    with pytest.raises(Exception):
+        major_ac_version_from_version("63.0-beta.2")
+
+
+def test_major_ac_version_from_version_good():
+    assert major_ac_version_from_version("63.0.0") == "63"
+    assert major_ac_version_from_version("64.0.1") == "64"
+    assert major_ac_version_from_version("65.1.2") == "65"
+    assert major_ac_version_from_version("123.0.8") == "123"
 
 
 def test_get_latest_gv_version_release():
@@ -210,3 +249,7 @@ def test_get_latest_ac_version():
     assert get_latest_ac_version(58) == "58.0.0"
     assert get_latest_ac_version(59) == "59.0.0"
     assert get_latest_ac_version(60) == "60.0.8"
+
+def test_get_latest_ac_nightly_version():
+    assert get_latest_ac_nightly_version() is not None
+
