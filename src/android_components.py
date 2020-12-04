@@ -51,6 +51,26 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, channel)
 
+        if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
+            raise Exception(f"No newer GV {channel.capitalize()} release found. Exiting.")
+
+        print(f"{ts()} We should update A-C with GV {channel.capitalize()} {latest_gv_version}")
+
+        #
+        # Check if the branch already exists
+        #
+
+        pr_branch_name = f"GV-Nightly-{latest_gv_version}"
+
+        try:
+            pr_branch = ac_repo.get_branch(pr_branch_name)
+            if pr_branch:
+                print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+                return
+        except GithubException as e:
+            # TODO Only ignore a 404 here, fail on others
+            pass
+
         #
         # Create a new branch for this update
         #
@@ -58,7 +78,6 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         release_branch = ac_repo.get_branch(release_branch_name)
         print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
 
-        pr_branch_name = f"GV-Nightly-{latest_gv_version}"
         ac_repo.create_git_ref(ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha)
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
