@@ -80,7 +80,6 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         print(f"{ts()} Pull request at {pr.html_url}")
     except Exception as e:
         print(f"{ts()} Exception: {str(e)}")
-        raise e
         # TODO Clean up the mess
 
 
