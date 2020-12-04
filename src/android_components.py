@@ -142,7 +142,6 @@ def update_geckoview(ac_repo, fenix_repo, channel, author, debug):
         pr = ac_repo.create_pull(title=f"Version {next_ac_version} with GV {channel.capitalize()} {latest_gv_version}.",
                          body=f"This (automated) patch updates GV {channel.capitalize()} to {latest_gv_version}.",
                          head=pr_branch_name, base=release_branch_name)
-        pr.add_to_labels("🛬 needs landing")
         print(f"{ts()} Pull request at {pr.html_url}")
     except Exception as e:
         print(f"{ts()} Exception: {str(e)}")
