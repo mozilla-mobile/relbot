@@ -23,7 +23,7 @@ def update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
 
 
 def update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel, author):
-    if channel not in ("beta", "release"):
+    if channel not in ("nightly", "beta", "release"):
         raise Exception(f"Invalid channel {channel}")
 
     contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
@@ -35,6 +35,53 @@ def update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel, 
 
     ac_repo.update_file(contents.path, f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
                      new_content, contents.sha, branch=branch, author=author)
+
+#
+# Update GeckoView Nightly on A-C master. This is a bit of a special
+# case since it doesn't care about release branches. It can probably
+# be refactored to share more code with update_geckoview() though.
+#
+
+def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
+    try:
+        channel = "nightly"
+        release_branch_name = "master"
+
+        current_gv_version = get_current_gv_version(ac_repo, release_branch_name, channel)
+        current_gv_major_version = major_gv_version_from_version(current_gv_version)
+        latest_gv_version = get_latest_gv_version(current_gv_major_version, channel)
+
+        #
+        # Create a new branch for this update
+        #
+
+        release_branch = ac_repo.get_branch(release_branch_name)
+        print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+
+        pr_branch_name = f"GV-Nightly-{latest_gv_version}"
+        ac_repo.create_git_ref(ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha)
+        print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
+
+        #
+        # Update buildSrc/src/main/java/Gecko.kt
+        #
+
+        print(f"{ts()} Updating buildSrc/src/main/java/Gecko.kt")
+        update_gv_version(ac_repo, current_gv_version, latest_gv_version, pr_branch_name, channel, author)
+
+        #
+        # Create the pull request
+        #
+
+        print(f"{ts()} Creating pull request")
+        pr = ac_repo.create_pull(title=f"GeckoView ({channel.capitalize()}) {latest_gv_version}",
+                                 body=f"This (automated) patch updates GV {channel.capitalize()} on master to {latest_gv_version}.",
+                                 head=pr_branch_name, base=release_branch_name)
+        print(f"{ts()} Pull request at {pr.html_url}")
+    except Exception as e:
+        print(f"{ts()} Exception: {str(e)}")
+        raise e
+        # TODO Clean up the mess
 
 
 #

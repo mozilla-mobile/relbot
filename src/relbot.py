@@ -40,7 +40,9 @@ def main(argv, ac_repo, fenix_repo, author, debug=False):
 
     # Android Components
     if argv[1] == "android-components":
-        if argv[2] == "update-geckoview-beta":
+        if argv[2] == "update-geckoview-nightly":
+            android_components.update_geckoview_nightly(ac_repo, fenix_repo, author, debug)
+        elif argv[2] == "update-geckoview-beta":
             android_components.update_geckoview(ac_repo, fenix_repo, "beta", author, debug)
         elif argv[2] == "update-geckoview-release":
             android_components.update_geckoview(ac_repo, fenix_repo, "release", author, debug)
