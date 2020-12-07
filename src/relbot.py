@@ -29,8 +29,8 @@ import android_components, fenix
 
 
 DEFAULT_ORGANIZATION = "st3fan"
-DEFAULT_AUTHOR_NAME = "Stefan Arentz"
-DEFAULT_AUTHOR_EMAIL = "stefan@arentz.ca"
+DEFAULT_AUTHOR_NAME = "MickeyMoz"
+DEFAULT_AUTHOR_EMAIL = "sebastian@mozilla.com"
 
 
 def main(argv, ac_repo, fenix_repo, author, debug=False):
