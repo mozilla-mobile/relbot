@@ -116,7 +116,7 @@ def get_latest_gv_version(gv_major_version, channel):
     if len(versions) == 0:
         raise Exception(f"Could not find any GeckoView {channel.capitalize()} {gv_major_version} releases")
 
-    versions = sorted(versions)
+    versions = sorted(versions, key=gv_version_sort_key)
     latest = versions[-1]
 
     # Make sure this release has been uploaded for all architectures.
@@ -143,7 +143,7 @@ def get_latest_ac_version(ac_major_version):
     if len(versions) == 0:
         raise Exception(f"Could not find any Android-Components {ac_major_version} releases on maven.mozilla.org")
 
-    versions = sorted(versions)
+    versions = sorted(versions, key=ac_version_sort_key)
     return versions[-1]
 
 
@@ -184,3 +184,11 @@ def compare_gv_versions(a, b):
     b = b.split(".")
     b = int(b[0])*10000000000000000000 + int(b[1])*1000000000000000 + int(b[2])
     return a-b
+
+def ac_version_sort_key(a):
+    a = a.split(".")
+    return int(a[0])*1000000 + int(a[1])*1000 + int(a[2])
+
+def gv_version_sort_key(a):
+    a = a.split(".")
+    return int(a[0])*10000000000000000000 + int(a[1])*1000000000000000 + int(a[2])
