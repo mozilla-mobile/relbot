@@ -53,7 +53,7 @@ def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False):
             sys.exit(1)
 
     # Reference Browser
-    if argv[1] == "reference-browser":
+    elif argv[1] == "reference-browser":
         if argv[2] == "update-android-components":
             reference_browser.update_android_components(ac_repo, rb_repo, author, debug)
         else:
