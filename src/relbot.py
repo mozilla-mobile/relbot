@@ -25,7 +25,7 @@ import os, sys
 
 from github import Github, InputGitAuthor, enable_console_debug_logging
 
-import android_components, fenix
+import android_components, fenix, reference_browser
 
 
 DEFAULT_ORGANIZATION = "st3fan"
@@ -33,9 +33,9 @@ DEFAULT_AUTHOR_NAME = "MickeyMoz"
 DEFAULT_AUTHOR_EMAIL = "sebastian@mozilla.com"
 
 
-def main(argv, ac_repo, fenix_repo, author, debug=False):
+def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False):
     if len(argv) < 2:
-        print("usage: relbot <android-components|fenix> command...")
+        print("usage: relbot <android-components|reference-browser|fenix> command...")
         sys.exit(1)
 
     # Android Components
@@ -49,7 +49,15 @@ def main(argv, ac_repo, fenix_repo, author, debug=False):
         elif argv[2] == "create-release":
             android_components.create_release(ac_repo, fenix_repo, author, debug)
         else:
-            print("usage: relbot android-components <update-geckoview-beta|update-geckoview-release|create-release>")
+            print("usage: relbot android-components <update-geckoview-{nighty,beta}|update-geckoview-release|create-release>")
+            sys.exit(1)
+
+    # Reference Browser
+    if argv[1] == "reference-browser":
+        if argv[2] == "update-android-components":
+            reference_browser.update_android_components(ac_repo, rb_repo, author, debug)
+        else:
+            print("usage: relbot reference-browser <update-android-components>")
             sys.exit(1)
 
     # Fenix
@@ -86,6 +94,7 @@ if __name__ == "__main__":
     organization = os.getenv("GITHUB_REPOSITORY_OWNER") or DEFAULT_ORGANIZATION
 
     ac_repo = github.get_repo(f"{organization}/android-components")
+    rb_repo = github.get_repo(f"{organization}/reference-browser")
     fenix_repo = github.get_repo(f"{organization}/fenix")
 
     author_name = os.getenv("AUTHOR_NAME") or DEFAULT_AUTHOR_NAME
@@ -94,4 +103,4 @@ if __name__ == "__main__":
 
     print(f"This is relbot working on https://github.com/{organization} as {author_email} / {author_name}")
 
-    main(sys.argv, ac_repo, fenix_repo, author, debug)
+    main(sys.argv, ac_repo, rb_repo, fenix_repo, author, debug)

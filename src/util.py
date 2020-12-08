@@ -42,6 +42,12 @@ def validate_ac_version(v):
     return v
 
 
+def major_ac_version_from_version(v):
+    """Return the major version for the given AC version"""
+    c = validate_ac_version(v).split(".")
+    return c[0]
+
+
 def validate_gv_version(v):
     """Validate that v is in the format of 82.0.20201027185343. Returns v or raises an exception."""
     if not re.match(r"^\d{2,}\.\d\.\d{14}$", v):
@@ -63,6 +69,17 @@ def get_current_ac_version_in_fenix(fenix_repo, release_branch_name):
     """Return the current A-C version used on the given Fenix branch"""
     content_file = fenix_repo.get_contents("buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name)
     return match_ac_version_in_fenix(content_file.decoded_content.decode('utf8'))
+
+
+def match_ac_version_in_reference_browser(src):
+    if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
+        return validate_ac_version(match[1])
+    raise Exception(f"Could not match the VERSION in AndroidComponents.kt")
+
+def get_current_ac_version_in_reference_browser(rb_repo, release_branch_name):
+    """Return the current A-C version used on the given branch"""
+    content_file = rb_repo.get_contents("buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name)
+    return match_ac_version_in_reference_browser(content_file.decoded_content.decode('utf8'))
 
 
 def match_gv_version(src, channel):
@@ -145,6 +162,14 @@ def get_latest_ac_version(ac_major_version):
 
     versions = sorted(versions, key=ac_version_sort_key)
     return versions[-1]
+
+
+def get_latest_ac_nightly_version():
+    """Find the last android-components Nightly release on Maven for the given major version"""
+    r = requests.get("https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml")
+    r.raise_for_status()
+    metadata = xmltodict.parse(r.text)
+    return metadata['metadata']['versioning']['latest']
 
 
 def get_next_ac_version(current_version):
