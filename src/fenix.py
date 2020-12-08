@@ -46,7 +46,8 @@ def update_android_components(ac_repo, fenix_repo, author, debug):
         try:
             pr_branch = fenix_repo.get_branch(pr_branch_name)
             if pr_branch:
-                raise Exception(f"The PR branch {pr_branch_name} already exists. Exiting.")
+                print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+                continue
         except GithubException as e:
             pass
 
