@@ -3,10 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 
+import os
+
 import github
 import pytest
 
 from util import *
+
+
+@pytest.fixture
+def gh():
+    return github.Github(os.getenv("GITHUB_TOKEN"))
 
 
 GECKO_KT = """
@@ -44,8 +51,8 @@ def test_match_gv_version():
     assert match_gv_version(GECKO_KT, "beta") == "81.0.20200910180444"
 
 
-def test_get_current_gv_version():
-    repo = github.Github().get_repo(f"st3fan/android-components")
+def test_get_current_gv_version(gh):
+    repo = gh.get_repo(f"st3fan/android-components")
     assert get_current_gv_version(repo, "master", "nightly") == "85.0.20201120094511"
     assert get_current_gv_version(repo, "releases/57.0", "beta") == "81.0.20200910180444"
     assert get_current_gv_version(repo, "releases/57.0", "release") == "81.0.20201012085804"
@@ -79,18 +86,18 @@ def test_match_ac_version_in_reference_browser():
     assert match_ac_version_in_reference_browser(RB_ANDROID_COMPONENTS_KT) == "69.0.20201203202830"
 
 
-def test_get_current_ac_version_in_fenix():
-    repo = github.Github().get_repo(f"st3fan/fenix")
+def test_get_current_ac_version_in_fenix(gh):
+    repo = gh.get_repo(f"st3fan/fenix")
     assert get_current_ac_version_in_fenix(repo, "releases/v82.0.0") == "60.0.5"
 
 
-def test_get_current_ac_version_in_reference_browser():
-    repo = github.Github().get_repo(f"st3fan/reference-browser")
+def test_get_current_ac_version_in_reference_browser(gh):
+    repo = gh.get_repo(f"st3fan/reference-browser")
     assert get_current_ac_version_in_fenix(repo, "for-relbot-tests") == "69.0.20201203202830"
 
 
-def test_get_current_ac_version():
-    repo = github.Github().get_repo(f"st3fan/android-components")
+def test_get_current_ac_version(gh):
+    repo = gh.get_repo(f"st3fan/android-components")
     assert get_current_ac_version(repo, "releases/57.0") == "57.0.8"
 
 
@@ -217,11 +224,11 @@ def test_ac_version_from_tag_bad():
         ac_version_from_tag("63.0-beta.2")
 
 
-def test_get_recent_ac_releases():
+def test_get_recent_ac_releases(gh):
     # No releases on the test repo
-    assert get_recent_ac_releases(github.Github().get_repo(f"st3fan/android-components")) == []
+    assert get_recent_ac_releases(gh.get_repo(f"st3fan/android-components")) == []
     # But plenty releases on the actual repo
-    assert get_recent_ac_releases(github.Github().get_repo(f"mozilla-mobile/android-components")) != []
+    assert get_recent_ac_releases(gh.get_repo(f"mozilla-mobile/android-components")) != []
 
 
 def test_compare_ac_versions():
