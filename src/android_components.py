@@ -48,8 +48,11 @@ def update_geckoview_nightly(ac_repo, fenix_repo, author, debug):
         release_branch_name = "master"
 
         current_gv_version = get_current_gv_version(ac_repo, release_branch_name, channel)
+        print(f"{ts()} Current GV {channel.capitalize()} version in A-C is {current_gv_version}")
+
         current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, channel)
+        print(f"{ts()} Latest GV {channel.capitalize()} version available is {latest_gv_version}")
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
             print(f"{ts()} No newer GV {channel.capitalize()} release found. Exiting.")
@@ -112,9 +115,14 @@ def update_geckoview(ac_repo, fenix_repo, channel, author, debug):
         ac_major_version = discover_ac_major_version(ac_repo)
         gv_major_version = discover_gv_major_version()
         release_branch_name = f"releases/{ac_major_version}.0"
+
         current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
+
         current_gv_version = get_current_gv_version(ac_repo, release_branch_name, channel)
+        print(f"{ts()} Current GV {channel.capitalize()} version in A-C {current_ac_version} is {current_gv_version}")
+
         latest_gv_version = get_latest_gv_version(gv_major_version, channel)
+        print(f"{ts()} Latest GV {channel.capitalize()} version available is {latest_gv_version}")
 
         if not latest_gv_version.startswith(f"{gv_major_version}."):
             raise Exception(f"Latest GV {channel.capitalize()} is not same major release. Exiting.")
