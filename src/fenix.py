@@ -67,8 +67,6 @@ def update_android_components_in_fenix(ac_repo, fenix_repo, fenix_major_version,
     pr = fenix_repo.create_pull(title=f"Update to Android-Components {latest_ac_version}.",
                              body=f"This (automated) patch updates Android-Components to {latest_ac_version}.",
                              head=pr_branch_name, base=release_branch_name)
-    pr.add_to_labels("needs:review")
-    pr.add_to_labels("pr:needs-landing")
     print(f"{ts()} Pull request at {pr.html_url}")
 
 
