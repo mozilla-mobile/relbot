@@ -15,17 +15,6 @@ import xmltodict
 AC_MAJOR_VERSION = 67 # TODO This should be discovered dynamically
 GV_MAJOR_VERSION = 84 # TODO This should be discovered dynamically
 
-FENIX_MAJOR_RELEASE_VERSION = 83 # TODO This should be discovered dynamically
-FENIX_MAJOR_BETA_VERSION = 84 # TODO This should be discovered dynamically
-
-
-def discover_fenix_major_version(channel):
-    if channel not in ("beta", "release"):
-        raise Exception(f"Invalid channel {channel}")
-    # TODO This should be discovered dynamically
-    versions = { "beta": FENIX_MAJOR_BETA_VERSION, "release": FENIX_MAJOR_RELEASE_VERSION }
-    return versions[channel]
-
 
 def discover_ac_major_version(repo):
     return AC_MAJOR_VERSION # TODO This should be discovered dynamically
