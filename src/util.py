@@ -15,17 +15,6 @@ import xmltodict
 AC_MAJOR_VERSION = 67 # TODO This should be discovered dynamically
 GV_MAJOR_VERSION = 84 # TODO This should be discovered dynamically
 
-FENIX_MAJOR_RELEASE_VERSION = 83 # TODO This should be discovered dynamically
-FENIX_MAJOR_BETA_VERSION = 84 # TODO This should be discovered dynamically
-
-
-def discover_fenix_major_version(channel):
-    if channel not in ("beta", "release"):
-        raise Exception(f"Invalid channel {channel}")
-    # TODO This should be discovered dynamically
-    versions = { "beta": FENIX_MAJOR_BETA_VERSION, "release": FENIX_MAJOR_RELEASE_VERSION }
-    return versions[channel]
-
 
 def discover_ac_major_version(repo):
     return AC_MAJOR_VERSION # TODO This should be discovered dynamically
@@ -217,3 +206,19 @@ def ac_version_sort_key(a):
 def gv_version_sort_key(a):
     a = a.split(".")
     return int(a[0])*10000000000000000000 + int(a[1])*1000000000000000 + int(a[2])
+
+
+def get_fenix_release_branches(repo):
+    return [branch.name for branch in repo.get_branches() if re.match(r"^releases/v\d+\.0\.0$", branch.name)]
+
+
+def major_version_from_fenix_release_branch_name(branch_name):
+    if matches := re.match(r"^releases/v(\d+)\.0\.0$", branch_name):
+        return int(matches[1])
+    raise Exception(f"Unexpected release branch name: {branch_name}")
+
+
+def get_recent_fenix_versions(repo):
+    major_fenix_versions = [major_version_from_fenix_release_branch_name(branch_name)
+                            for branch_name in get_fenix_release_branches(repo)]
+    return sorted(major_fenix_versions, reverse=False)[-2:]
