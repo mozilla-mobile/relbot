@@ -224,9 +224,9 @@ def get_recent_fenix_versions(repo):
     return sorted(major_fenix_versions, reverse=False)[-2:]
 
 #
-# Return "relevant" ac versions. Right now this is only the last two
-# Fenix versions that have release branches, which should always be
-# release and beta.
+# Return "relevant" A-C versions that could use a GeckoView update check.
+#
+# Right now we find these by looking at the last two Fenix releases.
 #
 
 def get_relevant_ac_versions(fenix_repo, ac_repo):
