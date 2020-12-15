@@ -264,6 +264,7 @@ def test_get_latest_ac_nightly_version():
 def test_get_fenix_release_branches(gh):
     assert get_fenix_release_branches(gh.get_repo(f"st3fan/fenix")) == ["releases/v79.0.0", "releases/v82.0.0", "releases/v83.0.0"]
 
+
 def test_major_version_from_fenix_release_branch_name():
     assert major_version_from_fenix_release_branch_name("releases/v79.0.0") == 79
     assert major_version_from_fenix_release_branch_name("releases/v83.0.0") == 83
@@ -274,5 +275,10 @@ def test_major_version_from_fenix_release_branch_name():
     with pytest.raises(Exception):
         major_version_from_fenix_release_branch_name("releases/v84.0.0-beta.1")
 
+
 def test_get_recent_fenix_versions(gh):
     assert get_recent_fenix_versions(gh.get_repo(f"st3fan/fenix")) == [82, 83]
+
+
+def test_get_relevant_ac_versions(gh):
+    assert get_relevant_ac_versions(gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")) == [60, 63]

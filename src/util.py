@@ -222,3 +222,17 @@ def get_recent_fenix_versions(repo):
     major_fenix_versions = [major_version_from_fenix_release_branch_name(branch_name)
                             for branch_name in get_fenix_release_branches(repo)]
     return sorted(major_fenix_versions, reverse=False)[-2:]
+
+#
+# Return "relevant" ac versions. Right now this is only the last two
+# Fenix versions that have release branches, which should always be
+# release and beta.
+#
+
+def get_relevant_ac_versions(fenix_repo, ac_repo):
+    releases = []
+    for fenix_version in get_recent_fenix_versions(fenix_repo):
+        release_branch_name = f"releases/v{fenix_version}.0.0"
+        ac_version = get_current_ac_version_in_fenix(fenix_repo, release_branch_name)
+        releases.append(int(major_ac_version_from_version(ac_version)))
+    return sorted(releases)
