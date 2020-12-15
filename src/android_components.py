@@ -149,6 +149,23 @@ def update_master(ac_repo, fenix_repo, author, debug, dry_run):
         except Exception as e:
             print(f"{ts()} Exception while updating GeckoView {channel.capitalize()} on A-C master: {str(e)}")
 
+#
+# Update GeckoView Release and Beta in all "relevant" A-C releases.
+#
+
+def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
+    for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
+        try:
+            _update_geckoview(ac_repo, fenix_repo, "release", ac_version, author, debug, dry_run)
+        except Exception as e:
+            print(f"{ts()} Exception while updating GeckoView {channel.capitalize()} on A-C master: {str(e)}")
+
+        try:
+            _update_geckoview(ac_repo, fenix_repo, "beta", ac_version, author, debug, dry_run)
+        except Exception as e:
+            print(f"{ts()} Exception while updating GeckoView {channel.capitalize()} on A-C master: {str(e)}")
+
+
 
 #
 # Update GeckoView Beta in the currently most recent A-C release. This
