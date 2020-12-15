@@ -33,19 +33,19 @@ DEFAULT_AUTHOR_NAME = "MickeyMoz"
 DEFAULT_AUTHOR_EMAIL = "sebastian@mozilla.com"
 
 
-def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False):
+def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False, dry_run=False):
     if len(argv) < 2:
         print("usage: relbot <android-components|reference-browser|fenix> command...")
         sys.exit(1)
 
     # Android Components
     if argv[1] == "android-components":
-        if argv[2] == "update-geckoview-nightly":
-            android_components.update_geckoview_nightly(ac_repo, fenix_repo, author, debug)
+        if argv[2] == "update-geckoview-nightly" or argv[2] == "update-master":
+            android_components.update_master(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "update-geckoview-beta":
-            android_components.update_geckoview(ac_repo, fenix_repo, "beta", author, debug)
+            android_components.update_geckoview_beta(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "update-geckoview-release":
-            android_components.update_geckoview(ac_repo, fenix_repo, "release", author, debug)
+            android_components.update_geckoview_release(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "create-release":
             android_components.create_release(ac_repo, fenix_repo, author, debug)
         else:
@@ -91,6 +91,8 @@ if __name__ == "__main__":
         print("Could not get authenticated user. Exiting.")
         sys.exit(1)
 
+    dry_run = os.getenv("DRY_RUN") == "True"
+
     organization = os.getenv("GITHUB_REPOSITORY_OWNER") or DEFAULT_ORGANIZATION
 
     ac_repo = github.get_repo(f"{organization}/android-components")
@@ -103,4 +105,4 @@ if __name__ == "__main__":
 
     print(f"This is relbot working on https://github.com/{organization} as {author_email} / {author_name}")
 
-    main(sys.argv, ac_repo, rb_repo, fenix_repo, author, debug)
+    main(sys.argv, ac_repo, rb_repo, fenix_repo, author, debug, dry_run)
