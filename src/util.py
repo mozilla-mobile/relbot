@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 
-import datetime, re
+import datetime, re, time
 
 
 from github import Github, GithubException, InputGitAuthor
@@ -110,7 +110,7 @@ def get_latest_gv_version(gv_major_version, channel):
     name = "geckoview"
     if channel != "release":
         name += "-" + channel
-    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml")
+    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml?t={int(time.time())}")
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
 
@@ -128,7 +128,7 @@ def get_latest_gv_version(gv_major_version, channel):
     # Make sure this release has been uploaded for all architectures.
 
     for arch in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64"):
-        r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom")
+        r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom?t={int(time.time())}")
         r.raise_for_status()
 
     return latest
@@ -136,7 +136,7 @@ def get_latest_gv_version(gv_major_version, channel):
 
 def get_latest_ac_version(ac_major_version):
     """Find the last android-components release on Maven for the given major version"""
-    r = requests.get("https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml")
+    r = requests.get(f"https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml?t={int(time.time())}")
     r.raise_for_status()
 
     metadata = xmltodict.parse(r.text)
@@ -155,7 +155,7 @@ def get_latest_ac_version(ac_major_version):
 
 def get_latest_ac_nightly_version():
     """Find the last android-components Nightly release on Maven for the given major version"""
-    r = requests.get("https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml")
+    r = requests.get(f"https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml?t={int(time.time())}")
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
     return metadata['metadata']['versioning']['latest']
