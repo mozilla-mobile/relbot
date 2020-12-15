@@ -158,7 +158,7 @@ def update_master(ac_repo, fenix_repo, author, debug, dry_run):
 
 def update_geckoview_beta(ac_repo, fenix_repo, author, debug, dry_run):
     try:
-        ac_major_version = 63 # discover_ac_major_version(ac_repo)
+        ac_major_version = discover_ac_major_version(ac_repo)
         _update_geckoview(ac_repo, fenix_repo, "beta", ac_major_version, author, debug, dry_run)
     except Exception as e:
         print(f"{ts()} Exception while updating GeckoView Beta on A-C master: {str(e)}")
@@ -172,7 +172,7 @@ def update_geckoview_beta(ac_repo, fenix_repo, author, debug, dry_run):
 
 def update_geckoview_release(ac_repo, fenix_repo, author, debug, dry_run):
     try:
-        ac_major_version = 63 # discover_ac_major_version(ac_repo)
+        ac_major_version = discover_ac_major_version(ac_repo)
         _update_geckoview(ac_repo, fenix_repo, "release", ac_major_version, author, debug, dry_run)
     except Exception as e:
         print(f"{ts()} Exception while updating GeckoView Release on A-C master: {str(e)}")
