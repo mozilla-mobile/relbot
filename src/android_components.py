@@ -12,17 +12,16 @@ from util import *
 # Helpers
 #
 
-
 def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
-    contents = ac_repo.get_contents(".buildconfig.yml", ref=branch)
-    content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f"componentsVersion: {old_ac_version}",
-                                  f"componentsVersion: {new_ac_version}")
-    if content == new_content:
-        raise Exception("Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?")
+    contents = ac_repo.get_contents("version.txt", ref=branch)
 
-    ac_repo.update_file(contents.path, f"Set version to {new_ac_version}.", new_content,
-                     contents.sha, branch=branch, author=author)
+    content = contents.decoded_content.decode("utf-8")
+    new_content = content.replace(old_ac_version, new_ac_version)
+    if content == new_content:
+        raise Exception("Update to version.txt resulted in no changes: maybe the file was already up to date?")
+
+    ac_repo.update_file(contents.path, f"Set version.txt to {new_ac_version}.", new_content,
+                        contents.sha, branch=branch, author=author)
 
 
 def _update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel, author):
