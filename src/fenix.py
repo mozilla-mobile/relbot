@@ -21,11 +21,12 @@ def _update_ac_version(fenix_repo, branch, old_ac_version, new_ac_version, autho
 # a newer android-components that can be pulled in.
 #
 
-def update_android_components_in_fenix(ac_repo, fenix_repo, fenix_major_version, author, debug):
+def update_android_components_in_fenix(ac_repo, fenix_repo, fenix_major_version, author, debug, dry_run):
     print(f"{ts()} Looking at Fenix {fenix_major_version}")
 
     # Make sure the release branch for this version exists
-    release_branch_name = f"releases/v{fenix_major_version}.0.0"
+    # TODO Temporary fix for transition between branch name conventions
+    release_branch_name = f"releases/v{fenix_major_version}.0.0" if fenix_major_version < 85 else f"releases_v{fenix_major_version}.0.0"
     release_branch = fenix_repo.get_branch(release_branch_name)
 
     print(f"{ts()} Looking at Fenix {fenix_major_version} on {release_branch_name}")
@@ -42,6 +43,10 @@ def update_android_components_in_fenix(ac_repo, fenix_repo, fenix_major_version,
         return
 
     print(f"{ts()} We are going to upgrade Fenix {fenix_major_version} to Android-Components {latest_ac_version}")
+
+    if dry_run:
+        print(f"{ts()} Dry-run so not continuing.")
+        return
 
     # Create a non unique PR branch name for work on this fenix release branch.
     pr_branch_name = f"relbot/fenix-{fenix_major_version}"
@@ -70,13 +75,13 @@ def update_android_components_in_fenix(ac_repo, fenix_repo, fenix_major_version,
     print(f"{ts()} Pull request at {pr.html_url}")
 
 
-def update_android_components(ac_repo, fenix_repo, author, debug):
+def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
     for fenix_version in get_recent_fenix_versions(fenix_repo):
         try:
-            update_android_components_in_fenix(ac_repo, fenix_repo, fenix_version, author, debug)
+            update_android_components_in_fenix(ac_repo, fenix_repo, fenix_version, author, debug, dry_run)
         except Exception as e:
             print(f"{ts()} Failed to update A-C in Fenix {fenix_version}: {str(e)}")
 
 
-def create_release(ac_repo, fenix_repo, author, debug):
+def create_release(ac_repo, fenix_repo, author, debug, dry_run):
     print("Creating Fenix Release")

@@ -209,11 +209,11 @@ def gv_version_sort_key(a):
 
 
 def get_fenix_release_branches(repo):
-    return [branch.name for branch in repo.get_branches() if re.match(r"^releases/v\d+\.0\.0$", branch.name)]
+    return [branch.name for branch in repo.get_branches() if re.match(r"^releases[_/]v\d+\.0\.0$", branch.name)]
 
 
 def major_version_from_fenix_release_branch_name(branch_name):
-    if matches := re.match(r"^releases/v(\d+)\.0\.0$", branch_name):
+    if matches := re.match(r"^releases[_/]v(\d+)\.0\.0$", branch_name):
         return int(matches[1])
     raise Exception(f"Unexpected release branch name: {branch_name}")
 
@@ -232,7 +232,8 @@ def get_recent_fenix_versions(repo):
 def get_relevant_ac_versions(fenix_repo, ac_repo):
     releases = []
     for fenix_version in get_recent_fenix_versions(fenix_repo):
-        release_branch_name = f"releases/v{fenix_version}.0.0"
+        # TODO Temporary fix for transition between branch name conventions
+        release_branch_name = f"releases/v{fenix_version}.0.0" if fenix_version < 85 else f"releases_v{fenix_version}.0.0"
         ac_version = get_current_ac_version_in_fenix(fenix_repo, release_branch_name)
         releases.append(int(major_ac_version_from_version(ac_version)))
     return sorted(releases)
