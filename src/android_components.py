@@ -77,7 +77,7 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
 
         short_version = "master" if ac_major_version is None else f"{ac_major_version}"
 
-        # Create a PR branch name that is non-unique for work on this branch
+        # Create a non unique PR branch name for work on this ac release branch.
         pr_branch_name = f"relbot/ac-{short_version}"
 
         try:

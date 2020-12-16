@@ -43,7 +43,7 @@ def update_android_components_in_fenix(ac_repo, fenix_repo, fenix_major_version,
 
     print(f"{ts()} We are going to upgrade Fenix {fenix_major_version} to Android-Components {latest_ac_version}")
 
-    # Create a PR branch name that is unique for this branch
+    # Create a non unique PR branch name for work on this fenix release branch.
     pr_branch_name = f"relbot/fenix-{fenix_major_version}"
 
     try:
