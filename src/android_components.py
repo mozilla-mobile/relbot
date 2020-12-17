@@ -167,34 +167,6 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
 
 
 #
-# Update GeckoView Beta in the currently most recent A-C release. This
-# will result in a PR to update Gecko.kt and also a version increment
-# in .buildconfig.yml
-#
-
-def update_geckoview_beta(ac_repo, fenix_repo, author, debug, dry_run):
-    try:
-        ac_major_version = discover_ac_major_version(ac_repo)
-        _update_geckoview(ac_repo, fenix_repo, "beta", ac_major_version, author, debug, dry_run)
-    except Exception as e:
-        print(f"{ts()} Exception while updating GeckoView Beta on A-C master: {str(e)}")
-
-
-#
-# Update GeckoView Release in the currently most recent A-C release. This
-# will result in a PR to update Gecko.kt and also a version increment
-# in .buildconfig.yml
-#
-
-def update_geckoview_release(ac_repo, fenix_repo, author, debug, dry_run):
-    try:
-        ac_major_version = discover_ac_major_version(ac_repo)
-        _update_geckoview(ac_repo, fenix_repo, "release", ac_major_version, author, debug, dry_run)
-    except Exception as e:
-        print(f"{ts()} Exception while updating GeckoView Release on A-C master: {str(e)}")
-
-
-#
 # Create an Android-Components release on the current release branch,
 # if it does not already exist. The logic is as follows:
 #
