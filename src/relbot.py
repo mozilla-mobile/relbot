@@ -40,18 +40,14 @@ def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False, dry_run=False)
 
     # Android Components
     if argv[1] == "android-components":
-        if argv[2] == "update-geckoview-nightly" or argv[2] == "update-master":
+        if argv[2] == "update-master":
             android_components.update_master(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "update-releases":
             android_components.update_releases(ac_repo, fenix_repo, author, debug, dry_run)
-        elif argv[2] == "update-geckoview-beta":
-            android_components.update_geckoview_beta(ac_repo, fenix_repo, author, debug, dry_run)
-        elif argv[2] == "update-geckoview-release":
-            android_components.update_geckoview_release(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "create-release":
             android_components.create_release(ac_repo, fenix_repo, author, debug)
         else:
-            print("usage: relbot android-components <update-geckoview-{nighty,beta}|update-geckoview-release|create-release>")
+            print("usage: relbot android-components <update-{master,releases}|create-release>")
             sys.exit(1)
 
     # Reference Browser
