@@ -170,41 +170,53 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
 # Create an Android-Components release on the current release branch,
 # if it does not already exist. The logic is as follows:
 #
-#  - Determine the latest release branch (currently hardcoded)
-#  - Check the version by looking at .buildconfig.yaml
+#  - Determine the "relevant" release branches
+#  - Check the version by looking at version.txt
 #  - If no github release exists, create it
 #
 # This basically means the trigger for a release is a change of the
-# `componentsVersion` field in `.buildconfig.yml`.
+# version.txt file.
 #
 # This can be run periodically, manually or triggered by a change
-# on .builconfig.yml.
+# on version.txt.
 #
 # TODO Instead of looking at the latest release branch, check all
 # relevant branches - those used by live products?
 #
 
-def create_release(ac_repo, fenix_repo, author, debug):
-    ac_major_version = discover_ac_major_version(ac_repo)
+def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run):
     release_branch_name = f"releases/{ac_major_version}.0"
     current_version = get_current_ac_version(ac_repo, release_branch_name)
     release_branch = ac_repo.get_branch(release_branch_name)
 
     if current_version.endswith(".0"):
         print(f"{ts()} Current version {current_version} is not a dot release. Exiting. ")
-        sys.exit(0)
+        return
 
     print(f"{ts()} Checking if android-components release {current_version} already exists.")
 
     releases = get_recent_ac_releases(ac_repo)
     if len(releases) == 0:
         print(f"{ts()} No releases found. Exiting. ")
-        sys.exit(0)
+        return
 
     if current_version in releases:
         print(f"{ts()} Release {current_version} already exists. Exiting. ")
-        sys.exit(0)
+        return
 
     print(f"{ts()} Creating android-components release {current_version}")
+
+    if dry_run:
+        print(f"{ts()} Dry-run so not continuing.")
+        return
+
     ac_repo.create_git_tag_and_release(f"v{current_version}", current_version,
         current_version, f"Release {current_version}", release_branch.commit.sha, "commit")
+
+def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
+    for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
+        try:
+            _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
+        except Exception as e:
+            print(f"{ts()} Exception while creating Android-Components release for {ac_version}: {str(e)}")
+        print()
