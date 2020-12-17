@@ -44,7 +44,7 @@ def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False, dry_run=False)
             android_components.update_master(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "update-releases":
             android_components.update_releases(ac_repo, fenix_repo, author, debug, dry_run)
-        elif argv[2] == "create-releases":
+        elif argv[2] == "create-releases" or argv[2] == "create-release":
             android_components.create_releases(ac_repo, fenix_repo, author, debug, dry_run)
         else:
             print("usage: relbot android-components <update-{master,releases}|create-releases>")
