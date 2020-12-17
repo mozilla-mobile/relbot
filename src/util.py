@@ -12,13 +12,6 @@ import requests
 import xmltodict
 
 
-AC_MAJOR_VERSION = 67 # TODO This should be discovered dynamically
-
-
-def discover_ac_major_version(repo):
-    return AC_MAJOR_VERSION # TODO This should be discovered dynamically
-
-
 def validate_ac_version(v):
     """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
     if not re.match(r"^\d+\.\d+\.\d+$", v):
