@@ -7,7 +7,6 @@ import datetime, re, time
 
 
 from github import Github, GithubException, InputGitAuthor
-import yaml
 import requests
 import xmltodict
 
@@ -78,9 +77,9 @@ def get_current_gv_version(repo, release_branch_name, channel):
 
 def get_current_ac_version(repo, release_branch_name):
     """Return the current ac version used on the given release branch"""
-    content_file = repo.get_contents(".buildconfig.yml", ref=release_branch_name)
-    build_config = yaml.load(content_file.decoded_content.decode('utf8'), Loader=yaml.Loader)
-    return build_config['componentsVersion']
+    content_file = repo.get_contents("version.txt", ref=release_branch_name)
+    content = content_file.decoded_content.decode('utf8')
+    return validate_ac_version(content.strip())
 
 
 def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):

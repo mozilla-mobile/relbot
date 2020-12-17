@@ -12,17 +12,28 @@ from util import *
 # Helpers
 #
 
-
-def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
+def _update_ac_buildconfig(ac_repo, old_ac_version, new_ac_version, branch, author):
     contents = ac_repo.get_contents(".buildconfig.yml", ref=branch)
+
     content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f"componentsVersion: {old_ac_version}",
-                                  f"componentsVersion: {new_ac_version}")
+    new_content = re.sub(r"componentsVersion: \d+\.\d+\.\d+", f"componentsVersion: {new_ac_version}", content)
     if content == new_content:
-        raise Exception("Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?")
+        print(f"{ts()} Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?")
 
     ac_repo.update_file(contents.path, f"Set version to {new_ac_version}.", new_content,
                      contents.sha, branch=branch, author=author)
+
+
+def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
+    contents = ac_repo.get_contents("version.txt", ref=branch)
+
+    content = contents.decoded_content.decode("utf-8")
+    new_content = content.replace(old_ac_version, new_ac_version)
+    if content == new_content:
+        raise Exception("Update to version.txt resulted in no changes: maybe the file was already up to date?")
+
+    ac_repo.update_file(contents.path, f"Set version.txt to {new_ac_version}.", new_content,
+                        contents.sha, branch=branch, author=author)
 
 
 def _update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel, author):
@@ -107,8 +118,8 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
         _update_gv_version(ac_repo, current_gv_version, latest_gv_version, pr_branch_name, gv_channel, author)
 
         #
-        # If we are updating a release branch then update also update .buildConfig to increment
-        # the patch version.
+        # If we are updating a release branch then update also update
+        # version.txt to increment the patch version.
         #
 
         if release_branch_name != "master":
@@ -117,8 +128,12 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
 
             print(f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}")
 
-            print(f"{ts()} Updating .buildConfig.yml")
+            print(f"{ts()} Updating version.txt")
             _update_ac_version(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
+
+            # TODO Also update buildconfig until we do not need it anymore
+            print(f"{ts()} Updating buildconfig.yml")
+            _update_ac_buildconfig(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
 
         #
         # Create the pull request
