@@ -106,8 +106,8 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
         _update_gv_version(ac_repo, current_gv_version, latest_gv_version, pr_branch_name, gv_channel, author)
 
         #
-        # If we are updating a release branch then update also update .buildConfig to increment
-        # the patch version.
+        # If we are updating a release branch then update also update
+        # version.txt to increment the patch version.
         #
 
         if release_branch_name != "master":
@@ -116,7 +116,7 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
 
             print(f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}")
 
-            print(f"{ts()} Updating .buildConfig.yml")
+            print(f"{ts()} Updating version.txt")
             _update_ac_version(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
 
         #
