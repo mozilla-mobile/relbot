@@ -13,15 +13,10 @@ import xmltodict
 
 
 AC_MAJOR_VERSION = 67 # TODO This should be discovered dynamically
-GV_MAJOR_VERSION = 84 # TODO This should be discovered dynamically
 
 
 def discover_ac_major_version(repo):
     return AC_MAJOR_VERSION # TODO This should be discovered dynamically
-
-
-def discover_gv_major_version():
-    return GV_MAJOR_VERSION # TODO This should be discovered dynamically
 
 
 def validate_ac_version(v):
