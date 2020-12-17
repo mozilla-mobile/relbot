@@ -12,6 +12,18 @@ from util import *
 # Helpers
 #
 
+def _update_ac_buildconfig(ac_repo, old_ac_version, new_ac_version, branch, author):
+    contents = ac_repo.get_contents(".buildconfig.yml", ref=branch)
+
+    content = contents.decoded_content.decode("utf-8")
+    new_content = re.sub(r"componentsVersion: \d+\.\d+\.\d+", f"componentsVersion: {new_ac_version}", content)
+    if content == new_content:
+        print(f"{ts()} Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?")
+
+    ac_repo.update_file(contents.path, f"Set version to {new_ac_version}.", new_content,
+                     contents.sha, branch=branch, author=author)
+
+
 def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
     contents = ac_repo.get_contents("version.txt", ref=branch)
 
@@ -118,6 +130,10 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
 
             print(f"{ts()} Updating version.txt")
             _update_ac_version(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
+
+            # TODO Also update buildconfig until we do not need it anymore
+            print(f"{ts()} Updating buildconfig.yml")
+            _update_ac_buildconfig(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
 
         #
         # Create the pull request
