@@ -235,14 +235,12 @@ def update_master(ac_repo, fenix_repo, author, debug, dry_run):
         _update_application_services(ac_repo, fenix_repo, None, author, debug, dry_run)
     except Exception as e:
         print(f"{ts()} Exception while updating A-S on A-C {ac_repo.name}:master: {str(e)}")
-    print()
 
     for gv_channel in ('nightly', 'beta', 'release'):
         try:
             _update_geckoview(ac_repo, fenix_repo, gv_channel, None, author, debug, dry_run)
         except Exception as e:
             print(f"{ts()} Exception while updating GeckoView {gv_channel.capitalize()} on A-C master: {str(e)}")
-        print()
 
 #
 # Update GeckoView Release and Beta in all "relevant" A-C releases.
@@ -250,18 +248,17 @@ def update_master(ac_repo, fenix_repo, author, debug, dry_run):
 
 def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
-        try:
-            _update_application_services(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
-        except Exception as e:
-            print(f"{ts()} Exception while updating A-S on A-C {ac_version}: {str(e)}")
-        print()
+        # TODO This is disabled for now so that we can test this code on A-C Nightly first.
+        # try:
+        #     _update_application_services(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
+        # except Exception as e:
+        #     print(f"{ts()} Exception while updating A-S on A-C {ac_version}: {str(e)}")
 
         for gv_channel in ("beta", "release"):
             try:
                 _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_version, author, debug, dry_run)
             except Exception as e:
                 print(f"{ts()} Exception while updating GeckoView {gv_channel.capitalize()} on A-C master: {str(e)}")
-            print()
 
 
 #
@@ -310,6 +307,7 @@ def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_ru
 
     ac_repo.create_git_tag_and_release(f"v{current_version}", current_version,
         current_version, f"Release {current_version}", release_branch.commit.sha, "commit")
+
 
 def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
