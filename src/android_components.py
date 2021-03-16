@@ -51,6 +51,18 @@ def _update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel,
                      new_content, contents.sha, branch=branch, author=author)
 
 
+def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
+    contents = ac_repo.get_contents("buildSrc/src/main/java/Dependencies.kt", ref=branch)
+    content = contents.decoded_content.decode("utf-8")
+    new_content = content.replace(f'mozilla_appservices = "{old_as_version}"',
+                                  f'mozilla_appservices = "{new_as_version}"')
+    if content == new_content:
+        raise Exception("Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?")
+
+    ac_repo.update_file(contents.path, f"Update A-S to {new_as_version}.",
+                     new_content, contents.sha, branch=branch, author=author)
+
+
 #
 # Update GeckoView $gv_channel in A-C $ac_release. if ac_release is None then we
 # update master. Otherwise it should be a major release version for which a

@@ -292,14 +292,3 @@ def compare_as_versions(a, b):
     b = int(b[0])*1000000 + int(b[1])*1000 + int(b[2])
     return a-b
 
-def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
-    contents = ac_repo.get_contents("buildSrc/src/main/java/Dependencies.kt", ref=branch)
-    content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f'mozilla_appservices = "{old_as_version}"',
-                                  f'mozilla_appservices = "{new_as_version}"')
-    if content == new_content:
-        raise Exception("Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?")
-
-    ac_repo.update_file(contents.path, f"Update A-S to {new_as_version}.",
-                     new_content, contents.sha, branch=branch, author=author)
-
