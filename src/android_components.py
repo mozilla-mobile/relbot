@@ -226,6 +226,14 @@ def _update_application_services(ac_repo, fenix_repo, ac_major_version, author, 
                                  body=f"This (automated) patch updates A-S to {latest_as_version}.",
                                  head=pr_branch_name, base=release_branch_name)
         print(f"{ts()} Pull request at {pr.html_url}")
+
+        #
+        # Leave a note for bors to run ui tests
+        #
+
+        print(f"{ts()} Asking Bors to run a try build")
+        issue = ac_repo.get_issue(pr.number)
+        issue.create_comment("bors try")
     except Exception as e:
         # TODO Clean up the mess
         raise e
