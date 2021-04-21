@@ -31,7 +31,6 @@ def validate_gv_version(v):
     return v
 
 
-# TODO Needs test
 def validate_gv_channel(c):
     """Validate that c is release, production or beta"""
     if c not in ('release', 'beta', 'nightly'):
@@ -83,7 +82,7 @@ def get_current_gv_version(repo, release_branch_name, channel):
     content_file = repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=release_branch_name)
     return match_gv_version(content_file.decoded_content.decode('utf8'), channel)
 
-# TODO Needs test
+
 def match_gv_version_new(src):
     """Find the GeckoView version in the contents of the given Gecko.kt file."""
     if match := re.compile(fr'version = "([^"]*)"', re.MULTILINE).search(src):
@@ -91,21 +90,19 @@ def match_gv_version_new(src):
     raise Exception(f"Could not match the {channel}_version in Gecko.kt")
 
 
-# TODO Needs test
 def get_current_gv_version_new(repo, release_branch_name):
     """Return the current gv version used on the given release branch"""
     content_file = repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=release_branch_name)
     return match_gv_version_new(content_file.decoded_content.decode('utf8'))
 
 
-# TODO Needs test
 def match_gv_channel(src):
     """Find the GeckoView channel in the contents of the given Gecko.kt file."""
     if match := re.compile(r'val channel = GeckoChannel.(NIGHTLY|BETA|RELEASE)', re.MULTILINE).search(src):
         return validate_gv_channel(match[1].lower())
     raise Exception(f"Could not match the channel in Gecko.kt")
 
-# TODO Needs test
+
 def get_current_gv_channel(repo, release_branch_name):
     """Return the current gv channel used on the given release branch"""
     content_file = repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=release_branch_name)
