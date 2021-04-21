@@ -76,9 +76,11 @@ def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
 
 
 #
-# Update GeckoView $gv_channel in A-C $ac_release. if ac_release is None then we
-# update master. Otherwise it should be a major release version for which a
-# release branch exists.
+# This _new version is to support the new style versioning according
+# to RFC7, which has now been deployed on A-C master. The plan is to
+# have both old and new code in relbot until Fenix 90 has a release
+# branch. At that point we can just use the new code and remove the
+# old implementation.
 #
 
 def _update_geckoview_new(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False):
@@ -171,26 +173,9 @@ def _update_geckoview_new(ac_repo, fenix_repo, ac_major_version, author, debug, 
                                  body=f"This (automated) patch updates GV {gv_channel.capitalize()} on master to {latest_gv_version}.",
                                  head=pr_branch_name, base=release_branch_name)
         print(f"{ts()} Pull request at {pr.html_url}")
-
-
     except Exception as e:
         # TODO Clean up the mess
         raise e
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author, debug, dry_run=False):
