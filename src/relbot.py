@@ -40,14 +40,14 @@ def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False, dry_run=False)
 
     # Android Components
     if argv[1] == "android-components":
-        if argv[2] == "update-master":
-            android_components.update_master(ac_repo, fenix_repo, author, debug, dry_run)
+        if argv[2] == "update-main":
+            android_components.update_main(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "update-releases":
             android_components.update_releases(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "create-releases" or argv[2] == "create-release":
             android_components.create_releases(ac_repo, fenix_repo, author, debug, dry_run)
         else:
-            print("usage: relbot android-components <update-{master,releases}|create-releases>")
+            print("usage: relbot android-components <update-{main,releases}|create-releases>")
             sys.exit(1)
 
     # Reference Browser

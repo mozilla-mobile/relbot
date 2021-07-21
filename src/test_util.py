@@ -95,7 +95,7 @@ def test_get_current_gv_version(gh):
 
 def test_get_current_gv_version_new(gh):
     repo = gh.get_repo(f"st3fan/android-components")
-    assert get_current_gv_version_new(repo, "master") == "90.0.20210420095122"
+    assert get_current_gv_version_new(repo, "main") == "90.0.20210420095122"
 
 
 def test_match_gv_channel():
@@ -104,7 +104,7 @@ def test_match_gv_channel():
 
 def test_get_current_gv_channel(gh):
     repo = gh.get_repo(f"st3fan/android-components")
-    assert get_current_gv_channel(repo, "master") == "nightly"
+    assert get_current_gv_channel(repo, "main") == "nightly"
 
 
 ANDROID_COMPONENTS_KT = """
