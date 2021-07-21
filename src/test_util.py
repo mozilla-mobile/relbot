@@ -95,7 +95,7 @@ def test_get_current_gv_version(gh):
 
 def test_get_current_gv_version_new(gh):
     repo = gh.get_repo(f"st3fan/android-components")
-    assert get_current_gv_version_new(repo, "main") == "90.0.20210420095122"
+    assert get_current_gv_version_new(repo, "main") == "92.0.20210721092353"
 
 
 def test_match_gv_channel():
