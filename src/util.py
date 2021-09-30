@@ -9,6 +9,7 @@ import datetime, re, time
 from github import Github, GithubException, InputGitAuthor
 import requests
 import xmltodict
+import json
 
 
 def validate_ac_version(v):
@@ -123,6 +124,35 @@ def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):
 MAVEN = "https://maven.mozilla.org/maven2"
 
 
+def get_latest_glean_version(gv_version, channel):
+    name = "geckoview"
+    if channel != "release":
+        name += "-" + channel
+    # A-C builds against geckoview-omni
+    # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3
+    name += "-omni"
+
+    r = requests.get(
+        f"{MAVEN}/org/mozilla/geckoview/{name}/{gv_version}/{name}-{gv_version}.module"
+    )
+    r.raise_for_status()
+    module_data = json.loads(r.text)
+
+    caps = module_data["variants"][0]["capabilities"]
+    versions = [
+        c["version"]
+        for c in caps
+        if c["group"] == "org.mozilla.telemetry" and c["name"] == "glean-native"
+    ]
+
+    if len(versions) != 1:
+        raise Exception(
+            f"Could not find unique glean-native capability for GeckoView {channel.capitalize()} {gv_version}"
+        )
+
+    return versions[0]
+
+
 def get_latest_gv_version(gv_major_version, channel):
     """Find the last geckoview beta release version on Maven for the given major version"""
     if channel not in ("nightly", "beta", "release"):
@@ -133,6 +163,10 @@ def get_latest_gv_version(gv_major_version, channel):
     name = "geckoview"
     if channel != "release":
         name += "-" + channel
+    # A-C builds against geckoview-omni
+    # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3
+    name += "-omni"
+
     r = requests.get(
         f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml?t={int(time.time())}"
     )
@@ -291,7 +325,7 @@ def get_relevant_ac_versions(fenix_repo, ac_repo):
 def validate_as_version(v):
     """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
     if not re.match(r"^\d+\.\d+\.\d+$", v):
-        raise Exception(f"Invalid A-S version format {v}")
+        raise Exception(f"Invalid version format {v}")
     return v
 
 
@@ -310,6 +344,23 @@ def get_current_as_version(ac_repo, release_branch_name):
         "buildSrc/src/main/java/Dependencies.kt", ref=release_branch_name
     )
     return match_as_version(content_file.decoded_content.decode("utf8"))
+
+
+def match_glean_version(src):
+    """Find the Glean version in the contents of the given Dependencies.kt file."""
+    if match := re.compile(
+        rf'const val mozilla_glean = "([^"]*)"', re.MULTILINE
+    ).search(src):
+        return validate_as_version(match[1])
+    raise Exception(f"Could not match glean in Dependencies.kt")
+
+
+def get_current_glean_version(ac_repo, release_branch_name):
+    """Return the current Glean version used on the given release branch"""
+    content_file = ac_repo.get_contents(
+        "buildSrc/src/main/java/Dependencies.kt", ref=release_branch_name
+    )
+    return match_glean_version(content_file.decoded_content.decode("utf8"))
 
 
 def major_as_version_from_version(v):

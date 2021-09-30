@@ -132,6 +132,32 @@ def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
     )
 
 
+def _update_glean_version(
+    ac_repo, old_glean_version, new_glean_version, branch, author
+):
+    contents = ac_repo.get_contents(
+        "buildSrc/src/main/java/Dependencies.kt", ref=branch
+    )
+    content = contents.decoded_content.decode("utf-8")
+    new_content = content.replace(
+        f'mozilla_glean = "{old_glean_version}"',
+        f'mozilla_glean = "{new_glean_version}"',
+    )
+    if content == new_content:
+        raise Exception(
+            "Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?"
+        )
+
+    ac_repo.update_file(
+        contents.path,
+        f"Update Glean to {new_glean_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
+
+
 #
 # This _new version is to support the new style versioning according
 # to RFC7, which has now been deployed on A-C main. The plan is to
@@ -164,6 +190,15 @@ def _update_geckoview_new(
         latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
         print(
             f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
+        )
+
+        current_glean_version = get_current_glean_version(ac_repo, release_branch_name)
+        print(
+            f"{ts()} Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} is {current_glean_version}"
+        )
+        latest_glean_version = get_latest_glean_version(latest_gv_version, gv_channel)
+        print(
+            f"{ts()} Latest bundled Glean version available is {latest_glean_version}"
         )
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
@@ -225,6 +260,16 @@ def _update_geckoview_new(
             gv_channel,
             author,
         )
+
+        if current_glean_version != latest_glean_version:
+            print(f"{ts()} Updating buildSrc/src/main/java/Dependencies.kt")
+            _update_glean_version(
+                ac_repo,
+                current_glean_version,
+                latest_glean_version,
+                pr_branch_name,
+                author,
+            )
 
         #
         # If we are updating a release branch then update also update

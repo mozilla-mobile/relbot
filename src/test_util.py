@@ -262,11 +262,11 @@ def test_major_ac_version_from_version_good():
 
 
 def test_get_latest_gv_version_release():
-    assert get_latest_gv_version(81, "release") == "81.0.20201108175212"
+    assert get_latest_gv_version(92, "release") == "92.0.20210922161155"
 
 
 def test_get_latest_gv_version_beta():
-    assert get_latest_gv_version(82, "beta") == "82.0.20201008183927"
+    assert get_latest_gv_version(93, "beta") == "93.0.20210923190449"
 
 
 def test_get_latest_gv_version_release_too_new():
