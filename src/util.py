@@ -363,3 +363,88 @@ def compare_as_versions(a, b):
     b = validate_as_version(b).split(".")
     b = int(b[0]) * 1000000 + int(b[1]) * 1000 + int(b[2])
     return a - b
+
+
+def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author):
+    contents = repo.get_contents(
+        "buildSrc/src/main/java/AndroidComponents.kt", ref=branch
+    )
+    content = contents.decoded_content.decode("utf-8")
+    new_content = content.replace(
+        f'VERSION = "{old_ac_version}"', f'VERSION = "{new_ac_version}"'
+    )
+    if content == new_content:
+        raise Exception(
+            "Update to AndroidComponents.kt resulted in no changes: maybe the file was already up to date?"
+        )
+    repo.update_file(
+        contents.path,
+        f"Update to Android-Components {new_ac_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
+
+
+def update_android_components(
+    ac_repo, target_repo, author, debug, release_branch_name, dry_ryn
+):
+
+    current_ac_version = get_current_embedded_ac_version(target_repo, release_branch_name)
+    print(f"{ts()} Current A-C version in {target_repo} is {current_ac_version}")
+
+    ac_major_version = major_ac_version_from_version(current_ac_version)
+
+    latest_ac_nightly_version = get_latest_ac_nightly_version()
+
+    if compare_ac_versions(current_ac_version, latest_ac_nightly_version) >= 0:
+        print(
+            f"{ts()} No need to upgrade; {target_repo} is on A-C {current_ac_version}"
+        )
+        return
+
+    print(
+        f"{ts()} We should upgrade {target_repo} to Android-Components {latest_ac_nightly_version}"
+    )
+
+    if dry_run:
+        print(f"{ts()} Dry-run so not continuing.")
+        return
+
+    pr_branch_name = f"relbot/AC-Nightly-{latest_ac_nightly_version}"
+
+    try:
+        if pr_branch := target_repo.get_branch(pr_branch_name):
+            print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+            return
+    except GithubException as e:
+        pass
+
+    release_branch = target_repo.get_branch(release_branch_name)
+    print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+
+    print(f"{ts()} Creating branch {pr_branch_name} on {release_branch.commit.sha}")
+    target_repo.create_git_ref(
+        ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
+    )
+
+    print(
+        f"{ts()} Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_nightly_version} on {pr_branch_name}"
+    )
+    _update_ac_version(
+        target_repo,
+        pr_branch_name,
+        current_ac_version,
+        latest_ac_nightly_version,
+        author,
+    )
+
+    print(f"{ts()} Creating pull request")
+    pr = target_repo.create_pull(
+        title=f"Update to Android-Components {latest_ac_nightly_version}.",
+        body=f"This (automated) patch updates Android-Components to {latest_ac_nightly_version}.",
+        head=pr_branch_name,
+        base=release_branch_name,
+    )
+    print(f"{ts()} Pull request at {pr.html_url}")
