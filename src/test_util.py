@@ -46,6 +46,7 @@ object Gecko {
 }
 """
 
+
 def test_match_gv_version():
     assert match_gv_version(GECKO_KT, "release") == "81.0.20201012085804"
     assert match_gv_version(GECKO_KT, "beta") == "81.0.20200910180444"
@@ -83,14 +84,20 @@ enum class GeckoChannel(
 }
 """
 
+
 def test_match_gv_version_new():
     assert match_gv_version_new(GECKO_KT_NEW) == "90.0.20210420095122"
 
 
 def test_get_current_gv_version(gh):
     repo = gh.get_repo(f"st3fan/android-components")
-    assert get_current_gv_version(repo, "releases/57.0", "beta") == "81.0.20200910180444"
-    assert get_current_gv_version(repo, "releases/57.0", "release") == "81.0.20201108175212"
+    assert (
+        get_current_gv_version(repo, "releases/57.0", "beta") == "81.0.20200910180444"
+    )
+    assert (
+        get_current_gv_version(repo, "releases/57.0", "release")
+        == "81.0.20201108175212"
+    )
 
 
 def test_get_current_gv_version_new(gh):
@@ -117,6 +124,7 @@ object AndroidComponents {
 }
 """
 
+
 def test_match_ac_version_in_fenix():
     assert match_ac_version_in_fenix(ANDROID_COMPONENTS_KT) == "64.0.20201027143116"
 
@@ -131,8 +139,12 @@ object AndroidComponents {
 }
 """
 
+
 def test_match_ac_version_in_reference_browser():
-    assert match_ac_version_in_reference_browser(RB_ANDROID_COMPONENTS_KT) == "69.0.20201203202830"
+    assert (
+        match_ac_version_in_reference_browser(RB_ANDROID_COMPONENTS_KT)
+        == "69.0.20201203202830"
+    )
 
 
 def test_get_current_ac_version_in_fenix(gh):
@@ -142,7 +154,10 @@ def test_get_current_ac_version_in_fenix(gh):
 
 def test_get_current_ac_version_in_reference_browser(gh):
     repo = gh.get_repo(f"st3fan/reference-browser")
-    assert get_current_ac_version_in_fenix(repo, "for-relbot-tests") == "69.0.20201203202830"
+    assert (
+        get_current_ac_version_in_fenix(repo, "for-relbot-tests")
+        == "69.0.20201203202830"
+    )
 
 
 def test_get_current_ac_version(gh):
@@ -213,6 +228,7 @@ def test_major_gv_version_from_version_bad():
         major_gv_version_from_version("81.0.20201012")
     with pytest.raises(Exception):
         major_gv_version_from_version("81.0.202010121122")
+
 
 def test_major_gv_version_from_version_good():
     assert major_gv_version_from_version("81.0.20201012085804") == "81"
@@ -294,7 +310,9 @@ def test_get_recent_ac_releases(gh):
     # No releases on the test repo
     assert get_recent_ac_releases(gh.get_repo(f"st3fan/android-components")) == []
     # But plenty releases on the actual repo
-    assert get_recent_ac_releases(gh.get_repo(f"mozilla-mobile/android-components")) != []
+    assert (
+        get_recent_ac_releases(gh.get_repo(f"mozilla-mobile/android-components")) != []
+    )
 
 
 def test_compare_ac_versions():
@@ -323,19 +341,22 @@ def test_get_latest_ac_version():
     assert get_latest_ac_version(59) == "59.0.0"
     assert get_latest_ac_version(60) == "60.0.8"
 
+
 def test_get_latest_ac_nightly_version():
     assert get_latest_ac_nightly_version() is not None
 
 
 def test_get_fenix_release_branches(gh):
-    assert get_fenix_release_branches(gh.get_repo(f"st3fan/fenix")) == ["releases/v79.0.0",
-                                                                        "releases/v82.0.0",
-                                                                        "releases/v83.0.0",
-                                                                        "releases/v84.0.0",
-                                                                        "releases_v85.0.0",
-                                                                        "releases_v86.0.0",
-                                                                        "releases_v87.0.0",
-                                                                        "releases_v88.0.0"]
+    assert get_fenix_release_branches(gh.get_repo(f"st3fan/fenix")) == [
+        "releases/v79.0.0",
+        "releases/v82.0.0",
+        "releases/v83.0.0",
+        "releases/v84.0.0",
+        "releases_v85.0.0",
+        "releases_v86.0.0",
+        "releases_v87.0.0",
+        "releases_v88.0.0",
+    ]
 
 
 def test_major_version_from_fenix_release_branch_name():
@@ -363,4 +384,6 @@ def test_get_recent_fenix_versions(gh):
 
 
 def test_get_relevant_ac_versions(gh):
-    assert get_relevant_ac_versions(gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")) == [73, 74]
+    assert get_relevant_ac_versions(
+        gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")
+    ) == [73, 74]

@@ -43,11 +43,17 @@ def main(argv, ac_repo, rb_repo, fenix_repo, author, debug=False, dry_run=False)
         if argv[2] == "update-main":
             android_components.update_main(ac_repo, fenix_repo, author, debug, dry_run)
         elif argv[2] == "update-releases":
-            android_components.update_releases(ac_repo, fenix_repo, author, debug, dry_run)
+            android_components.update_releases(
+                ac_repo, fenix_repo, author, debug, dry_run
+            )
         elif argv[2] == "create-releases" or argv[2] == "create-release":
-            android_components.create_releases(ac_repo, fenix_repo, author, debug, dry_run)
+            android_components.create_releases(
+                ac_repo, fenix_repo, author, debug, dry_run
+            )
         else:
-            print("usage: relbot android-components <update-{main,releases}|create-releases>")
+            print(
+                "usage: relbot android-components <update-{main,releases}|create-releases>"
+            )
             sys.exit(1)
 
     # Reference Browser
@@ -101,6 +107,8 @@ if __name__ == "__main__":
     author_email = os.getenv("AUTHOR_EMAIL") or DEFAULT_AUTHOR_EMAIL
     author = InputGitAuthor(author_name, author_email)
 
-    print(f"This is relbot working on https://github.com/{organization} as {author_email} / {author_name}")
+    print(
+        f"This is relbot working on https://github.com/{organization} as {author_email} / {author_name}"
+    )
 
     main(sys.argv, ac_repo, rb_repo, fenix_repo, author, debug, dry_run)
