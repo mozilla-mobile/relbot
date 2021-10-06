@@ -124,11 +124,6 @@ object AndroidComponents {
 }
 """
 
-
-def test_match_ac_version_in_fenix():
-    assert match_ac_version_in_fenix(ANDROID_COMPONENTS_KT) == "64.0.20201027143116"
-
-
 RB_ANDROID_COMPONENTS_KT = """
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -140,24 +135,27 @@ object AndroidComponents {
 """
 
 
-def test_match_ac_version_in_reference_browser():
-    assert (
-        match_ac_version_in_reference_browser(RB_ANDROID_COMPONENTS_KT)
-        == "69.0.20201203202830"
-    )
+@pytest.mark.parametrize(
+    "src, expected",
+    (
+        (ANDROID_COMPONENTS_KT, "64.0.20201027143116"),
+        (RB_ANDROID_COMPONENTS_KT, "69.0.20201203202830"),
+    ),
+)
+def test_match_ac_version(src, expected):
+    assert match_ac_version(src) == expected
 
 
-def test_get_current_ac_version_in_fenix(gh):
-    repo = gh.get_repo(f"st3fan/fenix")
-    assert get_current_ac_version_in_fenix(repo, "releases/v82.0.0") == "60.0.8"
-
-
-def test_get_current_ac_version_in_reference_browser(gh):
-    repo = gh.get_repo(f"st3fan/reference-browser")
-    assert (
-        get_current_ac_version_in_fenix(repo, "for-relbot-tests")
-        == "69.0.20201203202830"
-    )
+@pytest.mark.parametrize(
+    "repo_name, branch, expected",
+    (
+        ("st3fan/fenix", "releases/v82.0.0", "60.0.8"),
+        ("st3fan/reference-browser", "for-relbot-tests", "69.0.20201203202830"),
+    ),
+)
+def test_get_current_embedded_ac_version(gh, repo_name, branch, expected):
+    repo = gh.get_repo(repo_name)
+    assert get_current_embedded_ac_version(repo, branch) == expected
 
 
 def test_get_current_ac_version(gh):

@@ -50,9 +50,7 @@ def update_android_components_in_fenix(
 
     print(f"{ts()} Looking at Fenix {fenix_major_version} on {release_branch_name}")
 
-    current_ac_version = get_current_ac_version_in_fenix(
-        fenix_repo, release_branch_name
-    )
+    current_ac_version = get_current_embedded_ac_version(fenix_repo, release_branch_name)
     print(f"{ts()} Current A-C version in Fenix is {current_ac_version}")
 
     ac_major_version = int(current_ac_version[0:2])  # TODO Util & Test!

@@ -31,9 +31,7 @@ def _update_ac_version(rb_repo, branch, old_ac_version, new_ac_version, author):
 def update_android_components(ac_repo, rb_repo, author, debug):
     release_branch_name = "master"  # RB Only has master
 
-    current_ac_version = get_current_ac_version_in_reference_browser(
-        rb_repo, release_branch_name
-    )
+    current_ac_version = get_current_ac_version(rb_repo, release_branch_name)
     print(f"{ts()} Current A-C version in R-B is {current_ac_version}")
 
     ac_major_version = major_ac_version_from_version(current_ac_version)

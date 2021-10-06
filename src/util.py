@@ -44,34 +44,18 @@ def major_gv_version_from_version(v):
     return c[0]
 
 
-def match_ac_version_in_fenix(src):
+def match_ac_version(src):
     if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
         return validate_ac_version(match[1])
     raise Exception(f"Could not match the VERSION in AndroidComponents.kt")
 
 
-def get_current_ac_version_in_fenix(fenix_repo, release_branch_name):
-    """Return the current A-C version used on the given Fenix branch"""
-    content_file = fenix_repo.get_contents(
-        "buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name
-    )
-    return match_ac_version_in_fenix(content_file.decoded_content.decode("utf8"))
-
-
-def match_ac_version_in_reference_browser(src):
-    if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
-        return validate_ac_version(match[1])
-    raise Exception(f"Could not match the VERSION in AndroidComponents.kt")
-
-
-def get_current_ac_version_in_reference_browser(rb_repo, release_branch_name):
+def get_current_embedded_ac_version(repo, release_branch_name):
     """Return the current A-C version used on the given branch"""
-    content_file = rb_repo.get_contents(
+    content_file = repo.get_contents(
         "buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name
     )
-    return match_ac_version_in_reference_browser(
-        content_file.decoded_content.decode("utf8")
-    )
+    return match_ac_version(content_file.decoded_content.decode("utf8"))
 
 
 def match_gv_version(src, channel):
@@ -299,7 +283,7 @@ def get_relevant_ac_versions(fenix_repo, ac_repo):
             if fenix_version < 85
             else f"releases_v{fenix_version}.0.0"
         )
-        ac_version = get_current_ac_version_in_fenix(fenix_repo, release_branch_name)
+        ac_version = get_current_embedded_ac_version(fenix_repo, release_branch_name)
         releases.append(int(major_ac_version_from_version(ac_version)))
     return sorted(releases)
 
