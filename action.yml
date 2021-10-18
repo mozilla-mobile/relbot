@@ -2,10 +2,10 @@ name: 'Release Bot'
 description: 'Updates GV/AC & Creates Releases'
 inputs:
   project:
-    description: 'The project to work on. Either android-components or fenix.'
+    description: 'The project to work on. android-components, fenix, focus-android, reference-browser.'
     required: true
   command:
-    description: 'The command to execute. For android-components: update-geckoview-beta, update-geckoview-release, create-release. For fenix: update-android-compents.'
+    description: 'The command to execute. See src/relbot.py for supported commands.'
     required: true
 runs:
   using: 'docker'

@@ -12,16 +12,29 @@ from util import *
 # Helpers
 #
 
+
 def _update_ac_buildconfig(ac_repo, old_ac_version, new_ac_version, branch, author):
     contents = ac_repo.get_contents(".buildconfig.yml", ref=branch)
 
     content = contents.decoded_content.decode("utf-8")
-    new_content = re.sub(r"componentsVersion: \d+\.\d+\.\d+", f"componentsVersion: {new_ac_version}", content)
+    new_content = re.sub(
+        r"componentsVersion: \d+\.\d+\.\d+",
+        f"componentsVersion: {new_ac_version}",
+        content,
+    )
     if content == new_content:
-        print(f"{ts()} Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?")
+        print(
+            f"{ts()} Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?"
+        )
 
-    ac_repo.update_file(contents.path, f"Set version to {new_ac_version}.", new_content,
-                     contents.sha, branch=branch, author=author)
+    ac_repo.update_file(
+        contents.path,
+        f"Set version to {new_ac_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
 
 
 def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
@@ -30,49 +43,93 @@ def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(old_ac_version, new_ac_version)
     if content == new_content:
-        raise Exception("Update to version.txt resulted in no changes: maybe the file was already up to date?")
+        raise Exception(
+            "Update to version.txt resulted in no changes: maybe the file was already up to date?"
+        )
 
-    ac_repo.update_file(contents.path, f"Set version.txt to {new_ac_version}.", new_content,
-                        contents.sha, branch=branch, author=author)
+    ac_repo.update_file(
+        contents.path,
+        f"Set version.txt to {new_ac_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
 
 
-def _update_gv_version(ac_repo, old_gv_version, new_gv_version, branch, channel, author):
+def _update_gv_version(
+    ac_repo, old_gv_version, new_gv_version, branch, channel, author
+):
     if channel not in ("nightly", "beta", "release"):
         raise Exception(f"Invalid channel {channel}")
 
     contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
     content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f'{channel}_version = "{old_gv_version}"',
-                                  f'{channel}_version = "{new_gv_version}"')
+    new_content = content.replace(
+        f'{channel}_version = "{old_gv_version}"',
+        f'{channel}_version = "{new_gv_version}"',
+    )
     if content == new_content:
-        raise Exception("Update to Gecko.kt resulted in no changes: maybe the file was already up to date?")
+        raise Exception(
+            "Update to Gecko.kt resulted in no changes: maybe the file was already up to date?"
+        )
 
-    ac_repo.update_file(contents.path, f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
-                     new_content, contents.sha, branch=branch, author=author)
+    ac_repo.update_file(
+        contents.path,
+        f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
 
 
-def _update_gv_version_new(ac_repo, old_gv_version, new_gv_version, branch, channel, author):
+def _update_gv_version_new(
+    ac_repo, old_gv_version, new_gv_version, branch, channel, author
+):
     contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
     content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f'const val version = "{old_gv_version}"',
-                                  f'const val version = "{new_gv_version}"')
+    new_content = content.replace(
+        f'const val version = "{old_gv_version}"',
+        f'const val version = "{new_gv_version}"',
+    )
     if content == new_content:
-        raise Exception("Update to Gecko.kt resulted in no changes: maybe the file was already up to date?")
+        raise Exception(
+            "Update to Gecko.kt resulted in no changes: maybe the file was already up to date?"
+        )
 
-    ac_repo.update_file(contents.path, f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
-                     new_content, contents.sha, branch=branch, author=author)
+    ac_repo.update_file(
+        contents.path,
+        f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
 
 
 def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
-    contents = ac_repo.get_contents("buildSrc/src/main/java/Dependencies.kt", ref=branch)
+    contents = ac_repo.get_contents(
+        "buildSrc/src/main/java/Dependencies.kt", ref=branch
+    )
     content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(f'mozilla_appservices = "{old_as_version}"',
-                                  f'mozilla_appservices = "{new_as_version}"')
+    new_content = content.replace(
+        f'mozilla_appservices = "{old_as_version}"',
+        f'mozilla_appservices = "{new_as_version}"',
+    )
     if content == new_content:
-        raise Exception("Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?")
+        raise Exception(
+            "Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?"
+        )
 
-    ac_repo.update_file(contents.path, f"Update A-S to {new_as_version}.",
-                     new_content, contents.sha, branch=branch, author=author)
+    ac_repo.update_file(
+        contents.path,
+        f"Update A-S to {new_as_version}.",
+        new_content,
+        contents.sha,
+        branch=branch,
+        author=author,
+    )
 
 
 #
@@ -83,26 +140,41 @@ def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
 # old implementation.
 #
 
-def _update_geckoview_new(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False):
+
+def _update_geckoview_new(
+    ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False
+):
     try:
-        release_branch_name = "main" if ac_major_version == "main" else f"releases/{ac_major_version}.0"
-        print(f"{ts()} Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}")
+        release_branch_name = (
+            "main" if ac_major_version == "main" else f"releases/{ac_major_version}.0"
+        )
+        print(
+            f"{ts()} Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
+        )
 
         gv_channel = get_current_gv_channel(ac_repo, release_branch_name)
         print(f"{ts()} Current GV channel is {gv_channel}")
 
         current_gv_version = get_current_gv_version_new(ac_repo, release_branch_name)
-        print(f"{ts()} Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}")
+        print(
+            f"{ts()} Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
+        )
 
         current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
-        print(f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}")
+        print(
+            f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
+        )
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
-            print(f"{ts()} No newer GV {gv_channel.capitalize()} release found. Exiting.")
+            print(
+                f"{ts()} No newer GV {gv_channel.capitalize()} release found. Exiting."
+            )
             return
 
-        print(f"{ts()} We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}")
+        print(
+            f"{ts()} We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}"
+        )
 
         if dry_run:
             print(f"{ts()} Dry-run so not continuing.")
@@ -131,9 +203,13 @@ def _update_geckoview_new(ac_repo, fenix_repo, ac_major_version, author, debug, 
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+        print(
+            f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}"
+        )
 
-        ac_repo.create_git_ref(ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha)
+        ac_repo.create_git_ref(
+            ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
+        )
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
@@ -141,7 +217,14 @@ def _update_geckoview_new(ac_repo, fenix_repo, ac_major_version, author, debug, 
         #
 
         print(f"{ts()} Updating buildSrc/src/main/java/Gecko.kt")
-        _update_gv_version_new(ac_repo, current_gv_version, latest_gv_version, pr_branch_name, gv_channel, author)
+        _update_gv_version_new(
+            ac_repo,
+            current_gv_version,
+            latest_gv_version,
+            pr_branch_name,
+            gv_channel,
+            author,
+        )
 
         #
         # If we are updating a release branch then update also update
@@ -152,49 +235,74 @@ def _update_geckoview_new(ac_repo, fenix_repo, ac_major_version, author, debug, 
             current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
             next_ac_version = get_next_ac_version(current_ac_version)
 
-            print(f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}")
+            print(
+                f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}"
+            )
 
             print(f"{ts()} Updating version.txt")
-            _update_ac_version(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
+            _update_ac_version(
+                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
+            )
 
             # TODO Also update buildconfig until we do not need it anymore
             print(f"{ts()} Updating buildconfig.yml")
-            _update_ac_buildconfig(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
+            _update_ac_buildconfig(
+                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
+            )
 
         #
         # Create the pull request
         #
 
         print(f"{ts()} Creating pull request")
-        pr = ac_repo.create_pull(title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
-                                 body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
-                                 head=pr_branch_name, base=release_branch_name)
+        pr = ac_repo.create_pull(
+            title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
+            body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
+            head=pr_branch_name,
+            base=release_branch_name,
+        )
         print(f"{ts()} Pull request at {pr.html_url}")
     except Exception as e:
         # TODO Clean up the mess
         raise e
 
 
-def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author, debug, dry_run=False):
+def _update_geckoview(
+    ac_repo, fenix_repo, gv_channel, ac_major_version, author, debug, dry_run=False
+):
     try:
         if gv_channel not in ("nightly", "beta", "release"):
             raise Exception(f"Invalid channel {channel}")
 
-        release_branch_name = "main" if ac_major_version == None else f"releases/{ac_major_version}.0"
-        print(f"{ts()} Updating GeckoView {gv_channel.capitalize()} on A-C {release_branch_name}")
+        release_branch_name = (
+            "main" if ac_major_version == None else f"releases/{ac_major_version}.0"
+        )
+        print(
+            f"{ts()} Updating GeckoView {gv_channel.capitalize()} on A-C {release_branch_name}"
+        )
 
-        current_gv_version = get_current_gv_version(ac_repo, release_branch_name, gv_channel)
-        print(f"{ts()} Current GV {gv_channel.capitalize()} version in A-C is {current_gv_version}")
+        current_gv_version = get_current_gv_version(
+            ac_repo, release_branch_name, gv_channel
+        )
+        print(
+            f"{ts()} Current GV {gv_channel.capitalize()} version in A-C is {current_gv_version}"
+        )
 
         current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
-        print(f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}")
+        print(
+            f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
+        )
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
-            print(f"{ts()} No newer GV {gv_channel.capitalize()} release found. Exiting.")
+            print(
+                f"{ts()} No newer GV {gv_channel.capitalize()} release found. Exiting."
+            )
             return
 
-        print(f"{ts()} We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}")
+        print(
+            f"{ts()} We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}"
+        )
 
         if dry_run:
             print(f"{ts()} Dry-run so not continuing.")
@@ -223,9 +331,13 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+        print(
+            f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}"
+        )
 
-        ac_repo.create_git_ref(ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha)
+        ac_repo.create_git_ref(
+            ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
+        )
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
@@ -233,7 +345,14 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
         #
 
         print(f"{ts()} Updating buildSrc/src/main/java/Gecko.kt")
-        _update_gv_version(ac_repo, current_gv_version, latest_gv_version, pr_branch_name, gv_channel, author)
+        _update_gv_version(
+            ac_repo,
+            current_gv_version,
+            latest_gv_version,
+            pr_branch_name,
+            gv_channel,
+            author,
+        )
 
         #
         # If we are updating a release branch then update also update
@@ -244,45 +363,64 @@ def _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_major_version, author,
             current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
             next_ac_version = get_next_ac_version(current_ac_version)
 
-            print(f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}")
+            print(
+                f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}"
+            )
 
             print(f"{ts()} Updating version.txt")
-            _update_ac_version(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
+            _update_ac_version(
+                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
+            )
 
             # TODO Also update buildconfig until we do not need it anymore
             print(f"{ts()} Updating buildconfig.yml")
-            _update_ac_buildconfig(ac_repo, current_ac_version, next_ac_version, pr_branch_name, author)
+            _update_ac_buildconfig(
+                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
+            )
 
         #
         # Create the pull request
         #
 
         print(f"{ts()} Creating pull request")
-        pr = ac_repo.create_pull(title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
-                                 body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
-                                 head=pr_branch_name, base=release_branch_name)
+        pr = ac_repo.create_pull(
+            title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
+            body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
+            head=pr_branch_name,
+            base=release_branch_name,
+        )
         print(f"{ts()} Pull request at {pr.html_url}")
     except Exception as e:
         # TODO Clean up the mess
         raise e
 
 
-def _update_application_services(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False):
+def _update_application_services(
+    ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False
+):
     try:
-        release_branch_name = "main" if ac_major_version is None else f"releases/{ac_major_version}.0"
+        release_branch_name = (
+            "main" if ac_major_version is None else f"releases/{ac_major_version}.0"
+        )
         print(f"{ts()} Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
         current_as_version = get_current_as_version(ac_repo, release_branch_name)
-        print(f"{ts()} Current A-S version on A-C {release_branch_name} is {current_as_version}")
+        print(
+            f"{ts()} Current A-S version on A-C {release_branch_name} is {current_as_version}"
+        )
 
-        latest_as_version = get_latest_as_version(major_as_version_from_version(current_as_version))
+        latest_as_version = get_latest_as_version(
+            major_as_version_from_version(current_as_version)
+        )
         print(f"{ts()} Latest A-S version available is {latest_as_version}")
 
         if compare_as_versions(current_as_version, latest_as_version) >= 0:
             print(f"{ts()} No newer A-S release found. Exiting.")
             return
 
-        print(f"{ts()} We should update A-C {release_branch_name} with A-S {latest_as_version}")
+        print(
+            f"{ts()} We should update A-C {release_branch_name} with A-S {latest_as_version}"
+        )
 
         if dry_run:
             print(f"{ts()} Dry-run so not continuing.")
@@ -311,9 +449,13 @@ def _update_application_services(ac_repo, fenix_repo, ac_major_version, author, 
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+        print(
+            f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}"
+        )
 
-        ac_repo.create_git_ref(ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha)
+        ac_repo.create_git_ref(
+            ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
+        )
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
@@ -321,16 +463,21 @@ def _update_application_services(ac_repo, fenix_repo, ac_major_version, author, 
         #
 
         print(f"{ts()} Updating buildSrc/src/main/java/Dependencies.kt")
-        _update_as_version(ac_repo, current_as_version, latest_as_version, pr_branch_name, author)
+        _update_as_version(
+            ac_repo, current_as_version, latest_as_version, pr_branch_name, author
+        )
 
         #
         # Create the pull request
         #
 
         print(f"{ts()} Creating pull request")
-        pr = ac_repo.create_pull(title=f"Update to A-S {latest_as_version} on {release_branch_name}",
-                                 body=f"This (automated) patch updates A-S to {latest_as_version}.",
-                                 head=pr_branch_name, base=release_branch_name)
+        pr = ac_repo.create_pull(
+            title=f"Update to A-S {latest_as_version} on {release_branch_name}",
+            body=f"This (automated) patch updates A-S to {latest_as_version}.",
+            head=pr_branch_name,
+            base=release_branch_name,
+        )
         print(f"{ts()} Pull request at {pr.html_url}")
 
         #
@@ -345,7 +492,6 @@ def _update_application_services(ac_repo, fenix_repo, ac_major_version, author, 
         raise e
 
 
-
 #
 # High Level Tasks
 #
@@ -356,20 +502,27 @@ def _update_application_services(ac_repo, fenix_repo, ac_major_version, author, 
 # separate pull requests.
 #
 
+
 def update_main(ac_repo, fenix_repo, author, debug, dry_run):
     try:
         _update_application_services(ac_repo, fenix_repo, None, author, debug, dry_run)
     except Exception as e:
-        print(f"{ts()} Exception while updating A-S on A-C {ac_repo.full_name}:main: {str(e)}")
+        print(
+            f"{ts()} Exception while updating A-S on A-C {ac_repo.full_name}:main: {str(e)}"
+        )
 
     try:
         _update_geckoview_new(ac_repo, fenix_repo, "main", author, debug, dry_run)
     except Exception as e:
-        print(f"{ts()} Exception while updating GeckoView on A-C {ac_repo.full_name}:main: {str(e)}")
+        print(
+            f"{ts()} Exception while updating GeckoView on A-C {ac_repo.full_name}:main: {str(e)}"
+        )
+
 
 #
 # Update GeckoView Release and Beta in all "relevant" A-C releases.
 #
+
 
 def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
     # TODO A-C 89 and below uses OLD style GeckoView integration. Remove all this code when 91 is in beta.
@@ -377,15 +530,27 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
         if ac_version < 90:
             for gv_channel in ("beta", "release"):
                 try:
-                    _update_geckoview(ac_repo, fenix_repo, gv_channel, ac_version, author, debug, dry_run)
+                    _update_geckoview(
+                        ac_repo,
+                        fenix_repo,
+                        gv_channel,
+                        ac_version,
+                        author,
+                        debug,
+                        dry_run,
+                    )
                 except Exception as e:
-                    print(f"{ts()} Exception while updating GeckoView {gv_channel.capitalize()} on A-C main: {str(e)}")
+                    print(
+                        f"{ts()} Exception while updating GeckoView {gv_channel.capitalize()} on A-C main: {str(e)}"
+                    )
 
     # TODO Only A-C 90 and up uses NEW style GeckoView integration. Remove this check when 91 is in beta.
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
         if ac_version >= 90:
             try:
-                _update_geckoview_new(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
+                _update_geckoview_new(
+                    ac_repo, fenix_repo, ac_version, author, debug, dry_run
+                )
             except Exception as e:
                 print(f"{ts()} Exception while updating GeckoView on A-C {ac_version}")
 
@@ -408,16 +573,21 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
 # relevant branches - those used by live products?
 #
 
+
 def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run):
     release_branch_name = f"releases/{ac_major_version}.0"
     current_version = get_current_ac_version(ac_repo, release_branch_name)
     release_branch = ac_repo.get_branch(release_branch_name)
 
     if current_version.endswith(".0"):
-        print(f"{ts()} Current version {current_version} is not a dot release. Exiting. ")
+        print(
+            f"{ts()} Current version {current_version} is not a dot release. Exiting. "
+        )
         return
 
-    print(f"{ts()} Checking if android-components release {current_version} already exists.")
+    print(
+        f"{ts()} Checking if android-components release {current_version} already exists."
+    )
 
     releases = get_recent_ac_releases(ac_repo)
     if len(releases) == 0:
@@ -434,8 +604,14 @@ def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_ru
         print(f"{ts()} Dry-run so not continuing.")
         return
 
-    ac_repo.create_git_tag_and_release(f"v{current_version}", current_version,
-        current_version, f"Release {current_version}", release_branch.commit.sha, "commit")
+    ac_repo.create_git_tag_and_release(
+        f"v{current_version}",
+        current_version,
+        current_version,
+        f"Release {current_version}",
+        release_branch.commit.sha,
+        "commit",
+    )
 
 
 def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
@@ -443,5 +619,7 @@ def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
         try:
             _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
         except Exception as e:
-            print(f"{ts()} Exception while creating Android-Components release for {ac_version}: {str(e)}")
+            print(
+                f"{ts()} Exception while creating Android-Components release for {ac_version}: {str(e)}"
+            )
         print()
