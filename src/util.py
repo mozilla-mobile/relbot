@@ -388,7 +388,7 @@ def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author):
 
 
 def update_android_components(
-    ac_repo, target_repo, author, debug, release_branch_name, dry_ryn
+    ac_repo, target_repo, author, debug, release_branch_name, dry_run
 ):
 
     current_ac_version = get_current_embedded_ac_version(target_repo, release_branch_name)

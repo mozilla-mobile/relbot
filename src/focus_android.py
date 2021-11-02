@@ -6,9 +6,9 @@
 from util import *
 
 
-def update_android_components_in_focus(ac_repo, rb_repo, author, debug):
-    release_branch_name = "main"  # Focus Only has master
+def update_android_components_in_focus(ac_repo, focus_repo, author, debug):
+    release_branch_name = "main"  # Focus Only has main
 
     return update_android_components(
-        ac_repo, rb_repo, author, debug, release_branch_name, False
+        ac_repo, focus_repo, author, debug, release_branch_name, False
     )
