@@ -345,7 +345,11 @@ def test_get_latest_ac_nightly_version():
 
 
 def test_get_fenix_release_branches(gh):
-    assert get_fenix_release_branches(gh.get_repo(f"st3fan/fenix")) == [
+    branches = get_fenix_release_branches(gh.get_repo(f"st3fan/fenix"))
+
+    # Everchanging target. We verify it contains the 8 earliest expected releases.
+    assert len(branches) > 8
+    assert branches[0:8] == [
         "releases/v79.0.0",
         "releases/v82.0.0",
         "releases/v83.0.0",
@@ -378,10 +382,10 @@ def test_major_version_from_fenix_release_branch_name():
 
 
 def test_get_recent_fenix_versions(gh):
-    assert get_recent_fenix_versions(gh.get_repo(f"st3fan/fenix")) == [87, 88]
+    assert get_recent_fenix_versions(gh.get_repo(f"st3fan/fenix")) == [95, 96]
 
 
 def test_get_relevant_ac_versions(gh):
     assert get_relevant_ac_versions(
         gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")
-    ) == [73, 74]
+    ) == [95, 96]
