@@ -389,3 +389,16 @@ def test_get_relevant_ac_versions(gh):
     assert get_relevant_ac_versions(
         gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")
     ) == [95, 96]
+
+
+def test_get_current_glean_version(gh):
+    repo = gh.get_repo(f"st3fan/android-components")
+    assert get_current_glean_version(repo, "releases/73.0") == "34.1.0"
+
+
+def test_get_latest_glean_version_release(gh):
+    assert get_latest_glean_version("95.0.20211218203254", "release") == "42.1.0"
+
+
+def test_get_latest_glean_version_beta(gh):
+    assert get_latest_glean_version("96.0.20211228195952", "beta") == "42.1.0"
