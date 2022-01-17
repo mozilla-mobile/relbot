@@ -262,11 +262,11 @@ def test_major_ac_version_from_version_good():
 
 
 def test_get_latest_gv_version_release():
-    assert get_latest_gv_version(81, "release") == "81.0.20201108175212"
+    assert get_latest_gv_version(92, "release") == "92.0.20210922161155"
 
 
 def test_get_latest_gv_version_beta():
-    assert get_latest_gv_version(82, "beta") == "82.0.20201008183927"
+    assert get_latest_gv_version(93, "beta") == "93.0.20210923190449"
 
 
 def test_get_latest_gv_version_release_too_new():
@@ -345,7 +345,11 @@ def test_get_latest_ac_nightly_version():
 
 
 def test_get_fenix_release_branches(gh):
-    assert get_fenix_release_branches(gh.get_repo(f"st3fan/fenix")) == [
+    branches = get_fenix_release_branches(gh.get_repo(f"st3fan/fenix"))
+
+    # Everchanging target. We verify it contains the 8 earliest expected releases.
+    assert len(branches) > 8
+    assert branches[0:8] == [
         "releases/v79.0.0",
         "releases/v82.0.0",
         "releases/v83.0.0",
@@ -378,10 +382,23 @@ def test_major_version_from_fenix_release_branch_name():
 
 
 def test_get_recent_fenix_versions(gh):
-    assert get_recent_fenix_versions(gh.get_repo(f"st3fan/fenix")) == [87, 88]
+    assert get_recent_fenix_versions(gh.get_repo(f"st3fan/fenix")) == [95, 96]
 
 
 def test_get_relevant_ac_versions(gh):
     assert get_relevant_ac_versions(
         gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")
-    ) == [73, 74]
+    ) == [95, 96]
+
+
+def test_get_current_glean_version(gh):
+    repo = gh.get_repo(f"st3fan/android-components")
+    assert get_current_glean_version(repo, "releases/73.0") == "34.1.0"
+
+
+def test_get_latest_glean_version_release(gh):
+    assert get_latest_glean_version("95.0.20211218203254", "release") == "42.1.0"
+
+
+def test_get_latest_glean_version_beta(gh):
+    assert get_latest_glean_version("96.0.20211228195952", "beta") == "42.1.0"
