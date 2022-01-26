@@ -60,33 +60,6 @@ def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
 def _update_gv_version(
     ac_repo, old_gv_version, new_gv_version, branch, channel, author
 ):
-    if channel not in ("nightly", "beta", "release"):
-        raise Exception(f"Invalid channel {channel}")
-
-    contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
-    content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(
-        f'{channel}_version = "{old_gv_version}"',
-        f'{channel}_version = "{new_gv_version}"',
-    )
-    if content == new_content:
-        raise Exception(
-            "Update to Gecko.kt resulted in no changes: maybe the file was already up to date?"
-        )
-
-    ac_repo.update_file(
-        contents.path,
-        f"Update GeckoView ({channel.capitalize()}) to {new_gv_version}.",
-        new_content,
-        contents.sha,
-        branch=branch,
-        author=author,
-    )
-
-
-def _update_gv_version_new(
-    ac_repo, old_gv_version, new_gv_version, branch, channel, author
-):
     contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -158,16 +131,7 @@ def _update_glean_version(
     )
 
 
-#
-# This _new version is to support the new style versioning according
-# to RFC7, which has now been deployed on A-C main. The plan is to
-# have both old and new code in relbot until Fenix 90 has a release
-# branch. At that point we can just use the new code and remove the
-# old implementation.
-#
-
-
-def _update_geckoview_new(
+def _update_geckoview(
     ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False
 ):
     try:
@@ -181,7 +145,7 @@ def _update_geckoview_new(
         gv_channel = get_current_gv_channel(ac_repo, release_branch_name)
         print(f"{ts()} Current GV channel is {gv_channel}")
 
-        current_gv_version = get_current_gv_version_new(ac_repo, release_branch_name)
+        current_gv_version = get_current_gv_version(ac_repo, release_branch_name)
         print(
             f"{ts()} Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
@@ -252,7 +216,7 @@ def _update_geckoview_new(
         #
 
         print(f"{ts()} Updating buildSrc/src/main/java/Gecko.kt")
-        _update_gv_version_new(
+        _update_gv_version(
             ac_repo,
             current_gv_version,
             latest_gv_version,
@@ -270,134 +234,6 @@ def _update_geckoview_new(
                 pr_branch_name,
                 author,
             )
-
-        #
-        # If we are updating a release branch then update also update
-        # version.txt to increment the patch version.
-        #
-
-        if release_branch_name != "main":
-            current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
-            next_ac_version = get_next_ac_version(current_ac_version)
-
-            print(
-                f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}"
-            )
-
-            print(f"{ts()} Updating version.txt")
-            _update_ac_version(
-                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
-            )
-
-            # TODO Also update buildconfig until we do not need it anymore
-            print(f"{ts()} Updating buildconfig.yml")
-            _update_ac_buildconfig(
-                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
-            )
-
-        #
-        # Create the pull request
-        #
-
-        print(f"{ts()} Creating pull request")
-        pr = ac_repo.create_pull(
-            title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
-            body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
-            head=pr_branch_name,
-            base=release_branch_name,
-        )
-        print(f"{ts()} Pull request at {pr.html_url}")
-    except Exception as e:
-        # TODO Clean up the mess
-        raise e
-
-
-def _update_geckoview(
-    ac_repo, fenix_repo, gv_channel, ac_major_version, author, debug, dry_run=False
-):
-    try:
-        if gv_channel not in ("nightly", "beta", "release"):
-            raise Exception(f"Invalid channel {channel}")
-
-        release_branch_name = (
-            "main" if ac_major_version == None else f"releases/{ac_major_version}.0"
-        )
-        print(
-            f"{ts()} Updating GeckoView {gv_channel.capitalize()} on A-C {release_branch_name}"
-        )
-
-        current_gv_version = get_current_gv_version(
-            ac_repo, release_branch_name, gv_channel
-        )
-        print(
-            f"{ts()} Current GV {gv_channel.capitalize()} version in A-C is {current_gv_version}"
-        )
-
-        current_gv_major_version = major_gv_version_from_version(current_gv_version)
-        latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
-        print(
-            f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
-        )
-
-        if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
-            print(
-                f"{ts()} No newer GV {gv_channel.capitalize()} release found. Exiting."
-            )
-            return
-
-        print(
-            f"{ts()} We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}"
-        )
-
-        if dry_run:
-            print(f"{ts()} Dry-run so not continuing.")
-            return
-
-        #
-        # Check if the branch already exists
-        #
-
-        short_version = "main" if ac_major_version is None else f"{ac_major_version}"
-
-        # Create a non unique PR branch name for work on this ac release branch.
-        pr_branch_name = f"relbot/ac-{short_version}"
-
-        try:
-            pr_branch = ac_repo.get_branch(pr_branch_name)
-            if pr_branch:
-                print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
-                return
-        except GithubException as e:
-            # TODO Only ignore a 404 here, fail on others
-            pass
-
-        #
-        # Create a new branch for this update
-        #
-
-        release_branch = ac_repo.get_branch(release_branch_name)
-        print(
-            f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}"
-        )
-
-        ac_repo.create_git_ref(
-            ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
-        )
-        print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
-
-        #
-        # Update buildSrc/src/main/java/Gecko.kt
-        #
-
-        print(f"{ts()} Updating buildSrc/src/main/java/Gecko.kt")
-        _update_gv_version(
-            ac_repo,
-            current_gv_version,
-            latest_gv_version,
-            pr_branch_name,
-            gv_channel,
-            author,
-        )
 
         #
         # If we are updating a release branch then update also update
@@ -557,7 +393,7 @@ def update_main(ac_repo, fenix_repo, author, debug, dry_run):
         )
 
     try:
-        _update_geckoview_new(ac_repo, fenix_repo, "main", author, debug, dry_run)
+        _update_geckoview(ac_repo, fenix_repo, "main", author, debug, dry_run)
     except Exception as e:
         print(
             f"{ts()} Exception while updating GeckoView on A-C {ac_repo.full_name}:main: {str(e)}"
@@ -570,34 +406,13 @@ def update_main(ac_repo, fenix_repo, author, debug, dry_run):
 
 
 def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
-    # TODO A-C 89 and below uses OLD style GeckoView integration. Remove all this code when 91 is in beta.
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
-        if ac_version < 90:
-            for gv_channel in ("beta", "release"):
-                try:
-                    _update_geckoview(
-                        ac_repo,
-                        fenix_repo,
-                        gv_channel,
-                        ac_version,
-                        author,
-                        debug,
-                        dry_run,
-                    )
-                except Exception as e:
-                    print(
-                        f"{ts()} Exception while updating GeckoView {gv_channel.capitalize()} on A-C main: {str(e)}"
-                    )
-
-    # TODO Only A-C 90 and up uses NEW style GeckoView integration. Remove this check when 91 is in beta.
-    for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
-        if ac_version >= 90:
-            try:
-                _update_geckoview_new(
-                    ac_repo, fenix_repo, ac_version, author, debug, dry_run
-                )
-            except Exception as e:
-                print(f"{ts()} Exception while updating GeckoView on A-C {ac_version}")
+        try:
+            _update_geckoview(
+                ac_repo, fenix_repo, ac_version, author, debug, dry_run
+            )
+        except Exception as e:
+            print(f"{ts()} Exception while updating GeckoView on A-C {ac_version}")
 
 
 #

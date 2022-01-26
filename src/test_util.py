@@ -21,42 +21,6 @@ GECKO_KT = """
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-internal object GeckoVersions {
-    /**
-     * GeckoView Nightly Version.
-     */
-    const val nightly_version = "82.0.20200831091558"
-
-    /**
-     * GeckoView Beta Version.
-     */
-    const val beta_version = "81.0.20200910180444"
-
-    /**
-     * GeckoView Release Version.
-     */
-    const val release_version = "81.0.20201012085804"
-}
-
-@Suppress("Unused", "MaxLineLength")
-object Gecko {
-    const val geckoview_nightly = "org.mozilla.geckoview:geckoview-nightly:${GeckoVersions.nightly_version}"
-    const val geckoview_beta = "org.mozilla.geckoview:geckoview-beta:${GeckoVersions.beta_version}"
-    const val geckoview_release = "org.mozilla.geckoview:geckoview:${GeckoVersions.release_version}"
-}
-"""
-
-
-def test_match_gv_version():
-    assert match_gv_version(GECKO_KT, "release") == "81.0.20201012085804"
-    assert match_gv_version(GECKO_KT, "beta") == "81.0.20200910180444"
-
-
-GECKO_KT_NEW = """
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 /**
  * Gecko version and release channel constants used by this version of Android Components.
  */
@@ -85,28 +49,19 @@ enum class GeckoChannel(
 """
 
 
-def test_match_gv_version_new():
-    assert match_gv_version_new(GECKO_KT_NEW) == "90.0.20210420095122"
+def test_match_gv_version():
+    assert match_gv_version(GECKO_KT) == "90.0.20210420095122"
 
 
 def test_get_current_gv_version(gh):
-    repo = gh.get_repo(f"st3fan/android-components")
-    assert (
-        get_current_gv_version(repo, "releases/57.0", "beta") == "81.0.20200910180444"
-    )
-    assert (
-        get_current_gv_version(repo, "releases/57.0", "release")
-        == "81.0.20201108175212"
-    )
-
-
-def test_get_current_gv_version_new(gh):
-    repo = gh.get_repo(f"st3fan/android-components")
-    assert get_current_gv_version_new(repo, "main") == "92.0.20210721092353"
+    repo = gh.get_repo("st3fan/android-components")
+    assert get_current_gv_version(repo, "main") == "92.0.20210721092353"
+    repo = gh.get_repo("mozilla-mobile/android-components")
+    assert get_current_gv_version(repo, "releases/95.0") == "95.0.20211218203254"
 
 
 def test_match_gv_channel():
-    assert match_gv_channel(GECKO_KT_NEW) == "nightly"
+    assert match_gv_channel(GECKO_KT) == "nightly"
 
 
 def test_get_current_gv_channel(gh):

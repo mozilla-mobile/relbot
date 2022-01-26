@@ -59,38 +59,19 @@ def get_current_embedded_ac_version(repo, release_branch_name):
     return match_ac_version(content_file.decoded_content.decode("utf8"))
 
 
-def match_gv_version(src, channel):
-    """Find the GeckoView Beta version in the contents of the given AndroidComponents.kt file."""
-    if channel not in ("nightly", "beta", "release"):
-        raise Exception(f"Invalid channel {channel}")
-    if match := re.compile(fr'{channel}_version = "([^"]*)"', re.MULTILINE).search(src):
-        return validate_gv_version(match[1])
-    raise Exception(f"Could not match the {channel}_version in Gecko.kt")
-
-
-def get_current_gv_version(repo, release_branch_name, channel):
-    """Return the current gv beta version used on the given release branch"""
-    if channel not in ("nightly", "beta", "release"):
-        raise Exception(f"Invalid channel {channel}")
-    content_file = repo.get_contents(
-        "buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
-    )
-    return match_gv_version(content_file.decoded_content.decode("utf8"), channel)
-
-
-def match_gv_version_new(src):
+def match_gv_version(src):
     """Find the GeckoView version in the contents of the given Gecko.kt file."""
     if match := re.compile(fr'version = "([^"]*)"', re.MULTILINE).search(src):
         return validate_gv_version(match[1])
     raise Exception(f"Could not match the {channel}_version in Gecko.kt")
 
 
-def get_current_gv_version_new(repo, release_branch_name):
+def get_current_gv_version(repo, release_branch_name):
     """Return the current gv version used on the given release branch"""
     content_file = repo.get_contents(
         "buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
     )
-    return match_gv_version_new(content_file.decoded_content.decode("utf8"))
+    return match_gv_version(content_file.decoded_content.decode("utf8"))
 
 
 def match_gv_channel(src):
