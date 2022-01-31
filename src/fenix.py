@@ -40,12 +40,7 @@ def update_android_components_in_fenix(
     print(f"{ts()} Looking at Fenix {fenix_major_version}")
 
     # Make sure the release branch for this version exists
-    # TODO Temporary fix for transition between branch name conventions
-    release_branch_name = (
-        f"releases/v{fenix_major_version}.0.0"
-        if fenix_major_version < 85
-        else f"releases_v{fenix_major_version}.0.0"
-    )
+    release_branch_name = f"releases_v{fenix_major_version}.0.0"
     release_branch = fenix_repo.get_branch(release_branch_name)
 
     print(f"{ts()} Looking at Fenix {fenix_major_version} on {release_branch_name}")
