@@ -292,12 +292,7 @@ def get_recent_fenix_versions(repo):
 def get_relevant_ac_versions(fenix_repo, ac_repo):
     releases = []
     for fenix_version in get_recent_fenix_versions(fenix_repo):
-        # TODO Temporary fix for transition between branch name conventions
-        release_branch_name = (
-            f"releases/v{fenix_version}.0.0"
-            if fenix_version < 85
-            else f"releases_v{fenix_version}.0.0"
-        )
+        release_branch_name = f"releases_v{fenix_version}.0.0"
         ac_version = get_current_embedded_ac_version(fenix_repo, release_branch_name)
         releases.append(int(major_ac_version_from_version(ac_version)))
     return sorted(releases)
