@@ -113,7 +113,3 @@ def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
             )
         except Exception as e:
             print(f"{ts()} Failed to update A-C in Fenix {fenix_version}: {str(e)}")
-
-
-def create_release(ac_repo, fenix_repo, author, debug, dry_run):
-    print("Creating Fenix Release")
