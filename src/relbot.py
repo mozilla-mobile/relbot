@@ -73,10 +73,8 @@ def main(
     elif argv[1] == "fenix":
         if argv[2] == "update-android-components":
             fenix.update_android_components(ac_repo, fenix_repo, author, debug, dry_run)
-        elif argv[2] == "create-fenix-release":
-            fenix.create_release(ac_repo, fenix_repo, author, debug, dry_run)
         else:
-            print("usage: relbot fenix <update-android-components|create-release>")
+            print("usage: relbot fenix <update-android-components>")
             sys.exit(1)
 
     # Focus Android
