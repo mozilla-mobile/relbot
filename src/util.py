@@ -414,7 +414,7 @@ def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author):
     )
 
 
-def update_android_components(
+def update_android_components_nightly(
     ac_repo, target_repo, author, debug, release_branch_name, dry_run
 ):
 
