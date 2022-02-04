@@ -81,7 +81,7 @@ def main(
     elif argv[1] == "focus-android":
         if argv[2] == "update-android-components":
             focus_android.update_android_components_in_focus(
-                ac_repo, focus_repo, author, debug
+                ac_repo, focus_repo, author, debug, dry_run
             )
         else:
             print("usage: relbot focus-android <update-android-components>")
