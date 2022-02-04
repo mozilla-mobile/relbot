@@ -421,8 +421,6 @@ def update_android_components(
     current_ac_version = get_current_embedded_ac_version(target_repo, release_branch_name)
     print(f"{ts()} Current A-C version in {target_repo} is {current_ac_version}")
 
-    ac_major_version = major_ac_version_from_version(current_ac_version)
-
     latest_ac_nightly_version = get_latest_ac_nightly_version()
 
     if compare_ac_versions(current_ac_version, latest_ac_nightly_version) >= 0:
