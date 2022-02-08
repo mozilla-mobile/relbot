@@ -414,14 +414,14 @@ def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author):
     )
 
 
-def update_android_components(
+def update_android_components_nightly(
     ac_repo, target_repo, author, debug, release_branch_name, dry_run
 ):
 
-    current_ac_version = get_current_embedded_ac_version(target_repo, release_branch_name)
+    current_ac_version = get_current_embedded_ac_version(
+        target_repo, release_branch_name
+    )
     print(f"{ts()} Current A-C version in {target_repo} is {current_ac_version}")
-
-    ac_major_version = major_ac_version_from_version(current_ac_version)
 
     latest_ac_nightly_version = get_latest_ac_nightly_version()
 
@@ -473,5 +473,82 @@ def update_android_components(
         body=f"This (automated) patch updates Android-Components to {latest_ac_nightly_version}.",
         head=pr_branch_name,
         base=release_branch_name,
+    )
+    print(f"{ts()} Pull request at {pr.html_url}")
+
+
+def update_android_components_release(
+    ac_repo,
+    target_repo,
+    target_product,
+    target_branch,
+    major_version,
+    author,
+    debug,
+    dry_run,
+):
+    print(f"{ts()} Looking at {target_product} {major_version}")
+
+    # Make sure the release branch for this version exists
+    release_branch = target_repo.get_branch(target_branch)
+
+    print(f"{ts()} Looking at {target_product} {major_version} on {target_branch}")
+
+    current_ac_version = get_current_embedded_ac_version(target_repo, target_branch)
+    print(f"{ts()} Current A-C version in {target_product} is {current_ac_version}")
+
+    ac_major_version = int(current_ac_version.split(".", 1)[0])  # TODO Util & Test!
+    latest_ac_version = get_latest_ac_version(ac_major_version)
+    print(f"{ts()} Latest A-C version available is {latest_ac_version}")
+
+    if (
+        len(current_ac_version) != 19
+        and compare_ac_versions(current_ac_version, latest_ac_version) >= 0
+    ):
+        print(
+            f"{ts()} No need to upgrade; {target_product} {major_version} is on A-C {current_ac_version}"
+        )
+        return
+
+    print(
+        f"{ts()} We are going to upgrade {target_product} {major_version} to Android-Components {latest_ac_version}"
+    )
+
+    if dry_run:
+        print(f"{ts()} Dry-run so not continuing.")
+        return
+
+    # Create a non unique PR branch name for work on this release branch.
+    pr_branch_name = f"relbot/{target_product}-{major_version}"
+
+    try:
+        pr_branch = target_repo.get_branch(pr_branch_name)
+        if pr_branch:
+            print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+            return
+    except GithubException as e:
+        # TODO Only ignore a 404 here, fail on others
+        pass
+
+    print(f"{ts()} Last commit on {target_branch} is {release_branch.commit.sha}")
+
+    print(f"{ts()} Creating branch {pr_branch_name} on {release_branch.commit.sha}")
+    target_repo.create_git_ref(
+        ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
+    )
+
+    print(
+        f"{ts()} Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}"
+    )
+    _update_ac_version(
+        target_repo, pr_branch_name, current_ac_version, latest_ac_version, author
+    )
+
+    print(f"{ts()} Creating pull request")
+    pr = target_repo.create_pull(
+        title=f"Update to Android-Components {latest_ac_version}.",
+        body=f"This (automated) patch updates Android-Components to {latest_ac_version}.",
+        head=pr_branch_name,
+        base=target_branch,
     )
     print(f"{ts()} Pull request at {pr.html_url}")
