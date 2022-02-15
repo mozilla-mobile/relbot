@@ -149,7 +149,7 @@ def get_latest_gv_version(gv_major_version, channel):
     name += "-omni"
 
     r = requests.get(
-        f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml?t={int(time.time())}"
+        f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml"
     )
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
@@ -171,7 +171,7 @@ def get_latest_gv_version(gv_major_version, channel):
 
     for arch in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64"):
         r = requests.get(
-            f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom?t={int(time.time())}"
+            f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom"
         )
         r.raise_for_status()
 
@@ -181,7 +181,7 @@ def get_latest_gv_version(gv_major_version, channel):
 def get_latest_ac_version(ac_major_version):
     """Find the last android-components release on Maven for the given major version"""
     r = requests.get(
-        f"https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml?t={int(time.time())}"
+        f"https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
     )
     r.raise_for_status()
 
@@ -204,7 +204,7 @@ def get_latest_ac_version(ac_major_version):
 def get_latest_ac_nightly_version():
     """Find the last android-components Nightly release on Maven for the given major version"""
     r = requests.get(
-        f"https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml?t={int(time.time())}"
+        f"https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
     )
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
@@ -357,7 +357,7 @@ def get_latest_as_version(as_major_version):
 
     # TODO What is the right package to check here? full-megazord metadata seems broken.
     r = requests.get(
-        f"{MAVEN}/org/mozilla/appservices/nimbus/maven-metadata.xml?t={int(time.time())}"
+        f"{MAVEN}/org/mozilla/appservices/nimbus/maven-metadata.xml"
     )
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
@@ -378,7 +378,7 @@ def get_latest_as_version(as_major_version):
     # TODO Do we need to do this?
 
     # for arch in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64"):
-    #    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom?t={int(time.time())}")
+    #    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom")
     #    r.raise_for_status()
 
     return latest
