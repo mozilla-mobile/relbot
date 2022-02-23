@@ -99,7 +99,7 @@ def get_current_ac_version(repo, release_branch_name):
 
 
 def get_ac_release_branch_name(ac_major_version):
-    if ac_major_version < 95:
+    if int(ac_major_version) < 95:
         return f"releases/v{ac_major_version}.0"
     else:
         return f"releases_v{ac_major_version}.0"
