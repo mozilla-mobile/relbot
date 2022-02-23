@@ -98,8 +98,15 @@ def get_current_ac_version(repo, release_branch_name):
     return validate_ac_version(content.strip())
 
 
+def get_ac_release_branch_name(ac_major_version):
+    if ac_major_version < 95:
+        return f"releases/v{ac_major_version}.0"
+    else:
+        return f"releases_v{ac_major_version}.0"
+
+
 def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):
-    return get_current_ac_version(ac_repo, f"releases/{ac_major_version}.0")
+    return get_current_ac_version(ac_repo, get_ac_release_branch_name(ac_major_version))
 
 
 MAVEN = "https://maven.mozilla.org/maven2"

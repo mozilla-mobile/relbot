@@ -136,7 +136,9 @@ def _update_geckoview(
 ):
     try:
         release_branch_name = (
-            "main" if ac_major_version == "main" else f"releases/{ac_major_version}.0"
+            "main"
+            if ac_major_version == "main"
+            else get_ac_release_branch_name(ac_major_version)
         )
         print(
             f"{ts()} Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
@@ -281,7 +283,9 @@ def _update_application_services(
 ):
     try:
         release_branch_name = (
-            "main" if ac_major_version is None else f"releases/{ac_major_version}.0"
+            "main"
+            if ac_major_version is None
+            else get_ac_release_branch_name(ac_major_version)
         )
         print(f"{ts()} Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
@@ -408,9 +412,7 @@ def update_main(ac_repo, fenix_repo, author, debug, dry_run):
 def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
         try:
-            _update_geckoview(
-                ac_repo, fenix_repo, ac_version, author, debug, dry_run
-            )
+            _update_geckoview(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
         except Exception as e:
             print(f"{ts()} Exception while updating GeckoView on A-C {ac_version}")
 
@@ -435,7 +437,7 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
 
 
 def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run):
-    release_branch_name = f"releases/{ac_major_version}.0"
+    release_branch_name = get_ac_release_branch_name(ac_major_version)
     current_version = get_current_ac_version(ac_repo, release_branch_name)
     release_branch = ac_repo.get_branch(release_branch_name)
 
