@@ -12,6 +12,9 @@ import xmltodict
 import json
 
 
+AC_UNDERSCORE_BRANCH_NAMES_RELEASE = 99
+
+
 def validate_ac_version(v):
     """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
     if not re.match(r"^\d+\.\d+\.\d+$", v):
@@ -99,7 +102,7 @@ def get_current_ac_version(repo, release_branch_name):
 
 
 def get_ac_release_branch_name(ac_major_version):
-    if int(ac_major_version) < 95:
+    if int(ac_major_version) < AC_UNDERSCORE_BRANCH_NAMES_RELEASE:
         return f"releases/v{ac_major_version}.0"
     else:
         return f"releases_v{ac_major_version}.0"

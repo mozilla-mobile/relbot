@@ -360,7 +360,14 @@ def test_get_latest_glean_version_beta(gh):
 
 
 @pytest.mark.parametrize(
-    "version,branch", (("95", "releases_v95.0"), ("94", "releases/v94.0"))
+    "version,branch",
+    (
+        (
+            AC_UNDERSCORE_BRANCH_NAMES_RELEASE,
+            f"releases_v{AC_UNDERSCORE_BRANCH_NAMES_RELEASE}.0",
+        ),
+        ("94", "releases/v94.0"),
+    ),
 )
 def test_get_release_branch_name(version, branch):
     assert get_ac_release_branch_name(version) == branch
