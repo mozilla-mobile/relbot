@@ -253,11 +253,13 @@ def _update_geckoview(
                 ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
             )
 
-            # TODO Also update buildconfig until we do not need it anymore
-            print(f"{ts()} Updating buildconfig.yml")
-            _update_ac_buildconfig(
-                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
-            )
+            major = int(major_ac_version_from_version(current_ac_version))
+            if major < 104:
+                # TODO Also update buildconfig until we do not need it anymore
+                print(f"{ts()} Updating buildconfig.yml")
+                _update_ac_buildconfig(
+                    ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
+                )
 
         #
         # Create the pull request
