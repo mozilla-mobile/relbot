@@ -239,8 +239,9 @@ def _update_geckoview(
         # If we are updating a release branch then update also update
         # version.txt to increment the patch version.
         #
-
-        if release_branch_name != "main":
+        # TODO Remove this code when 103 is EOL
+        major = int(major_ac_version_from_version(current_ac_version))
+        if major < 104:
             current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
             next_ac_version = get_next_ac_version(current_ac_version)
 
@@ -253,13 +254,10 @@ def _update_geckoview(
                 ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
             )
 
-            major = int(major_ac_version_from_version(current_ac_version))
-            if major < 104:
-                # TODO Also update buildconfig until we do not need it anymore
-                print(f"{ts()} Updating buildconfig.yml")
-                _update_ac_buildconfig(
-                    ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
-                )
+            print(f"{ts()} Updating buildconfig.yml")
+            _update_ac_buildconfig(
+                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
+            )
 
         #
         # Create the pull request
