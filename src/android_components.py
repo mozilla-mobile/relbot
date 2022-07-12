@@ -240,9 +240,9 @@ def _update_geckoview(
         # version.txt to increment the patch version.
         #
         # TODO Remove this code when 103 is EOL
+        current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
         major = int(major_ac_version_from_version(current_ac_version))
         if major < 104:
-            current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
             next_ac_version = get_next_ac_version(current_ac_version)
 
             print(
