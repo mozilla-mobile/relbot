@@ -476,6 +476,9 @@ def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_ru
 
 def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
+        if ac_version >= 104:
+            print(f"{ts()} Skipping Android-Components {ac_version}: releases are now created on ship-it")
+            continue
         try:
             _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
         except Exception as e:
