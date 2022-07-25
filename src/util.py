@@ -170,8 +170,7 @@ def get_latest_gv_version(gv_major_version, channel):
             f"Could not find any GeckoView {channel.capitalize()} {gv_major_version} releases"
         )
 
-    versions = sorted(versions, key=gv_version_sort_key)
-    latest = versions[-1]
+    latest = max(versions, key=gv_version_sort_key)
 
     # Make sure this release has been uploaded for all architectures.
 
@@ -203,8 +202,7 @@ def get_latest_ac_version(ac_major_version):
             f"Could not find any Android-Components {ac_major_version} releases on maven.mozilla.org"
         )
 
-    versions = sorted(versions, key=ac_version_sort_key)
-    return versions[-1]
+    return max(versions, key=ac_version_sort_key)
 
 
 def get_latest_ac_nightly_version():
@@ -376,8 +374,7 @@ def get_latest_as_version(as_major_version):
     if len(versions) == 0:
         raise Exception(f"Could not find any A-S {as_major_version} releases")
 
-    versions = sorted(versions, key=as_version_sort_key)
-    latest = versions[-1]
+    latest = max(versions, key=as_version_sort_key)
 
     # Make sure this release has been uploaded for all architectures.
 
