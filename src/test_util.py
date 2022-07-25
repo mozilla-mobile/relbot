@@ -357,3 +357,17 @@ def test_get_latest_glean_version_release(gh):
 
 def test_get_latest_glean_version_beta(gh):
     assert get_latest_glean_version("96.0.20211228195952", "beta") == "42.1.0"
+
+
+@pytest.mark.parametrize(
+    "version,branch",
+    (
+        (
+            AC_UNDERSCORE_BRANCH_NAMES_RELEASE,
+            f"releases_v{AC_UNDERSCORE_BRANCH_NAMES_RELEASE}.0",
+        ),
+        ("94", "releases/v94.0"),
+    ),
+)
+def test_get_release_branch_name(version, branch):
+    assert get_ac_release_branch_name(version) == branch
