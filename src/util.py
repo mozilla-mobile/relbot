@@ -146,6 +146,8 @@ def get_latest_gv_version(gv_major_version, channel):
         name += "-" + channel
     # A-C builds against geckoview-omni
     # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3
+    # However, geckoview-omni requires exoplayer2 which comes from the lite build, so check for that too
+    name_lite = name
     name += "-omni"
 
     r = requests.get(
@@ -153,11 +155,15 @@ def get_latest_gv_version(gv_major_version, channel):
     )
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
+    r = requests.get(
+        f"{MAVEN}/org/mozilla/geckoview/{name_lite}/maven-metadata.xml"
+    )
+    r.raise_for_status()
+    lite_metadata = xmltodict.parse(r.text)
 
-    versions = []
-    for version in metadata["metadata"]["versioning"]["versions"]["version"]:
-        if version.startswith(f"{gv_major_version}."):
-            versions.append(version)
+    versions = [v for v in metadata["metadata"]["versioning"]["versions"]["version"]
+                if v.startswith(f"{gv_major_version}.")
+                and v in lite_metadata["metadata"]["versioning"]["versions"]["version"]]
 
     if len(versions) == 0:
         raise Exception(
