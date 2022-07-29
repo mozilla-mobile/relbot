@@ -150,7 +150,11 @@ def _update_geckoview(
             f"{ts()} Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
 
-        current_gv_major_version = major_gv_version_from_version(current_gv_version)
+        if ac_major_version == "main":
+            # We always want to be on the latest geckoview version on the main branch
+            current_gv_major_version = None
+        else:
+            current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
         print(
             f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"

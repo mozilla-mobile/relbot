@@ -162,7 +162,7 @@ def get_latest_gv_version(gv_major_version, channel):
     lite_metadata = xmltodict.parse(r.text)
 
     versions = [v for v in metadata["metadata"]["versioning"]["versions"]["version"]
-                if v.startswith(f"{gv_major_version}.")
+                if (gv_major_version is None or v.startswith(f"{gv_major_version}."))
                 and v in lite_metadata["metadata"]["versioning"]["versions"]["version"]]
 
     if len(versions) == 0:
