@@ -6,10 +6,13 @@
 from util import *
 
 
-# For the current Fenix release and beta version, find out if there is
+# For the current Fenix versions, find out if there is
 # a newer android-components that can be pulled in.
 #
 def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
+    update_android_components_nightly(
+        ac_repo, fenix_repo, author, debug, "main", dry_run
+    )
     for fenix_version in get_recent_fenix_versions(fenix_repo):
         release_branch_name = f"releases_v{fenix_version}.0.0"
         try:
