@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     organization = os.getenv("GITHUB_REPOSITORY_OWNER") or DEFAULT_ORGANIZATION
 
-    ac_repo = github.get_repo(f"{organization}/android-components")
+    ac_repo = github.get_repo(f"{organization}/firefox-android")
     rb_repo = github.get_repo(f"{organization}/reference-browser")
     fenix_repo = github.get_repo(f"{organization}/fenix")
     focus_repo = github.get_repo(f"{organization}/focus-android")

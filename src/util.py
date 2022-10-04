@@ -66,10 +66,10 @@ def match_gv_version(src):
     raise Exception(f"Could not match the {channel}_version in Gecko.kt")
 
 
-def get_current_gv_version(repo, release_branch_name):
+def get_current_gv_version(ac_repo, release_branch_name):
     """Return the current gv version used on the given release branch"""
-    content_file = repo.get_contents(
-        "buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
+    content_file = ac_repo.get_contents(
+        "android-components/buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
     )
     return match_gv_version(content_file.decoded_content.decode("utf8"))
 
@@ -83,10 +83,10 @@ def match_gv_channel(src):
     raise Exception(f"Could not match the channel in Gecko.kt")
 
 
-def get_current_gv_channel(repo, release_branch_name):
+def get_current_gv_channel(ac_repo, release_branch_name):
     """Return the current gv channel used on the given release branch"""
-    content_file = repo.get_contents(
-        "buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
+    content_file = ac_repo.get_contents(
+        "android-components/buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
     )
     return match_gv_channel(content_file.decoded_content.decode("utf8"))
 
@@ -321,7 +321,8 @@ def match_as_version(src):
 def get_current_as_version(ac_repo, release_branch_name):
     """Return the current as version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "buildSrc/src/main/java/Dependencies.kt", ref=release_branch_name
+        "android-components/buildSrc/src/main/java/Dependencies.kt",
+        ref=release_branch_name,
     )
     return match_as_version(content_file.decoded_content.decode("utf8"))
 
@@ -338,7 +339,8 @@ def match_glean_version(src):
 def get_current_glean_version(ac_repo, release_branch_name):
     """Return the current Glean version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "buildSrc/src/main/java/Dependencies.kt", ref=release_branch_name
+        "android-components/buildSrc/src/main/java/Dependencies.kt",
+        ref=release_branch_name,
     )
     return match_glean_version(content_file.decoded_content.decode("utf8"))
 
