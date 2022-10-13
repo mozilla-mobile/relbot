@@ -14,7 +14,7 @@ from util import *
 
 
 def _update_ac_buildconfig(ac_repo, old_ac_version, new_ac_version, branch, author):
-    contents = ac_repo.get_contents(".buildconfig.yml", ref=branch)
+    contents = ac_repo.get_contents("android-components/.buildconfig.yml", ref=branch)
 
     content = contents.decoded_content.decode("utf-8")
     new_content = re.sub(
@@ -60,7 +60,9 @@ def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
 def _update_gv_version(
     ac_repo, old_gv_version, new_gv_version, branch, channel, author
 ):
-    contents = ac_repo.get_contents("buildSrc/src/main/java/Gecko.kt", ref=branch)
+    contents = ac_repo.get_contents(
+        "android-components/buildSrc/src/main/java/Gecko.kt", ref=branch
+    )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
         f'const val version = "{old_gv_version}"',
@@ -83,7 +85,7 @@ def _update_gv_version(
 
 def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
     contents = ac_repo.get_contents(
-        "buildSrc/src/main/java/Dependencies.kt", ref=branch
+        "android-components/buildSrc/src/main/java/Dependencies.kt", ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -109,7 +111,7 @@ def _update_glean_version(
     ac_repo, old_glean_version, new_glean_version, branch, author
 ):
     contents = ac_repo.get_contents(
-        "buildSrc/src/main/java/Dependencies.kt", ref=branch
+        "android-components/buildSrc/src/main/java/Dependencies.kt", ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -216,10 +218,10 @@ def _update_geckoview(
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
-        # Update buildSrc/src/main/java/Gecko.kt
+        # Update android-components/buildSrc/src/main/java/Gecko.kt
         #
 
-        print(f"{ts()} Updating buildSrc/src/main/java/Gecko.kt")
+        print(f"{ts()} Updating android-components/buildSrc/src/main/java/Gecko.kt")
         _update_gv_version(
             ac_repo,
             current_gv_version,
@@ -230,7 +232,9 @@ def _update_geckoview(
         )
 
         if current_glean_version != latest_glean_version:
-            print(f"{ts()} Updating buildSrc/src/main/java/Dependencies.kt")
+            print(
+                f"{ts()} Updating android-components/buildSrc/src/main/java/Dependencies.kt"
+            )
             _update_glean_version(
                 ac_repo,
                 current_glean_version,
@@ -344,10 +348,12 @@ def _update_application_services(
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
-        # Update buildSrc/src/main/java/Gecko.kt
+        # Update android-components/buildSrc/src/main/java/Gecko.kt
         #
 
-        print(f"{ts()} Updating buildSrc/src/main/java/Dependencies.kt")
+        print(
+            f"{ts()} Updating android-components/buildSrc/src/main/java/Dependencies.kt"
+        )
         _update_as_version(
             ac_repo, current_as_version, latest_as_version, pr_branch_name, author
         )
