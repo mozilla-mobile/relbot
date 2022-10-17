@@ -112,10 +112,12 @@ if __name__ == "__main__":
 
     organization = os.getenv("GITHUB_REPOSITORY_OWNER") or DEFAULT_ORGANIZATION
 
-    ac_repo = github.get_repo(f"{organization}/firefox-android")
-    rb_repo = github.get_repo(f"{organization}/reference-browser")
-    fenix_repo = github.get_repo(f"{organization}/fenix")
-    focus_repo = github.get_repo(f"{organization}/focus-android")
+    repo_name_prefix = "staging-" if organization == "mozilla-releng" else ""
+
+    ac_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
+    rb_repo = github.get_repo(f"{organization}/{repo_name_prefix}reference-browser")
+    fenix_repo = github.get_repo(f"{organization}/{repo_name_prefix}fenix")
+    focus_repo = github.get_repo(f"{organization}/{repo_name_prefix}focus-android")
 
     author_name = os.getenv("AUTHOR_NAME") or DEFAULT_AUTHOR_NAME
     author_email = os.getenv("AUTHOR_EMAIL") or DEFAULT_AUTHOR_EMAIL
