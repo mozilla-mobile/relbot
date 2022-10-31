@@ -99,7 +99,7 @@ def get_current_ac_version(repo, release_branch_name):
 
 
 def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):
-    return get_current_ac_version(ac_repo, f"releases_v{ac_major_version}.0")
+    return get_current_ac_version(ac_repo, f"releases_v{ac_major_version}")
 
 
 MAVEN = "https://maven.mozilla.org/maven2"
