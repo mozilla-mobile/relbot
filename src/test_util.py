@@ -112,6 +112,7 @@ def test_get_current_embedded_ac_version(gh, repo_name, branch, expected):
 
 
 def test_get_current_ac_version(gh):
+    # TODO: Support monorepo and use a repo that is not tied to an individual
     repo = gh.get_repo(f"st3fan/android-components")
     assert get_current_ac_version(repo, "releases/73.0") == "73.0.12"
 
