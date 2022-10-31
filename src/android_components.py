@@ -138,7 +138,7 @@ def _update_geckoview(
 ):
     try:
         release_branch_name = (
-            "main" if ac_major_version == "main" else f"releases_v{ac_major_version}.0"
+            "main" if ac_major_version == "main" else f"releases_v{ac_major_version}"
         )
         print(
             f"{ts()} Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
@@ -289,7 +289,7 @@ def _update_application_services(
 ):
     try:
         release_branch_name = (
-            "main" if ac_major_version is None else f"releases_v{ac_major_version}.0"
+            "main" if ac_major_version is None else f"releases_v{ac_major_version}"
         )
         print(f"{ts()} Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
@@ -445,7 +445,7 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
 
 
 def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run):
-    release_branch_name = f"releases_v{ac_major_version}.0"
+    release_branch_name = f"releases_v{ac_major_version}"
     current_version = get_current_ac_version(ac_repo, release_branch_name)
     release_branch = ac_repo.get_branch(release_branch_name)
 
