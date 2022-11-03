@@ -51,10 +51,10 @@ def match_ac_version(src):
     raise Exception(f"Could not match the VERSION in AndroidComponents.kt")
 
 
-def get_current_embedded_ac_version(repo, release_branch_name):
+def get_current_embedded_ac_version(repo, release_branch_name, target_path=""):
     """Return the current A-C version used on the given branch"""
     content_file = repo.get_contents(
-        "buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name
+        f"{target_path}buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name
     )
     return match_ac_version(content_file.decoded_content.decode("utf8"))
 
@@ -297,7 +297,7 @@ def get_relevant_ac_versions(fenix_repo, ac_repo):
     releases = []
     for fenix_version in get_recent_fenix_versions(fenix_repo):
         release_branch_name = f"releases_v{fenix_version}.0.0"
-        ac_version = get_current_embedded_ac_version(fenix_repo, release_branch_name)
+        ac_version = get_current_embedded_ac_version(fenix_repo, release_branch_name, "")
         releases.append(int(major_ac_version_from_version(ac_version)))
     return sorted(releases)
 
@@ -397,9 +397,9 @@ def compare_as_versions(a, b):
     return a - b
 
 
-def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author):
+def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author, target_path=""):
     contents = repo.get_contents(
-        "buildSrc/src/main/java/AndroidComponents.kt", ref=branch
+        f"{target_path}buildSrc/src/main/java/AndroidComponents.kt", ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -420,11 +420,11 @@ def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author):
 
 
 def update_android_components_nightly(
-    ac_repo, target_repo, author, debug, release_branch_name, dry_run
+    ac_repo, target_repo, target_path, author, debug, release_branch_name, dry_run
 ):
 
     current_ac_version = get_current_embedded_ac_version(
-        target_repo, release_branch_name
+        target_repo, release_branch_name, target_path
     )
     print(f"{ts()} Current A-C version in {target_repo} is {current_ac_version}")
 
@@ -470,6 +470,7 @@ def update_android_components_nightly(
         current_ac_version,
         latest_ac_nightly_version,
         author,
+        target_path
     )
 
     print(f"{ts()} Creating pull request")
@@ -485,6 +486,7 @@ def update_android_components_nightly(
 def update_android_components_release(
     ac_repo,
     target_repo,
+    target_path,
     target_product,
     target_branch,
     major_version,
@@ -499,7 +501,7 @@ def update_android_components_release(
 
     print(f"{ts()} Looking at {target_product} {major_version} on {target_branch}")
 
-    current_ac_version = get_current_embedded_ac_version(target_repo, target_branch)
+    current_ac_version = get_current_embedded_ac_version(target_repo, target_branch, target_path)
     print(f"{ts()} Current A-C version in {target_product} is {current_ac_version}")
 
     ac_major_version = int(current_ac_version.split(".", 1)[0])  # TODO Util & Test!
@@ -546,7 +548,7 @@ def update_android_components_release(
         f"{ts()} Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}"
     )
     _update_ac_version(
-        target_repo, pr_branch_name, current_ac_version, latest_ac_version, author
+        target_repo, pr_branch_name, current_ac_version, latest_ac_version, author, target_path
     )
 
     print(f"{ts()} Creating pull request")
