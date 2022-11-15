@@ -69,7 +69,7 @@ def match_gv_version(src):
 def get_current_gv_version(ac_repo, release_branch_name):
     """Return the current gv version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
+        "android-components/plugins/dependencies/src/main/java/Gecko.kt", ref=release_branch_name
     )
     return match_gv_version(content_file.decoded_content.decode("utf8"))
 
@@ -86,7 +86,7 @@ def match_gv_channel(src):
 def get_current_gv_channel(ac_repo, release_branch_name):
     """Return the current gv channel used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Gecko.kt", ref=release_branch_name
+        "android-components/plugins/dependencies/src/main/java/Gecko.kt", ref=release_branch_name
     )
     return match_gv_channel(content_file.decoded_content.decode("utf8"))
 
@@ -310,36 +310,36 @@ def validate_as_version(v):
 
 
 def match_as_version(src):
-    """Find the A-S version in the contents of the given Dependencies.kt file."""
+    """Find the A-S version in the contents of the given DependenciesPlugin.kt file."""
     if match := re.compile(
         r'const val mozilla_appservices = "([^"]*)"', re.MULTILINE
     ).search(src):
         return validate_as_version(match[1])
-    raise Exception(f"Could not match mozilla_appservices in Dependencies.kt")
+    raise Exception(f"Could not match mozilla_appservices in DependenciesPlugin.kt")
 
 
 def get_current_as_version(ac_repo, release_branch_name):
     """Return the current as version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Dependencies.kt",
+        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt",
         ref=release_branch_name,
     )
     return match_as_version(content_file.decoded_content.decode("utf8"))
 
 
 def match_glean_version(src):
-    """Find the Glean version in the contents of the given Dependencies.kt file."""
+    """Find the Glean version in the contents of the given DependenciesPlugin.kt file."""
     if match := re.compile(
         rf'const val mozilla_glean = "([^"]*)"', re.MULTILINE
     ).search(src):
         return validate_as_version(match[1])
-    raise Exception(f"Could not match glean in Dependencies.kt")
+    raise Exception(f"Could not match glean in DependenciesPlugin.kt")
 
 
 def get_current_glean_version(ac_repo, release_branch_name):
     """Return the current Glean version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Dependencies.kt",
+        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt",
         ref=release_branch_name,
     )
     return match_glean_version(content_file.decoded_content.decode("utf8"))
