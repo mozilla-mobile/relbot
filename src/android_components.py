@@ -61,7 +61,7 @@ def _update_gv_version(
     ac_repo, old_gv_version, new_gv_version, branch, channel, author
 ):
     contents = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Gecko.kt", ref=branch
+        "android-components/plugins/dependencies/src/main/java/Gecko.kt", ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -85,7 +85,7 @@ def _update_gv_version(
 
 def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
     contents = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Dependencies.kt", ref=branch
+        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt", ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -94,7 +94,7 @@ def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
     )
     if content == new_content:
         raise Exception(
-            "Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?"
+            "Update to DependenciesPlugin.kt resulted in no changes: maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -111,7 +111,7 @@ def _update_glean_version(
     ac_repo, old_glean_version, new_glean_version, branch, author
 ):
     contents = ac_repo.get_contents(
-        "android-components/buildSrc/src/main/java/Dependencies.kt", ref=branch
+        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt", ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -120,7 +120,7 @@ def _update_glean_version(
     )
     if content == new_content:
         raise Exception(
-            "Update to Dependencies.kt resulted in no changes: maybe the file was already up to date?"
+            "Update to DependenciesPlugin.kt resulted in no changes: maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -218,10 +218,10 @@ def _update_geckoview(
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
-        # Update android-components/buildSrc/src/main/java/Gecko.kt
+        # Update android-components/plugins/dependencies/src/main/java/Gecko.kt
         #
 
-        print(f"{ts()} Updating android-components/buildSrc/src/main/java/Gecko.kt")
+        print(f"{ts()} Updating android-components/plugins/dependencies/src/main/java/Gecko.kt")
         _update_gv_version(
             ac_repo,
             current_gv_version,
@@ -233,7 +233,7 @@ def _update_geckoview(
 
         if current_glean_version != latest_glean_version:
             print(
-                f"{ts()} Updating android-components/buildSrc/src/main/java/Dependencies.kt"
+                f"{ts()} Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
             )
             _update_glean_version(
                 ac_repo,
@@ -348,11 +348,11 @@ def _update_application_services(
         print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
-        # Update android-components/buildSrc/src/main/java/Gecko.kt
+        # Update android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt
         #
 
         print(
-            f"{ts()} Updating android-components/buildSrc/src/main/java/Dependencies.kt"
+            f"{ts()} Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
         )
         _update_as_version(
             ac_repo, current_as_version, latest_as_version, pr_branch_name, author

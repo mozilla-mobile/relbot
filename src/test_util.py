@@ -54,8 +54,8 @@ def test_match_gv_version():
 
 
 def test_get_current_gv_version(gh):
-    repo = gh.get_repo("gabrielluong/firefox-android")
-    assert get_current_gv_version(repo, "relbot-test") == "106.0.20220915094451"
+    repo = gh.get_repo("mozilla-mobile/firefox-android")
+    assert get_current_gv_version(repo, "do-not-delete-use-for-relbot-tests") == "109.0.20221115095444"
 
 
 def test_match_gv_channel():
@@ -63,8 +63,8 @@ def test_match_gv_channel():
 
 
 def test_get_current_gv_channel(gh):
-    repo = gh.get_repo(f"gabrielluong/firefox-android")
-    assert get_current_gv_channel(repo, "relbot-test") == "nightly"
+    repo = gh.get_repo(f"mozilla-mobile/firefox-android")
+    assert get_current_gv_channel(repo, "do-not-delete-use-for-relbot-tests") == "nightly"
 
 
 ANDROID_COMPONENTS_KT = """
@@ -346,8 +346,8 @@ def test_get_relevant_ac_versions(gh):
 
 
 def test_get_current_glean_version(gh):
-    repo = gh.get_repo(f"gabrielluong/firefox-android")
-    assert get_current_glean_version(repo, "relbot-test") == "51.2.0"
+    repo = gh.get_repo(f"mozilla-mobile/firefox-android")
+    assert get_current_glean_version(repo, "do-not-delete-use-for-relbot-tests") == "51.8.0"
 
 
 def test_get_latest_glean_version_release(gh):
