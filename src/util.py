@@ -12,6 +12,22 @@ import xmltodict
 import json
 
 
+def get_gecko_file_path(ac_major_version):
+    """Return the file path to Gecko.kt"""
+    return (
+        "android-components/plugins/dependencies/src/main/java/Gecko.kt"
+        if ac_major_version >= 109
+        else "android-components/buildSrc/src/main/java/Gecko.kt"
+    )
+
+def get_dependencies_file_path(ac_major_version):
+    """Return the file path to dependencies file"""
+    return (
+        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
+        if ac_major_version >= 109
+        else "android-components/buildSrc/src/main/java/Dependencies.kt"
+    )
+
 def validate_ac_version(v):
     """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
     if not re.match(r"^\d+\.\d+\.\d+$", v):
@@ -66,10 +82,10 @@ def match_gv_version(src):
     raise Exception(f"Could not match the {channel}_version in Gecko.kt")
 
 
-def get_current_gv_version(ac_repo, release_branch_name):
+def get_current_gv_version(ac_repo, release_branch_name, ac_major_version):
     """Return the current gv version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/Gecko.kt", ref=release_branch_name
+        get_gecko_file_path(ac_major_version), ref=release_branch_name
     )
     return match_gv_version(content_file.decoded_content.decode("utf8"))
 
@@ -83,10 +99,10 @@ def match_gv_channel(src):
     raise Exception(f"Could not match the channel in Gecko.kt")
 
 
-def get_current_gv_channel(ac_repo, release_branch_name):
+def get_current_gv_channel(ac_repo, release_branch_name, ac_major_version):
     """Return the current gv channel used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/Gecko.kt", ref=release_branch_name
+        get_gecko_file_path(ac_major_version), ref=release_branch_name
     )
     return match_gv_channel(content_file.decoded_content.decode("utf8"))
 
@@ -318,10 +334,10 @@ def match_as_version(src):
     raise Exception(f"Could not match mozilla_appservices in DependenciesPlugin.kt")
 
 
-def get_current_as_version(ac_repo, release_branch_name):
+def get_current_as_version(ac_repo, release_branch_name, ac_major_version):
     """Return the current as version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt",
+        get_dependencies_file_path(ac_major_version),
         ref=release_branch_name,
     )
     return match_as_version(content_file.decoded_content.decode("utf8"))
@@ -336,10 +352,10 @@ def match_glean_version(src):
     raise Exception(f"Could not match glean in DependenciesPlugin.kt")
 
 
-def get_current_glean_version(ac_repo, release_branch_name):
+def get_current_glean_version(ac_repo, release_branch_name, ac_major_version):
     """Return the current Glean version used on the given release branch"""
     content_file = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt",
+        get_dependencies_file_path(ac_major_version),
         ref=release_branch_name,
     )
     return match_glean_version(content_file.decoded_content.decode("utf8"))

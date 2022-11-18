@@ -58,10 +58,10 @@ def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
 
 
 def _update_gv_version(
-    ac_repo, old_gv_version, new_gv_version, branch, channel, author
+    ac_repo, old_gv_version, new_gv_version, branch, channel, author, ac_major_version
 ):
     contents = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/Gecko.kt", ref=branch
+        get_gecko_file_path(ac_major_version), ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -83,9 +83,9 @@ def _update_gv_version(
     )
 
 
-def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
+def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author, ac_major_version):
     contents = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt", ref=branch
+        get_dependencies_file_path(ac_major_version), ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -108,10 +108,10 @@ def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author):
 
 
 def _update_glean_version(
-    ac_repo, old_glean_version, new_glean_version, branch, author
+    ac_repo, old_glean_version, new_glean_version, branch, author, ac_major_version
 ):
     contents = ac_repo.get_contents(
-        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt", ref=branch
+        get_dependencies_file_path(ac_major_version), ref=branch
     )
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
@@ -144,10 +144,10 @@ def _update_geckoview(
             f"{ts()} Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
         )
 
-        gv_channel = get_current_gv_channel(ac_repo, release_branch_name)
+        gv_channel = get_current_gv_channel(ac_repo, release_branch_name, ac_major_version)
         print(f"{ts()} Current GV channel is {gv_channel}")
 
-        current_gv_version = get_current_gv_version(ac_repo, release_branch_name)
+        current_gv_version = get_current_gv_version(ac_repo, release_branch_name, ac_major_version)
         print(
             f"{ts()} Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
@@ -162,7 +162,7 @@ def _update_geckoview(
             f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
         )
 
-        current_glean_version = get_current_glean_version(ac_repo, release_branch_name)
+        current_glean_version = get_current_glean_version(ac_repo, release_branch_name, ac_major_version)
         print(
             f"{ts()} Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} is {current_glean_version}"
         )
@@ -229,6 +229,7 @@ def _update_geckoview(
             pr_branch_name,
             gv_channel,
             author,
+            ac_major_version
         )
 
         if current_glean_version != latest_glean_version:
@@ -241,6 +242,7 @@ def _update_geckoview(
                 latest_glean_version,
                 pr_branch_name,
                 author,
+                ac_major_version
             )
 
         #
@@ -293,7 +295,7 @@ def _update_application_services(
         )
         print(f"{ts()} Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
-        current_as_version = get_current_as_version(ac_repo, release_branch_name)
+        current_as_version = get_current_as_version(ac_repo, release_branch_name, ac_major_version)
         print(
             f"{ts()} Current A-S version on A-C {release_branch_name} is {current_as_version}"
         )
@@ -355,7 +357,7 @@ def _update_application_services(
             f"{ts()} Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
         )
         _update_as_version(
-            ac_repo, current_as_version, latest_as_version, pr_branch_name, author
+            ac_repo, current_as_version, latest_as_version, pr_branch_name, author, ac_major_version
         )
 
         #
