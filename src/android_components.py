@@ -136,12 +136,9 @@ def _update_glean_version(
 
 
 def _update_geckoview(
-    ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False
+    ac_repo, release_branch_name, ac_major_version, author, dry_run=False
 ):
     try:
-        release_branch_name = (
-            "main" if ac_major_version == "main" else f"releases_v{ac_major_version}"
-        )
         log.info(
             f"Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
         )
@@ -191,7 +188,7 @@ def _update_geckoview(
         # Check if the branch already exists
         #
 
-        short_version = "main" if ac_major_version == "main" else f"{ac_major_version}"
+        short_version = "main" if release_branch_name == "main" else f"{ac_major_version}"
 
         # Create a non unique PR branch name for work on this ac release branch.
         pr_branch_name = f"relbot/upgrade-geckoview-ac-{short_version}"
@@ -289,12 +286,9 @@ def _update_geckoview(
 
 
 def _update_application_services(
-    ac_repo, fenix_repo, ac_major_version, author, debug, dry_run=False
+    ac_repo, release_branch_name, ac_major_version, author, dry_run=False
 ):
     try:
-        release_branch_name = (
-            "main" if ac_major_version is None else f"releases_v{ac_major_version}"
-        )
         log.info(f"Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
         current_as_version = get_current_as_version(ac_repo, release_branch_name, ac_major_version)
@@ -398,9 +392,12 @@ def _update_application_services(
 #
 
 
-def update_main(ac_repo, fenix_repo, author, debug, dry_run):
-    _update_application_services(ac_repo, fenix_repo, None, author, debug, dry_run)
-    _update_geckoview(ac_repo, fenix_repo, "main", author, debug, dry_run)
+def update_main(ac_repo, author, dry_run):
+    branch_name = "main"
+    current_ac_version = get_current_ac_version(ac_repo, branch_name)
+    ac_major_version = int(major_as_version_from_version(current_ac_version))
+    _update_application_services(ac_repo, branch_name, ac_major_version, author, dry_run)
+    _update_geckoview(ac_repo, branch_name, ac_major_version, author, dry_run)
 
 
 #
@@ -408,11 +405,10 @@ def update_main(ac_repo, fenix_repo, author, debug, dry_run):
 #
 
 
-def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
+def update_releases(ac_repo, fenix_repo, author, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
-        _update_geckoview(
-            ac_repo, fenix_repo, ac_version, author, debug, dry_run
-        )
+        release_branch_name = f"releases_v{ac_version}"
+        _update_geckoview(ac_repo, release_branch_name, ac_version, author, dry_run)
 
 
 #

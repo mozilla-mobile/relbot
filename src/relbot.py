@@ -49,11 +49,9 @@ def main(
     # Android Components
     if argv[1] == "android-components":
         if argv[2] == "update-main":
-            android_components.update_main(ac_repo, fenix_repo, author, debug, dry_run)
+            android_components.update_main(ac_repo, author, dry_run)
         elif argv[2] == "update-releases":
-            android_components.update_releases(
-                ac_repo, fenix_repo, author, debug, dry_run
-            )
+            android_components.update_releases(ac_repo, fenix_repo, author, dry_run)
         elif argv[2] == "create-releases" or argv[2] == "create-release":
             android_components.create_releases(
                 ac_repo, fenix_repo, author, debug, dry_run
