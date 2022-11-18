@@ -395,7 +395,7 @@ def _update_application_services(
 def update_main(ac_repo, author, dry_run):
     branch_name = "main"
     current_ac_version = get_current_ac_version(ac_repo, branch_name)
-    ac_major_version = int(major_as_version_from_version(current_ac_version))
+    ac_major_version = int(major_ac_version_from_version(current_ac_version))
     _update_application_services(ac_repo, branch_name, ac_major_version, author, dry_run)
     _update_geckoview(ac_repo, branch_name, ac_major_version, author, dry_run)
 
