@@ -2,10 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import logging
 import re
 from util import *
 
-
+log = logging.getLogger(__name__)
 RELBRANCH_RE = re.compile(r"^releases_v(\d+)\.0$")
 
 
@@ -55,4 +56,4 @@ def update_android_components_in_focus(ac_repo, focus_repo, author, debug, dry_r
                 dry_run=dry_run,
             )
         except Exception as e:
-            print(f"{ts()} Failed to update A-C in focus-android {version}: {str(e)}")
+            log.error(f"Failed to update A-C in focus-android {version}: {str(e)}")

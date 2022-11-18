@@ -4,12 +4,16 @@
 
 
 import datetime, re, time
+import logging
 
 
 from github import Github, GithubException, InputGitAuthor
 import requests
 import xmltodict
 import json
+
+
+log = logging.getLogger(__name__)
 
 
 def get_gecko_file_path(ac_major_version):
@@ -64,7 +68,7 @@ def major_gv_version_from_version(v):
 def match_ac_version(src):
     if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
         return validate_ac_version(match[1])
-    raise Exception(f"Could not match the VERSION in AndroidComponents.kt")
+    raise Exception("Could not match the VERSION in AndroidComponents.kt")
 
 
 def get_current_embedded_ac_version(repo, release_branch_name, target_path=""):
@@ -77,7 +81,7 @@ def get_current_embedded_ac_version(repo, release_branch_name, target_path=""):
 
 def match_gv_version(src):
     """Find the GeckoView version in the contents of the given Gecko.kt file."""
-    if match := re.compile(fr'version = "([^"]*)"', re.MULTILINE).search(src):
+    if match := re.compile(r'version = "([^"]*)"', re.MULTILINE).search(src):
         return validate_gv_version(match[1])
     raise Exception(f"Could not match the {channel}_version in Gecko.kt")
 
@@ -96,7 +100,7 @@ def match_gv_channel(src):
         r"val channel = GeckoChannel.(NIGHTLY|BETA|RELEASE)", re.MULTILINE
     ).search(src):
         return validate_gv_channel(match[1].lower())
-    raise Exception(f"Could not match the channel in Gecko.kt")
+    raise Exception("Could not match the channel in Gecko.kt")
 
 
 def get_current_gv_channel(ac_repo, release_branch_name, ac_major_version):
@@ -202,7 +206,7 @@ def get_latest_gv_version(gv_major_version, channel):
 def get_latest_ac_version(ac_major_version):
     """Find the last android-components release on Maven for the given major version"""
     r = requests.get(
-        f"https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
+        "https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
     )
     r.raise_for_status()
 
@@ -224,7 +228,7 @@ def get_latest_ac_version(ac_major_version):
 def get_latest_ac_nightly_version():
     """Find the last android-components Nightly release on Maven for the given major version"""
     r = requests.get(
-        f"https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
+        "https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
     )
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
@@ -331,7 +335,7 @@ def match_as_version(src):
         r'const val mozilla_appservices = "([^"]*)"', re.MULTILINE
     ).search(src):
         return validate_as_version(match[1])
-    raise Exception(f"Could not match mozilla_appservices in DependenciesPlugin.kt")
+    raise Exception("Could not match mozilla_appservices in DependenciesPlugin.kt")
 
 
 def get_current_as_version(ac_repo, release_branch_name, ac_major_version):
@@ -346,10 +350,10 @@ def get_current_as_version(ac_repo, release_branch_name, ac_major_version):
 def match_glean_version(src):
     """Find the Glean version in the contents of the given DependenciesPlugin.kt file."""
     if match := re.compile(
-        rf'const val mozilla_glean = "([^"]*)"', re.MULTILINE
+        r'const val mozilla_glean = "([^"]*)"', re.MULTILINE
     ).search(src):
         return validate_as_version(match[1])
-    raise Exception(f"Could not match glean in DependenciesPlugin.kt")
+    raise Exception("Could not match glean in DependenciesPlugin.kt")
 
 
 def get_current_glean_version(ac_repo, release_branch_name, ac_major_version):
@@ -442,43 +446,43 @@ def update_android_components_nightly(
     current_ac_version = get_current_embedded_ac_version(
         target_repo, release_branch_name, target_path
     )
-    print(f"{ts()} Current A-C version in {target_repo} is {current_ac_version}")
+    log.info(f"Current A-C version in {target_repo} is {current_ac_version}")
 
     latest_ac_nightly_version = get_latest_ac_nightly_version()
 
     if compare_ac_versions(current_ac_version, latest_ac_nightly_version) >= 0:
-        print(
-            f"{ts()} No need to upgrade; {target_repo} is on A-C {current_ac_version}"
+        log.warning(
+            f"No need to upgrade; {target_repo} is on A-C {current_ac_version}"
         )
         return
 
-    print(
-        f"{ts()} We should upgrade {target_repo} to Android-Components {latest_ac_nightly_version}"
+    log.info(
+        f"We should upgrade {target_repo} to Android-Components {latest_ac_nightly_version}"
     )
 
     if dry_run:
-        print(f"{ts()} Dry-run so not continuing.")
+        log.warning("Dry-run so not continuing.")
         return
 
     pr_branch_name = f"relbot/AC-Nightly-{latest_ac_nightly_version}"
 
     try:
         if pr_branch := target_repo.get_branch(pr_branch_name):
-            print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+            log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
             return
     except GithubException as e:
         pass
 
     release_branch = target_repo.get_branch(release_branch_name)
-    print(f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}")
+    log.info(f"Last commit on {release_branch_name} is {release_branch.commit.sha}")
 
-    print(f"{ts()} Creating branch {pr_branch_name} on {release_branch.commit.sha}")
+    log.info(f"Creating branch {pr_branch_name} on {release_branch.commit.sha}")
     target_repo.create_git_ref(
         ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
     )
 
-    print(
-        f"{ts()} Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_nightly_version} on {pr_branch_name}"
+    log.info(
+        f"Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_nightly_version} on {pr_branch_name}"
     )
     _update_ac_version(
         target_repo,
@@ -489,14 +493,14 @@ def update_android_components_nightly(
         target_path
     )
 
-    print(f"{ts()} Creating pull request")
+    log.info("Creating pull request")
     pr = target_repo.create_pull(
         title=f"Update to Android-Components {latest_ac_nightly_version}.",
         body=f"This (automated) patch updates Android-Components to {latest_ac_nightly_version}.",
         head=pr_branch_name,
         base=release_branch_name,
     )
-    print(f"{ts()} Pull request at {pr.html_url}")
+    log.info(f"Pull request at {pr.html_url}")
 
 
 def update_android_components_release(
@@ -510,35 +514,35 @@ def update_android_components_release(
     debug,
     dry_run,
 ):
-    print(f"{ts()} Looking at {target_product} {major_version}")
+    log.info(f"Looking at {target_product} {major_version}")
 
     # Make sure the release branch for this version exists
     release_branch = target_repo.get_branch(target_branch)
 
-    print(f"{ts()} Looking at {target_product} {major_version} on {target_branch}")
+    log.info(f"Looking at {target_product} {major_version} on {target_branch}")
 
     current_ac_version = get_current_embedded_ac_version(target_repo, target_branch, target_path)
-    print(f"{ts()} Current A-C version in {target_product} is {current_ac_version}")
+    log.info(f"Current A-C version in {target_product} is {current_ac_version}")
 
     ac_major_version = int(current_ac_version.split(".", 1)[0])  # TODO Util & Test!
     latest_ac_version = get_latest_ac_version(ac_major_version)
-    print(f"{ts()} Latest A-C version available is {latest_ac_version}")
+    log.info(f"Latest A-C version available is {latest_ac_version}")
 
     if (
         len(current_ac_version) != 19
         and compare_ac_versions(current_ac_version, latest_ac_version) >= 0
     ):
-        print(
-            f"{ts()} No need to upgrade; {target_product} {major_version} is on A-C {current_ac_version}"
+        log.warning(
+            f"No need to upgrade; {target_product} {major_version} is on A-C {current_ac_version}"
         )
         return
 
-    print(
-        f"{ts()} We are going to upgrade {target_product} {major_version} to Android-Components {latest_ac_version}"
+    log.info(
+        f"We are going to upgrade {target_product} {major_version} to Android-Components {latest_ac_version}"
     )
 
     if dry_run:
-        print(f"{ts()} Dry-run so not continuing.")
+        log.warning("Dry-run so not continuing.")
         return
 
     # Create a non unique PR branch name for work on this release branch.
@@ -547,31 +551,31 @@ def update_android_components_release(
     try:
         pr_branch = target_repo.get_branch(pr_branch_name)
         if pr_branch:
-            print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+            log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
             return
     except GithubException as e:
         # TODO Only ignore a 404 here, fail on others
         pass
 
-    print(f"{ts()} Last commit on {target_branch} is {release_branch.commit.sha}")
+    log.info(f"Last commit on {target_branch} is {release_branch.commit.sha}")
 
-    print(f"{ts()} Creating branch {pr_branch_name} on {release_branch.commit.sha}")
+    log.info(f"Creating branch {pr_branch_name} on {release_branch.commit.sha}")
     target_repo.create_git_ref(
         ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
     )
 
-    print(
-        f"{ts()} Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}"
+    log.info(
+        f"Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}"
     )
     _update_ac_version(
         target_repo, pr_branch_name, current_ac_version, latest_ac_version, author, target_path
     )
 
-    print(f"{ts()} Creating pull request")
+    log.info("Creating pull request")
     pr = target_repo.create_pull(
         title=f"Update to Android-Components {latest_ac_version}.",
         body=f"This (automated) patch updates Android-Components to {latest_ac_version}.",
         head=pr_branch_name,
         base=target_branch,
     )
-    print(f"{ts()} Pull request at {pr.html_url}")
+    log.info(f"Pull request at {pr.html_url}")

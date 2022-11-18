@@ -22,10 +22,15 @@
 
 
 import os, sys
+import logging
 
 from github import Github, InputGitAuthor, enable_console_debug_logging
 
 import android_components, fenix, focus_android, reference_browser
+
+
+log = logging.getLogger(__name__)
+logging.basicConfig(format="%(asctime)s - %(name)s.%(funcName)s:%(lineno)s - %(levelname)s - %(message)s", level=logging.INFO)
 
 
 DEFAULT_ORGANIZATION = "st3fan"
@@ -100,12 +105,12 @@ if __name__ == "__main__":
 
     github_access_token = os.getenv("GITHUB_TOKEN")
     if not github_access_token:
-        print("No GITHUB_TOKEN set. Exiting.")
+        log.error("No GITHUB_TOKEN set. Exiting.")
         sys.exit(1)
 
     github = Github(github_access_token)
     if github.get_user() is None:
-        print("Could not get authenticated user. Exiting.")
+        log.error("Could not get authenticated user. Exiting.")
         sys.exit(1)
 
     dry_run = os.getenv("DRY_RUN") == "True"
@@ -123,7 +128,7 @@ if __name__ == "__main__":
     author_email = os.getenv("AUTHOR_EMAIL") or DEFAULT_AUTHOR_EMAIL
     author = InputGitAuthor(author_name, author_email)
 
-    print(
+    log.info(
         f"This is relbot working on https://github.com/{organization} as {author_email} / {author_name}"
     )
 
