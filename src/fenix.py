@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-
+import logging
 from util import *
 
+log = logging.getLogger(__name__)
 
 # For the current Fenix versions, find out if there is
 # a newer android-components that can be pulled in.
@@ -34,4 +35,4 @@ def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
                 dry_run=dry_run,
             )
         except Exception as e:
-            print(f"{ts()} Failed to update A-C in Fenix {fenix_version}: {str(e)}")
+            log.error(f"Failed to update A-C in Fenix {fenix_version}: {str(e)}")

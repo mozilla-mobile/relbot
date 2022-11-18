@@ -4,9 +4,11 @@
 
 
 import datetime, sys
+import logging
 
 from util import *
 
+log = logging.getLogger(__name__)
 
 #
 # Helpers
@@ -23,8 +25,8 @@ def _update_ac_buildconfig(ac_repo, old_ac_version, new_ac_version, branch, auth
         content,
     )
     if content == new_content:
-        print(
-            f"{ts()} Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?"
+        log.warning(
+            "Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -140,16 +142,16 @@ def _update_geckoview(
         release_branch_name = (
             "main" if ac_major_version == "main" else f"releases_v{ac_major_version}"
         )
-        print(
-            f"{ts()} Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
+        log.info(
+            f"Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
         )
 
         gv_channel = get_current_gv_channel(ac_repo, release_branch_name, ac_major_version)
-        print(f"{ts()} Current GV channel is {gv_channel}")
+        log.info(f"Current GV channel is {gv_channel}")
 
         current_gv_version = get_current_gv_version(ac_repo, release_branch_name, ac_major_version)
-        print(
-            f"{ts()} Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
+        log.info(
+            f"Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
 
         if ac_major_version == "main":
@@ -158,31 +160,31 @@ def _update_geckoview(
         else:
             current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
-        print(
-            f"{ts()} Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
+        log.info(
+            f"Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
         )
 
         current_glean_version = get_current_glean_version(ac_repo, release_branch_name, ac_major_version)
-        print(
-            f"{ts()} Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} is {current_glean_version}"
+        log.info(
+            f"Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} is {current_glean_version}"
         )
         latest_glean_version = get_latest_glean_version(latest_gv_version, gv_channel)
-        print(
-            f"{ts()} Latest bundled Glean version available is {latest_glean_version}"
+        log.info(
+            f"Latest bundled Glean version available is {latest_glean_version}"
         )
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
-            print(
-                f"{ts()} No newer GV {gv_channel.capitalize()} release found. Exiting."
+            log.warning(
+                f"No newer GV {gv_channel.capitalize()} release found. Exiting."
             )
             return
 
-        print(
-            f"{ts()} We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}"
+        log.info(
+            f"We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}"
         )
 
         if dry_run:
-            print(f"{ts()} Dry-run so not continuing.")
+            log.warning("Dry-run so not continuing.")
             return
 
         #
@@ -197,7 +199,7 @@ def _update_geckoview(
         try:
             pr_branch = ac_repo.get_branch(pr_branch_name)
             if pr_branch:
-                print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+                log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
                 return
         except GithubException as e:
             # TODO Only ignore a 404 here, fail on others
@@ -208,20 +210,20 @@ def _update_geckoview(
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        print(
-            f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}"
+        log.info(
+            f"Last commit on {release_branch_name} is {release_branch.commit.sha}"
         )
 
         ac_repo.create_git_ref(
             ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
         )
-        print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
+        log.info(f"Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
         # Update android-components/plugins/dependencies/src/main/java/Gecko.kt
         #
 
-        print(f"{ts()} Updating android-components/plugins/dependencies/src/main/java/Gecko.kt")
+        log.info("Updating android-components/plugins/dependencies/src/main/java/Gecko.kt")
         _update_gv_version(
             ac_repo,
             current_gv_version,
@@ -233,8 +235,8 @@ def _update_geckoview(
         )
 
         if current_glean_version != latest_glean_version:
-            print(
-                f"{ts()} Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
+            log.info(
+                "Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
             )
             _update_glean_version(
                 ac_repo,
@@ -255,16 +257,16 @@ def _update_geckoview(
         if major < 104:
             next_ac_version = get_next_ac_version(current_ac_version)
 
-            print(
-                f"{ts()} Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}"
+            log.info(
+                f"Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}"
             )
 
-            print(f"{ts()} Updating version.txt")
+            log.info("Updating version.txt")
             _update_ac_version(
                 ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
             )
 
-            print(f"{ts()} Updating buildconfig.yml")
+            log.info("Updating buildconfig.yml")
             _update_ac_buildconfig(
                 ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
             )
@@ -273,14 +275,14 @@ def _update_geckoview(
         # Create the pull request
         #
 
-        print(f"{ts()} Creating pull request")
+        log.info("Creating pull request")
         pr = ac_repo.create_pull(
             title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
             body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
             head=pr_branch_name,
             base=release_branch_name,
         )
-        print(f"{ts()} Pull request at {pr.html_url}")
+        log.info(f"Pull request at {pr.html_url}")
     except Exception as e:
         # TODO Clean up the mess
         raise e
@@ -293,28 +295,28 @@ def _update_application_services(
         release_branch_name = (
             "main" if ac_major_version is None else f"releases_v{ac_major_version}"
         )
-        print(f"{ts()} Updating A-S on {ac_repo.full_name}:{release_branch_name}")
+        log.info(f"Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
         current_as_version = get_current_as_version(ac_repo, release_branch_name, ac_major_version)
-        print(
-            f"{ts()} Current A-S version on A-C {release_branch_name} is {current_as_version}"
+        log.info(
+            f"Current A-S version on A-C {release_branch_name} is {current_as_version}"
         )
 
         latest_as_version = get_latest_as_version(
             major_as_version_from_version(current_as_version)
         )
-        print(f"{ts()} Latest A-S version available is {latest_as_version}")
+        log.info(f"Latest A-S version available is {latest_as_version}")
 
         if compare_as_versions(current_as_version, latest_as_version) >= 0:
-            print(f"{ts()} No newer A-S release found. Exiting.")
+            log.warning("No newer A-S release found. Exiting.")
             return
 
-        print(
-            f"{ts()} We should update A-C {release_branch_name} with A-S {latest_as_version}"
+        log.info(
+            f"We should update A-C {release_branch_name} with A-S {latest_as_version}"
         )
 
         if dry_run:
-            print(f"{ts()} Dry-run so not continuing.")
+            log.warning("Dry-run so not continuing.")
             return
 
         #
@@ -329,7 +331,7 @@ def _update_application_services(
         try:
             pr_branch = ac_repo.get_branch(pr_branch_name)
             if pr_branch:
-                print(f"{ts()} The PR branch {pr_branch_name} already exists. Exiting.")
+                log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
                 return
         except GithubException as e:
             # TODO Only ignore a 404 here, fail on others
@@ -340,21 +342,21 @@ def _update_application_services(
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        print(
-            f"{ts()} Last commit on {release_branch_name} is {release_branch.commit.sha}"
+        log.info(
+            f"Last commit on {release_branch_name} is {release_branch.commit.sha}"
         )
 
         ac_repo.create_git_ref(
             ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
         )
-        print(f"{ts()} Created branch {pr_branch_name} on {release_branch.commit.sha}")
+        log.info(f"Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
         #
         # Update android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt
         #
 
-        print(
-            f"{ts()} Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
+        log.info(
+            "Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
         )
         _update_as_version(
             ac_repo, current_as_version, latest_as_version, pr_branch_name, author, ac_major_version
@@ -364,20 +366,20 @@ def _update_application_services(
         # Create the pull request
         #
 
-        print(f"{ts()} Creating pull request")
+        log.info("Creating pull request")
         pr = ac_repo.create_pull(
             title=f"Update to A-S {latest_as_version} on {release_branch_name}",
             body=f"This (automated) patch updates A-S to {latest_as_version}.",
             head=pr_branch_name,
             base=release_branch_name,
         )
-        print(f"{ts()} Pull request at {pr.html_url}")
+        log.info(f"Pull request at {pr.html_url}")
 
         #
         # Leave a note for bors to run ui tests
         #
 
-        print(f"{ts()} Asking Bors to run a try build")
+        log.info("Asking Bors to run a try build")
         issue = ac_repo.get_issue(pr.number)
         issue.create_comment("bors try")
     except Exception as e:
@@ -400,15 +402,15 @@ def update_main(ac_repo, fenix_repo, author, debug, dry_run):
     try:
         _update_application_services(ac_repo, fenix_repo, None, author, debug, dry_run)
     except Exception as e:
-        print(
-            f"{ts()} Exception while updating A-S on A-C {ac_repo.full_name}:main: {str(e)}"
+        log.error(
+            f"Exception while updating A-S on A-C {ac_repo.full_name}:main: {str(e)}"
         )
 
     try:
         _update_geckoview(ac_repo, fenix_repo, "main", author, debug, dry_run)
     except Exception as e:
-        print(
-            f"{ts()} Exception while updating GeckoView on A-C {ac_repo.full_name}:main: {str(e)}"
+        log.error(
+            f"Exception while updating GeckoView on A-C {ac_repo.full_name}:main: {str(e)}"
         )
 
 
@@ -424,7 +426,7 @@ def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
                 ac_repo, fenix_repo, ac_version, author, debug, dry_run
             )
         except Exception as e:
-            print(f"{ts()} Exception while updating GeckoView on A-C {ac_version}")
+            log.error(f"Exception while updating GeckoView on A-C {ac_version}")
 
 
 #
@@ -452,28 +454,28 @@ def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_ru
     release_branch = ac_repo.get_branch(release_branch_name)
 
     if current_version.endswith(".0"):
-        print(
-            f"{ts()} Current version {current_version} is not a dot release. Exiting. "
+        log.warning(
+            f"Current version {current_version} is not a dot release. Exiting. "
         )
         return
 
-    print(
-        f"{ts()} Checking if android-components release {current_version} already exists."
+    log.info(
+        f"Checking if android-components release {current_version} already exists."
     )
 
     releases = get_recent_ac_releases(ac_repo)
     if len(releases) == 0:
-        print(f"{ts()} No releases found. Exiting. ")
+        log.warning("No releases found. Exiting. ")
         return
 
     if current_version in releases:
-        print(f"{ts()} Release {current_version} already exists. Exiting. ")
+        log.warning(f"Release {current_version} already exists. Exiting. ")
         return
 
-    print(f"{ts()} Creating android-components release {current_version}")
+    log.info(f"Creating android-components release {current_version}")
 
     if dry_run:
-        print(f"{ts()} Dry-run so not continuing.")
+        log.warning("Dry-run so not continuing.")
         return
 
     ac_repo.create_git_tag_and_release(
@@ -489,12 +491,11 @@ def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_ru
 def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
         if ac_version >= 104:
-            print(f"{ts()} Skipping Android-Components {ac_version}: releases are now created on ship-it")
+            log.warning(f"Skipping Android-Components {ac_version}: releases are now created on ship-it")
             continue
         try:
             _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
         except Exception as e:
-            print(
-                f"{ts()} Exception while creating Android-Components release for {ac_version}: {str(e)}"
+            log.info(
+                f"Exception while creating Android-Components release for {ac_version}: {str(e)}"
             )
-        print()
