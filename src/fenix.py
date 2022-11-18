@@ -22,17 +22,14 @@ def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
     )
     for fenix_version in get_recent_fenix_versions(fenix_repo):
         release_branch_name = f"releases_v{fenix_version}.0.0"
-        try:
-            update_android_components_release(
-                ac_repo,
-                fenix_repo,
-                target_path="",
-                target_product="fenix",
-                target_branch=release_branch_name,
-                major_version= fenix_version,
-                author=author,
-                debug=debug,
-                dry_run=dry_run,
-            )
-        except Exception as e:
-            log.error(f"Failed to update A-C in Fenix {fenix_version}: {str(e)}")
+        update_android_components_release(
+            ac_repo,
+            fenix_repo,
+            target_path="",
+            target_product="fenix",
+            target_branch=release_branch_name,
+            major_version= fenix_version,
+            author=author,
+            debug=debug,
+            dry_run=dry_run,
+        )

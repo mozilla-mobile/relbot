@@ -43,17 +43,14 @@ def update_android_components_in_focus(ac_repo, focus_repo, author, debug, dry_r
     )
     for version in get_recent_focus_versions(focus_repo):
         release_branch_name = f"releases_v{version}.0"
-        try:
-            update_android_components_release(
-                ac_repo,
-                focus_repo,
-                target_path="focus-android/",
-                target_product="focus",
-                target_branch=release_branch_name,
-                major_version=version,
-                author=author,
-                debug=debug,
-                dry_run=dry_run,
-            )
-        except Exception as e:
-            log.error(f"Failed to update A-C in focus-android {version}: {str(e)}")
+        update_android_components_release(
+            ac_repo,
+            focus_repo,
+            target_path="focus-android/",
+            target_product="focus",
+            target_branch=release_branch_name,
+            major_version=version,
+            author=author,
+            debug=debug,
+            dry_run=dry_run,
+        )

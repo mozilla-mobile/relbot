@@ -399,19 +399,8 @@ def _update_application_services(
 
 
 def update_main(ac_repo, fenix_repo, author, debug, dry_run):
-    try:
-        _update_application_services(ac_repo, fenix_repo, None, author, debug, dry_run)
-    except Exception as e:
-        log.error(
-            f"Exception while updating A-S on A-C {ac_repo.full_name}:main: {str(e)}"
-        )
-
-    try:
-        _update_geckoview(ac_repo, fenix_repo, "main", author, debug, dry_run)
-    except Exception as e:
-        log.error(
-            f"Exception while updating GeckoView on A-C {ac_repo.full_name}:main: {str(e)}"
-        )
+    _update_application_services(ac_repo, fenix_repo, None, author, debug, dry_run)
+    _update_geckoview(ac_repo, fenix_repo, "main", author, debug, dry_run)
 
 
 #
@@ -421,12 +410,9 @@ def update_main(ac_repo, fenix_repo, author, debug, dry_run):
 
 def update_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
-        try:
-            _update_geckoview(
-                ac_repo, fenix_repo, ac_version, author, debug, dry_run
-            )
-        except Exception as e:
-            log.error(f"Exception while updating GeckoView on A-C {ac_version}")
+        _update_geckoview(
+            ac_repo, fenix_repo, ac_version, author, debug, dry_run
+        )
 
 
 #
@@ -493,9 +479,5 @@ def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
         if ac_version >= 104:
             log.warning(f"Skipping Android-Components {ac_version}: releases are now created on ship-it")
             continue
-        try:
-            _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
-        except Exception as e:
-            log.info(
-                f"Exception while creating Android-Components release for {ac_version}: {str(e)}"
-            )
+
+        _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
