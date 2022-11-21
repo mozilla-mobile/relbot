@@ -3,15 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 
-import datetime, re, time
+import datetime
+import json
 import logging
+import re
+import time
 
-
-from github import Github, GithubException, InputGitAuthor
 import requests
 import xmltodict
-import json
-
+from github import Github, GithubException, InputGitAuthor
 
 log = logging.getLogger(__name__)
 
