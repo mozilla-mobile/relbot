@@ -475,10 +475,10 @@ def update_android_components_nightly(
     pr_branch_name = f"relbot/AC-Nightly-{latest_ac_nightly_version}"
 
     try:
-        if pr_branch := target_repo.get_branch(pr_branch_name):
+        if target_repo.get_branch(pr_branch_name):
             log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
             return
-    except GithubException as e:
+    except GithubException:
         pass
 
     release_branch = target_repo.get_branch(release_branch_name)
@@ -567,7 +567,7 @@ def update_android_components_release(
         if pr_branch:
             log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
             return
-    except GithubException as e:
+    except GithubException:
         # TODO Only ignore a 404 here, fail on others
         pass
 
