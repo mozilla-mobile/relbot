@@ -7,11 +7,10 @@ import datetime
 import json
 import logging
 import re
-import time
 
 import requests
 import xmltodict
-from github import Github, GithubException, InputGitAuthor
+from github import GithubException
 
 log = logging.getLogger(__name__)
 
