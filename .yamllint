@@ -1,0 +1,10 @@
+---
+extends: default
+
+rules:
+    document-end:
+        present: false
+    indentation:
+        indent-sequences: false
+        spaces: 4
+    line-length: disable
