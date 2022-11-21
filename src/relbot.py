@@ -34,7 +34,7 @@ import reference_browser
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
-    format="%(asctime)s - %(name)s.%(funcName)s:%(lineno)s - %(levelname)s - %(message)s",
+    format="%(asctime)s - %(name)s.%(funcName)s:%(lineno)s - %(levelname)s - %(message)s",  # noqa E501
     level=logging.INFO,
 )
 
@@ -42,7 +42,7 @@ logging.basicConfig(
 DEFAULT_ORGANIZATION = "st3fan"
 DEFAULT_AUTHOR_NAME = "MickeyMoz"
 DEFAULT_AUTHOR_EMAIL = "sebastian@mozilla.com"
-USAGE = "usage: relbot <android-components|fenix|focus-android|reference-browser> command..."
+USAGE = "usage: relbot <android-components|fenix|focus-android|reference-browser> command..."  # noqa E501
 
 
 def main(
@@ -64,7 +64,7 @@ def main(
             )
         else:
             print(
-                "usage: relbot android-components <update-{main,releases}|create-releases>"
+                "usage: relbot android-components <update-{main,releases}|create-releases>"  # noqa E501
             )
             sys.exit(1)
 
@@ -133,7 +133,8 @@ if __name__ == "__main__":
     author = InputGitAuthor(author_name, author_email)
 
     log.info(
-        f"This is relbot working on https://github.com/{organization} as {author_email} / {author_name}"
+        f"This is relbot working on https://github.com/{organization} "
+        f"as {author_email} / {author_name}"
     )
 
     main(sys.argv, ac_repo, rb_repo, fenix_repo, focus_repo, author, debug, dry_run)

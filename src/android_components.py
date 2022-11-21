@@ -25,7 +25,8 @@ def _update_ac_buildconfig(ac_repo, old_ac_version, new_ac_version, branch, auth
     )
     if content == new_content:
         log.warning(
-            "Update to .buildConfig.yml resulted in no changes: maybe the file was already up to date?"
+            "Update to .buildConfig.yml resulted in no changes: "
+            "maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -45,7 +46,8 @@ def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
     new_content = content.replace(old_ac_version, new_ac_version)
     if content == new_content:
         raise Exception(
-            "Update to version.txt resulted in no changes: maybe the file was already up to date?"
+            "Update to version.txt resulted in no changes: "
+            "maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -69,7 +71,8 @@ def _update_gv_version(
     )
     if content == new_content:
         raise Exception(
-            "Update to Gecko.kt resulted in no changes: maybe the file was already up to date?"
+            "Update to Gecko.kt resulted in no changes: "
+            "maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -95,7 +98,8 @@ def _update_as_version(
     )
     if content == new_content:
         raise Exception(
-            "Update to DependenciesPlugin.kt resulted in no changes: maybe the file was already up to date?"
+            "Update to DependenciesPlugin.kt resulted in no changes: "
+            "maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -121,7 +125,8 @@ def _update_glean_version(
     )
     if content == new_content:
         raise Exception(
-            "Update to DependenciesPlugin.kt resulted in no changes: maybe the file was already up to date?"
+            "Update to DependenciesPlugin.kt resulted in no changes: "
+            "maybe the file was already up to date?"
         )
 
     ac_repo.update_file(
@@ -149,7 +154,8 @@ def _update_geckoview(
             ac_repo, release_branch_name, ac_major_version
         )
         log.info(
-            f"Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
+            f"Current GV {gv_channel.capitalize()} version in A-C "
+            f"{ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
 
         if ac_major_version == "main":
@@ -159,14 +165,16 @@ def _update_geckoview(
             current_gv_major_version = major_gv_version_from_version(current_gv_version)
         latest_gv_version = get_latest_gv_version(current_gv_major_version, gv_channel)
         log.info(
-            f"Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
+            f"Latest GV {gv_channel.capitalize()} version available "
+            f"is {latest_gv_version}"
         )
 
         current_glean_version = get_current_glean_version(
             ac_repo, release_branch_name, ac_major_version
         )
         log.info(
-            f"Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} is {current_glean_version}"
+            f"Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} "
+            f"is {current_glean_version}"
         )
         latest_glean_version = get_latest_glean_version(latest_gv_version, gv_channel)
         log.info(f"Latest bundled Glean version available is {latest_glean_version}")
@@ -178,7 +186,8 @@ def _update_geckoview(
             return
 
         log.info(
-            f"We should update A-C {release_branch_name} with GV {gv_channel.capitalize()} {latest_gv_version}"
+            f"We should update A-C {release_branch_name} with GV "
+            f"{gv_channel.capitalize()} {latest_gv_version}"
         )
 
         if dry_run:
@@ -217,10 +226,6 @@ def _update_geckoview(
         )
         log.info(f"Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
-        #
-        # Update android-components/plugins/dependencies/src/main/java/Gecko.kt
-        #
-
         log.info(
             "Updating android-components/plugins/dependencies/src/main/java/Gecko.kt"
         )
@@ -236,7 +241,8 @@ def _update_geckoview(
 
         if current_glean_version != latest_glean_version:
             log.info(
-                "Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
+                "Updating android-components/plugins/dependencies/src/"
+                "main/java/DependenciesPlugin.kt"
             )
             _update_glean_version(
                 ac_repo,
@@ -258,7 +264,8 @@ def _update_geckoview(
             next_ac_version = get_next_ac_version(current_ac_version)
 
             log.info(
-                f"Create an A-C {next_ac_version} release with GV {gv_channel.capitalize()} {latest_gv_version}"
+                f"Create an A-C {next_ac_version} release with GV "
+                f"{gv_channel.capitalize()} {latest_gv_version}"
             )
 
             log.info("Updating version.txt")
@@ -277,8 +284,10 @@ def _update_geckoview(
 
         log.info("Creating pull request")
         pr = ac_repo.create_pull(
-            title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} on {release_branch_name}",
-            body=f"This (automated) patch updates GV {gv_channel.capitalize()} on main to {latest_gv_version}.",
+            title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} "
+            "on {release_branch_name}",
+            body=f"This (automated) patch updates GV {gv_channel.capitalize()} "
+            "on main to {latest_gv_version}.",
             head=pr_branch_name,
             base=release_branch_name,
         )
@@ -348,12 +357,9 @@ def _update_application_services(
         )
         log.info(f"Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
-        #
-        # Update android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt
-        #
-
         log.info(
-            "Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
+            "Updating android-components/plugins/dependencies/src"
+            "/main/java/DependenciesPlugin.kt"
         )
         _update_as_version(
             ac_repo,
@@ -484,7 +490,8 @@ def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
         if ac_version >= 104:
             log.warning(
-                f"Skipping Android-Components {ac_version}: releases are now created on ship-it"
+                f"Skipping Android-Components {ac_version}: "
+                "releases are now created on ship-it"
             )
             continue
 
