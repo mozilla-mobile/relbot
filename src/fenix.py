@@ -8,9 +8,9 @@ from util import *
 
 log = logging.getLogger(__name__)
 
+
 # For the current Fenix versions, find out if there is
 # a newer android-components that can be pulled in.
-#
 def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
     update_android_components_nightly(
         ac_repo,
