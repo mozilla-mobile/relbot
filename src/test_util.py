@@ -67,7 +67,7 @@ def test_match_gv_channel():
 
 
 def test_get_current_gv_channel(gh):
-    repo = gh.get_repo(f"mozilla-mobile/firefox-android")
+    repo = gh.get_repo("mozilla-mobile/firefox-android")
     assert (
         get_current_gv_channel(repo, "do-not-delete-use-for-relbot-tests", 109)
         == "nightly"
@@ -120,7 +120,7 @@ def test_get_current_embedded_ac_version(gh, repo_name, branch, expected):
 
 def test_get_current_ac_version(gh):
     # TODO: Support monorepo and use a repo that is not tied to an individual
-    repo = gh.get_repo(f"st3fan/android-components")
+    repo = gh.get_repo("st3fan/android-components")
     assert get_current_ac_version(repo, "releases/73.0") == "73.0.12"
 
 
@@ -267,10 +267,10 @@ def test_ac_version_from_tag_bad():
 
 def test_get_recent_ac_releases(gh):
     # No releases on the test repo
-    assert get_recent_ac_releases(gh.get_repo(f"st3fan/android-components")) == []
+    assert get_recent_ac_releases(gh.get_repo("st3fan/android-components")) == []
     # But plenty releases on the actual repo
     assert (
-        get_recent_ac_releases(gh.get_repo(f"mozilla-mobile/android-components")) != []
+        get_recent_ac_releases(gh.get_repo("mozilla-mobile/android-components")) != []
     )
 
 
@@ -306,7 +306,7 @@ def test_get_latest_ac_nightly_version():
 
 
 def test_get_fenix_release_branches(gh):
-    branches = get_fenix_release_branches(gh.get_repo(f"st3fan/fenix"))
+    branches = get_fenix_release_branches(gh.get_repo("st3fan/fenix"))
 
     # Everchanging target. We verify it contains the 8 earliest expected releases.
     assert len(branches) > 8
@@ -343,17 +343,17 @@ def test_major_version_from_fenix_release_branch_name():
 
 
 def test_get_recent_fenix_versions(gh):
-    assert get_recent_fenix_versions(gh.get_repo(f"st3fan/fenix")) == [95, 96]
+    assert get_recent_fenix_versions(gh.get_repo("st3fan/fenix")) == [95, 96]
 
 
 def test_get_relevant_ac_versions(gh):
     assert get_relevant_ac_versions(
-        gh.get_repo(f"st3fan/fenix"), gh.get_repo(f"st3fan/android-components")
+        gh.get_repo("st3fan/fenix"), gh.get_repo("st3fan/android-components")
     ) == [95, 96]
 
 
 def test_get_current_glean_version(gh):
-    repo = gh.get_repo(f"mozilla-mobile/firefox-android")
+    repo = gh.get_repo("mozilla-mobile/firefox-android")
     assert (
         get_current_glean_version(repo, "do-not-delete-use-for-relbot-tests", 109)
         == "51.8.0"
