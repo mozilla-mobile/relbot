@@ -1,0 +1,12 @@
+[flake8]
+# We can't migrate this configuration to pyproject.toml because flake8
+# doesn't support it. See https://github.com/PyCQA/flake8/issues/234
+
+# black made the choice about the ideal line length.
+# See https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html#line-length
+max-line-length = 88
+# E203 is not PEP8 compliant per black.
+# See https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html#slices
+#
+# TODO: reactivate E302,F401,F403,F405,E501,F541,F821,F841
+extend-ignore = E203,E302,F401,F403,F405,E501,F541,F821,F841
