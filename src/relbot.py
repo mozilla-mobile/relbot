@@ -30,7 +30,10 @@ import android_components, fenix, focus_android, reference_browser
 
 
 log = logging.getLogger(__name__)
-logging.basicConfig(format="%(asctime)s - %(name)s.%(funcName)s:%(lineno)s - %(levelname)s - %(message)s", level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s.%(funcName)s:%(lineno)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
 
 DEFAULT_ORGANIZATION = "st3fan"

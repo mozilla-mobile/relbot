@@ -39,7 +39,7 @@ def update_android_components_in_focus(ac_repo, focus_repo, author, debug, dry_r
         author=author,
         debug=debug,
         release_branch_name="main",
-        dry_run=dry_run
+        dry_run=dry_run,
     )
     for version in get_recent_focus_versions(focus_repo):
         release_branch_name = f"releases_v{version}.0"

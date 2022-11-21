@@ -16,5 +16,5 @@ def update_android_components_in_rb(ac_repo, rb_repo, author, debug):
         author=author,
         debug=debug,
         release_branch_name=release_branch_name,
-        dry_run=False
+        dry_run=False,
     )
