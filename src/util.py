@@ -47,7 +47,8 @@ def major_ac_version_from_version(v):
 
 
 def validate_gv_version(v):
-    """Validate that v is in the format of 82.0.20201027185343. Returns v or raises an exception."""
+    """Validate that v is in the format of 82.0.20201027185343.
+    Returns v or raises an exception."""
     if not re.match(r"^\d{2,}\.\d\.\d{14}$", v):
         raise Exception(f"Invalid GV version {v}")
     return v
@@ -134,7 +135,7 @@ def get_latest_glean_version(gv_version, channel):
     if channel != "release":
         name += "-" + channel
     # A-C builds against geckoview-omni
-    # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3
+    # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3  # noqa E501
     name += "-omni"
 
     r = requests.get(
@@ -152,14 +153,16 @@ def get_latest_glean_version(gv_version, channel):
 
     if len(versions) != 1:
         raise Exception(
-            f"Could not find unique glean-native capability for GeckoView {channel.capitalize()} {gv_version}"
+            "Could not find unique glean-native capability for "
+            f"GeckoView {channel.capitalize()} {gv_version}"
         )
 
     return versions[0]
 
 
 def get_latest_gv_version(gv_major_version, channel):
-    """Find the last geckoview beta release version on Maven for the given major version"""
+    """Find the last geckoview beta release version on Maven
+    for the given major version"""
     if channel not in ("nightly", "beta", "release"):
         raise Exception(f"Invalid channel {channel}")
 
@@ -169,8 +172,9 @@ def get_latest_gv_version(gv_major_version, channel):
     if channel != "release":
         name += "-" + channel
     # A-C builds against geckoview-omni
-    # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3
-    # However, geckoview-omni requires exoplayer2 which comes from the lite build, so check for that too
+    # See https://github.com/mozilla-mobile/android-components/commit/0b349f48c91a50bb7b4ffbf40c6c122ed18142d3  # noqa E501
+    # However, geckoview-omni requires exoplayer2 which comes
+    # from the lite build, so check for that too
     name_lite = name
     name += "-omni"
 
@@ -190,7 +194,8 @@ def get_latest_gv_version(gv_major_version, channel):
 
     if len(versions) == 0:
         raise Exception(
-            f"Could not find any GeckoView {channel.capitalize()} {gv_major_version} releases"
+            f"Could not find any GeckoView {channel.capitalize()} "
+            f"{gv_major_version} releases"
         )
 
     latest = max(versions, key=gv_version_sort_key)
@@ -199,7 +204,8 @@ def get_latest_gv_version(gv_major_version, channel):
 
     for arch in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64"):
         r = requests.get(
-            f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom"
+            f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/"
+            f"{latest}/{name}-{arch}-{latest}.pom"
         )
         r.raise_for_status()
 
@@ -209,7 +215,7 @@ def get_latest_gv_version(gv_major_version, channel):
 def get_latest_ac_version(ac_major_version):
     """Find the last android-components release on Maven for the given major version"""
     r = requests.get(
-        "https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
+        "https://maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"  # noqa E501
     )
     r.raise_for_status()
 
@@ -222,16 +228,18 @@ def get_latest_ac_version(ac_major_version):
 
     if len(versions) == 0:
         raise Exception(
-            f"Could not find any Android-Components {ac_major_version} releases on maven.mozilla.org"
+            f"Could not find any Android-Components {ac_major_version} "
+            "releases on maven.mozilla.org"
         )
 
     return max(versions, key=ac_version_sort_key)
 
 
 def get_latest_ac_nightly_version():
-    """Find the last android-components Nightly release on Maven for the given major version"""
+    """Find the last android-components Nightly release on Maven
+    for the given major version"""
     r = requests.get(
-        "https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"
+        "https://nightly.maven.mozilla.org/maven2/org/mozilla/components/ui-widgets/maven-metadata.xml"  # noqa E501
     )
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
@@ -353,7 +361,8 @@ def get_current_as_version(ac_repo, release_branch_name, ac_major_version):
 
 
 def match_glean_version(src):
-    """Find the Glean version in the contents of the given DependenciesPlugin.kt file."""
+    """Find the Glean version in the contents of the given
+    DependenciesPlugin.kt file."""
     if match := re.compile(r'const val mozilla_glean = "([^"]*)"', re.MULTILINE).search(
         src
     ):
@@ -401,13 +410,7 @@ def get_latest_as_version(as_major_version):
 
     latest = max(versions, key=as_version_sort_key)
 
-    # Make sure this release has been uploaded for all architectures.
-
-    # TODO Do we need to do this?
-
-    # for arch in ("arm64-v8a", "armeabi-v7a", "x86", "x86_64"):
-    #    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}-{arch}/{latest}/{name}-{arch}-{latest}.pom")
-    #    r.raise_for_status()
+    # TODO Make sure this release has been uploaded for all architectures.
 
     return latest
 
@@ -432,7 +435,8 @@ def _update_ac_version(
     )
     if content == new_content:
         raise Exception(
-            "Update to AndroidComponents.kt resulted in no changes: maybe the file was already up to date?"
+            "Update to AndroidComponents.kt resulted in no changes: "
+            "maybe the file was already up to date?"
         )
     repo.update_file(
         contents.path,
@@ -460,7 +464,8 @@ def update_android_components_nightly(
         return
 
     log.info(
-        f"We should upgrade {target_repo} to Android-Components {latest_ac_nightly_version}"
+        f"We should upgrade {target_repo} to Android-Components "
+        f"{latest_ac_nightly_version}"
     )
 
     if dry_run:
@@ -485,7 +490,8 @@ def update_android_components_nightly(
     )
 
     log.info(
-        f"Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_nightly_version} on {pr_branch_name}"
+        f"Updating AndroidComponents.kt from {current_ac_version} to "
+        f"{latest_ac_nightly_version} on {pr_branch_name}"
     )
     _update_ac_version(
         target_repo,
@@ -499,7 +505,8 @@ def update_android_components_nightly(
     log.info("Creating pull request")
     pr = target_repo.create_pull(
         title=f"Update to Android-Components {latest_ac_nightly_version}.",
-        body=f"This (automated) patch updates Android-Components to {latest_ac_nightly_version}.",
+        body="This (automated) patch updates Android-Components to "
+        f"{latest_ac_nightly_version}.",
         head=pr_branch_name,
         base=release_branch_name,
     )
@@ -538,12 +545,14 @@ def update_android_components_release(
         and compare_ac_versions(current_ac_version, latest_ac_version) >= 0
     ):
         log.warning(
-            f"No need to upgrade; {target_product} {major_version} is on A-C {current_ac_version}"
+            f"No need to upgrade; {target_product} {major_version} is on A-C"
+            f"{current_ac_version}"
         )
         return
 
     log.info(
-        f"We are going to upgrade {target_product} {major_version} to Android-Components {latest_ac_version}"
+        f"We are going to upgrade {target_product} {major_version} to "
+        f"Android-Components {latest_ac_version}"
     )
 
     if dry_run:
@@ -570,7 +579,8 @@ def update_android_components_release(
     )
 
     log.info(
-        f"Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}"
+        f"Updating AndroidComponents.kt from {current_ac_version} to "
+        f"{latest_ac_version} on {pr_branch_name}"
     )
     _update_ac_version(
         target_repo,
@@ -584,7 +594,8 @@ def update_android_components_release(
     log.info("Creating pull request")
     pr = target_repo.create_pull(
         title=f"Update to Android-Components {latest_ac_version}.",
-        body=f"This (automated) patch updates Android-Components to {latest_ac_version}.",
+        body=f"This (automated) patch updates Android-Components "
+        f"to {latest_ac_version}.",
         head=pr_branch_name,
         base=target_branch,
     )

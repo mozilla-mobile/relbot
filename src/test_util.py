@@ -22,7 +22,8 @@ GECKO_KT = """
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
- * Gecko version and release channel constants used by this version of Android Components.
+ * Gecko version and release channel constants used by
+ * this version of Android Components.
  */
 object Gecko {
     /**
