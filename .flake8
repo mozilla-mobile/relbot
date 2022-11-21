@@ -8,5 +8,5 @@ max-line-length = 88
 # E203 is not PEP8 compliant per black.
 # See https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html#slices
 #
-# TODO: reactivate F403,F405
-extend-ignore = E203,F403,F405
+# TODO: reactivate F405
+extend-ignore = E203,F405

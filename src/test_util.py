@@ -8,7 +8,34 @@ import os
 import github
 import pytest
 
-from util import *
+from util import (
+    ac_version_from_tag,
+    compare_ac_versions,
+    compare_gv_versions,
+    get_current_ac_version,
+    get_current_embedded_ac_version,
+    get_current_glean_version,
+    get_current_gv_channel,
+    get_current_gv_version,
+    get_fenix_release_branches,
+    get_latest_ac_nightly_version,
+    get_latest_ac_version,
+    get_latest_glean_version,
+    get_latest_gv_version,
+    get_next_ac_version,
+    get_recent_ac_releases,
+    get_recent_fenix_versions,
+    get_relevant_ac_versions,
+    major_ac_version_from_version,
+    major_gv_version_from_version,
+    major_version_from_fenix_release_branch_name,
+    match_ac_version,
+    match_gv_channel,
+    match_gv_version,
+    validate_ac_version,
+    validate_gv_channel,
+    validate_gv_version,
+)
 
 
 @pytest.fixture

@@ -5,7 +5,7 @@
 import logging
 import re
 
-from util import *
+from util import update_android_components_nightly, update_android_components_release
 
 log = logging.getLogger(__name__)
 RELBRANCH_RE = re.compile(r"^releases_v(\d+)\.0$")

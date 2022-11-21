@@ -4,7 +4,11 @@
 
 import logging
 
-from util import *
+from util import (
+    get_recent_fenix_versions,
+    update_android_components_nightly,
+    update_android_components_release,
+)
 
 log = logging.getLogger(__name__)
 

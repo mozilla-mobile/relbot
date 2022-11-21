@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 
-from util import *
+from util import update_android_components_nightly
 
 
 def update_android_components_in_rb(ac_repo, rb_repo, author, debug):

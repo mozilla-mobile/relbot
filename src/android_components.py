@@ -4,8 +4,30 @@
 
 
 import logging
+import re
 
-from util import *
+from github import GithubException
+
+from util import (
+    compare_as_versions,
+    compare_gv_versions,
+    get_current_ac_version,
+    get_current_as_version,
+    get_current_glean_version,
+    get_current_gv_channel,
+    get_current_gv_version,
+    get_dependencies_file_path,
+    get_gecko_file_path,
+    get_latest_as_version,
+    get_latest_glean_version,
+    get_latest_gv_version,
+    get_next_ac_version,
+    get_recent_ac_releases,
+    get_relevant_ac_versions,
+    major_ac_version_from_version,
+    major_as_version_from_version,
+    major_gv_version_from_version,
+)
 
 log = logging.getLogger(__name__)
 
