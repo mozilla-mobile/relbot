@@ -1,15 +1,16 @@
+---
 name: 'Release Bot'
 description: 'Updates GV/AC & Creates Releases'
 inputs:
-  project:
-    description: 'The project to work on. android-components, fenix, focus-android, reference-browser.'
-    required: true
-  command:
-    description: 'The command to execute. See src/relbot.py for supported commands.'
-    required: true
+    project:
+        description: 'The project to work on. android-components, fenix, focus-android, reference-browser.'
+        required: true
+    command:
+        description: 'The command to execute. See src/relbot.py for supported commands.'
+        required: true
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.project }}
-    - ${{ inputs.command }}
+    using: 'docker'
+    image: 'Dockerfile'
+    args:
+    - ${{inputs.project}}
+    - ${{inputs.command}}
