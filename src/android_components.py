@@ -210,7 +210,7 @@ def _update_geckoview(
             if pr_branch:
                 log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
                 return
-        except GithubException as e:
+        except GithubException:
             # TODO Only ignore a 404 here, fail on others
             pass
 
@@ -341,7 +341,7 @@ def _update_application_services(
             if pr_branch:
                 log.warning(f"The PR branch {pr_branch_name} already exists. Exiting.")
                 return
-        except GithubException as e:
+        except GithubException:
             # TODO Only ignore a 404 here, fail on others
             pass
 
