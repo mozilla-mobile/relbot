@@ -24,6 +24,7 @@ def get_gecko_file_path(ac_major_version):
         else "android-components/buildSrc/src/main/java/Gecko.kt"
     )
 
+
 def get_dependencies_file_path(ac_major_version):
     """Return the file path to dependencies file"""
     return (
@@ -31,6 +32,7 @@ def get_dependencies_file_path(ac_major_version):
         if ac_major_version >= 109
         else "android-components/buildSrc/src/main/java/Dependencies.kt"
     )
+
 
 def validate_ac_version(v):
     """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
@@ -74,7 +76,8 @@ def match_ac_version(src):
 def get_current_embedded_ac_version(repo, release_branch_name, target_path=""):
     """Return the current A-C version used on the given branch"""
     content_file = repo.get_contents(
-        f"{target_path}buildSrc/src/main/java/AndroidComponents.kt", ref=release_branch_name
+        f"{target_path}buildSrc/src/main/java/AndroidComponents.kt",
+        ref=release_branch_name,
     )
     return match_ac_version(content_file.decoded_content.decode("utf8"))
 
@@ -172,20 +175,19 @@ def get_latest_gv_version(gv_major_version, channel):
     name_lite = name
     name += "-omni"
 
-    r = requests.get(
-        f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml"
-    )
+    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name}/maven-metadata.xml")
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
-    r = requests.get(
-        f"{MAVEN}/org/mozilla/geckoview/{name_lite}/maven-metadata.xml"
-    )
+    r = requests.get(f"{MAVEN}/org/mozilla/geckoview/{name_lite}/maven-metadata.xml")
     r.raise_for_status()
     lite_metadata = xmltodict.parse(r.text)
 
-    versions = [v for v in metadata["metadata"]["versioning"]["versions"]["version"]
-                if (gv_major_version is None or v.startswith(f"{gv_major_version}."))
-                and v in lite_metadata["metadata"]["versioning"]["versions"]["version"]]
+    versions = [
+        v
+        for v in metadata["metadata"]["versioning"]["versions"]["version"]
+        if (gv_major_version is None or v.startswith(f"{gv_major_version}."))
+        and v in lite_metadata["metadata"]["versioning"]["versions"]["version"]
+    ]
 
     if len(versions) == 0:
         raise Exception(
@@ -319,7 +321,9 @@ def get_relevant_ac_versions(fenix_repo, ac_repo):
     releases = []
     for fenix_version in get_recent_fenix_versions(fenix_repo):
         release_branch_name = f"releases_v{fenix_version}.0.0"
-        ac_version = get_current_embedded_ac_version(fenix_repo, release_branch_name, "")
+        ac_version = get_current_embedded_ac_version(
+            fenix_repo, release_branch_name, ""
+        )
         releases.append(int(major_ac_version_from_version(ac_version)))
     return sorted(releases)
 
@@ -351,9 +355,9 @@ def get_current_as_version(ac_repo, release_branch_name, ac_major_version):
 
 def match_glean_version(src):
     """Find the Glean version in the contents of the given DependenciesPlugin.kt file."""
-    if match := re.compile(
-        r'const val mozilla_glean = "([^"]*)"', re.MULTILINE
-    ).search(src):
+    if match := re.compile(r'const val mozilla_glean = "([^"]*)"', re.MULTILINE).search(
+        src
+    ):
         return validate_as_version(match[1])
     raise Exception("Could not match glean in DependenciesPlugin.kt")
 
@@ -384,9 +388,7 @@ def get_latest_as_version(as_major_version):
     # Find the latest release in the multi-arch .aar
 
     # TODO What is the right package to check here? full-megazord metadata seems broken.
-    r = requests.get(
-        f"{MAVEN}/org/mozilla/appservices/nimbus/maven-metadata.xml"
-    )
+    r = requests.get(f"{MAVEN}/org/mozilla/appservices/nimbus/maven-metadata.xml")
     r.raise_for_status()
     metadata = xmltodict.parse(r.text)
 
@@ -419,7 +421,9 @@ def compare_as_versions(a, b):
     return a - b
 
 
-def _update_ac_version(repo, branch, old_ac_version, new_ac_version, author, target_path=""):
+def _update_ac_version(
+    repo, branch, old_ac_version, new_ac_version, author, target_path=""
+):
     contents = repo.get_contents(
         f"{target_path}buildSrc/src/main/java/AndroidComponents.kt", ref=branch
     )
@@ -453,9 +457,7 @@ def update_android_components_nightly(
     latest_ac_nightly_version = get_latest_ac_nightly_version()
 
     if compare_ac_versions(current_ac_version, latest_ac_nightly_version) >= 0:
-        log.warning(
-            f"No need to upgrade; {target_repo} is on A-C {current_ac_version}"
-        )
+        log.warning(f"No need to upgrade; {target_repo} is on A-C {current_ac_version}")
         return
 
     log.info(
@@ -492,7 +494,7 @@ def update_android_components_nightly(
         current_ac_version,
         latest_ac_nightly_version,
         author,
-        target_path
+        target_path,
     )
 
     log.info("Creating pull request")
@@ -523,7 +525,9 @@ def update_android_components_release(
 
     log.info(f"Looking at {target_product} {major_version} on {target_branch}")
 
-    current_ac_version = get_current_embedded_ac_version(target_repo, target_branch, target_path)
+    current_ac_version = get_current_embedded_ac_version(
+        target_repo, target_branch, target_path
+    )
     log.info(f"Current A-C version in {target_product} is {current_ac_version}")
 
     ac_major_version = int(current_ac_version.split(".", 1)[0])  # TODO Util & Test!
@@ -570,7 +574,12 @@ def update_android_components_release(
         f"Updating AndroidComponents.kt from {current_ac_version} to {latest_ac_version} on {pr_branch_name}"
     )
     _update_ac_version(
-        target_repo, pr_branch_name, current_ac_version, latest_ac_version, author, target_path
+        target_repo,
+        pr_branch_name,
+        current_ac_version,
+        latest_ac_version,
+        author,
+        target_path,
     )
 
     log.info("Creating pull request")

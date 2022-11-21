@@ -62,9 +62,7 @@ def _update_ac_version(ac_repo, old_ac_version, new_ac_version, branch, author):
 def _update_gv_version(
     ac_repo, old_gv_version, new_gv_version, branch, channel, author, ac_major_version
 ):
-    contents = ac_repo.get_contents(
-        get_gecko_file_path(ac_major_version), ref=branch
-    )
+    contents = ac_repo.get_contents(get_gecko_file_path(ac_major_version), ref=branch)
     content = contents.decoded_content.decode("utf-8")
     new_content = content.replace(
         f'const val version = "{old_gv_version}"',
@@ -85,7 +83,9 @@ def _update_gv_version(
     )
 
 
-def _update_as_version(ac_repo, old_as_version, new_as_version, branch, author, ac_major_version):
+def _update_as_version(
+    ac_repo, old_as_version, new_as_version, branch, author, ac_major_version
+):
     contents = ac_repo.get_contents(
         get_dependencies_file_path(ac_major_version), ref=branch
     )
@@ -139,14 +139,16 @@ def _update_geckoview(
     ac_repo, release_branch_name, ac_major_version, author, dry_run=False
 ):
     try:
-        log.info(
-            f"Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}"
-        )
+        log.info(f"Updating GeckoView on A-C {ac_repo.full_name}:{release_branch_name}")
 
-        gv_channel = get_current_gv_channel(ac_repo, release_branch_name, ac_major_version)
+        gv_channel = get_current_gv_channel(
+            ac_repo, release_branch_name, ac_major_version
+        )
         log.info(f"Current GV channel is {gv_channel}")
 
-        current_gv_version = get_current_gv_version(ac_repo, release_branch_name, ac_major_version)
+        current_gv_version = get_current_gv_version(
+            ac_repo, release_branch_name, ac_major_version
+        )
         log.info(
             f"Current GV {gv_channel.capitalize()} version in A-C {ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
@@ -161,14 +163,14 @@ def _update_geckoview(
             f"Latest GV {gv_channel.capitalize()} version available is {latest_gv_version}"
         )
 
-        current_glean_version = get_current_glean_version(ac_repo, release_branch_name, ac_major_version)
+        current_glean_version = get_current_glean_version(
+            ac_repo, release_branch_name, ac_major_version
+        )
         log.info(
             f"Current Glean version in A-C {ac_repo.full_name}:{release_branch_name} is {current_glean_version}"
         )
         latest_glean_version = get_latest_glean_version(latest_gv_version, gv_channel)
-        log.info(
-            f"Latest bundled Glean version available is {latest_glean_version}"
-        )
+        log.info(f"Latest bundled Glean version available is {latest_glean_version}")
 
         if compare_gv_versions(current_gv_version, latest_gv_version) >= 0:
             log.warning(
@@ -188,7 +190,9 @@ def _update_geckoview(
         # Check if the branch already exists
         #
 
-        short_version = "main" if release_branch_name == "main" else f"{ac_major_version}"
+        short_version = (
+            "main" if release_branch_name == "main" else f"{ac_major_version}"
+        )
 
         # Create a non unique PR branch name for work on this ac release branch.
         pr_branch_name = f"relbot/upgrade-geckoview-ac-{short_version}"
@@ -207,9 +211,7 @@ def _update_geckoview(
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        log.info(
-            f"Last commit on {release_branch_name} is {release_branch.commit.sha}"
-        )
+        log.info(f"Last commit on {release_branch_name} is {release_branch.commit.sha}")
 
         ac_repo.create_git_ref(
             ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
@@ -220,7 +222,9 @@ def _update_geckoview(
         # Update android-components/plugins/dependencies/src/main/java/Gecko.kt
         #
 
-        log.info("Updating android-components/plugins/dependencies/src/main/java/Gecko.kt")
+        log.info(
+            "Updating android-components/plugins/dependencies/src/main/java/Gecko.kt"
+        )
         _update_gv_version(
             ac_repo,
             current_gv_version,
@@ -228,7 +232,7 @@ def _update_geckoview(
             pr_branch_name,
             gv_channel,
             author,
-            ac_major_version
+            ac_major_version,
         )
 
         if current_glean_version != latest_glean_version:
@@ -241,7 +245,7 @@ def _update_geckoview(
                 latest_glean_version,
                 pr_branch_name,
                 author,
-                ac_major_version
+                ac_major_version,
             )
 
         #
@@ -291,7 +295,9 @@ def _update_application_services(
     try:
         log.info(f"Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
-        current_as_version = get_current_as_version(ac_repo, release_branch_name, ac_major_version)
+        current_as_version = get_current_as_version(
+            ac_repo, release_branch_name, ac_major_version
+        )
         log.info(
             f"Current A-S version on A-C {release_branch_name} is {current_as_version}"
         )
@@ -336,9 +342,7 @@ def _update_application_services(
         #
 
         release_branch = ac_repo.get_branch(release_branch_name)
-        log.info(
-            f"Last commit on {release_branch_name} is {release_branch.commit.sha}"
-        )
+        log.info(f"Last commit on {release_branch_name} is {release_branch.commit.sha}")
 
         ac_repo.create_git_ref(
             ref=f"refs/heads/{pr_branch_name}", sha=release_branch.commit.sha
@@ -353,7 +357,12 @@ def _update_application_services(
             "Updating android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
         )
         _update_as_version(
-            ac_repo, current_as_version, latest_as_version, pr_branch_name, author, ac_major_version
+            ac_repo,
+            current_as_version,
+            latest_as_version,
+            pr_branch_name,
+            author,
+            ac_major_version,
         )
 
         #
@@ -396,7 +405,9 @@ def update_main(ac_repo, author, dry_run):
     branch_name = "main"
     current_ac_version = get_current_ac_version(ac_repo, branch_name)
     ac_major_version = int(major_ac_version_from_version(current_ac_version))
-    _update_application_services(ac_repo, branch_name, ac_major_version, author, dry_run)
+    _update_application_services(
+        ac_repo, branch_name, ac_major_version, author, dry_run
+    )
     _update_geckoview(ac_repo, branch_name, ac_major_version, author, dry_run)
 
 
@@ -473,7 +484,9 @@ def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_ru
 def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
     for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
         if ac_version >= 104:
-            log.warning(f"Skipping Android-Components {ac_version}: releases are now created on ship-it")
+            log.warning(
+                f"Skipping Android-Components {ac_version}: releases are now created on ship-it"
+            )
             continue
 
         _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
