@@ -18,10 +18,12 @@ $ docker run -it --rm relbot ...command...
 
 ### Development
 
-```
-$ python3 -m venv env
-$ pip install -r requirements.txt
-$ pip install pytest
+```sh
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+pip install pytest pre-commit
+pre-commit install --install-hooks
 ```
 
 ### Testing

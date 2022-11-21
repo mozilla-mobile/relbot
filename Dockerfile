@@ -8,4 +8,3 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/* ./
 
 ENTRYPOINT ["/usr/src/app/relbot.py"]
-
