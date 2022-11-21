@@ -13,4 +13,3 @@ runs:
   args:
     - ${{ inputs.project }}
     - ${{ inputs.command }}
-
