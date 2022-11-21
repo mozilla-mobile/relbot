@@ -86,7 +86,7 @@ def match_gv_version(src):
     """Find the GeckoView version in the contents of the given Gecko.kt file."""
     if match := re.compile(r'version = "([^"]*)"', re.MULTILINE).search(src):
         return validate_gv_version(match[1])
-    raise Exception(f"Could not match the {channel}_version in Gecko.kt")
+    raise Exception("Could not match the version in Gecko.kt")
 
 
 def get_current_gv_version(ac_repo, release_branch_name, ac_major_version):
