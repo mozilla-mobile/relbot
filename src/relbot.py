@@ -21,13 +21,16 @@
 #
 
 
-import os, sys
 import logging
+import os
+import sys
 
 from github import Github, InputGitAuthor, enable_console_debug_logging
 
-import android_components, fenix, focus_android, reference_browser
-
+import android_components
+import fenix
+import focus_android
+import reference_browser
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
