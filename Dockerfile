@@ -2,8 +2,8 @@ FROM python:3.9
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements/base.txt requirements.txt
+RUN pip install --no-cache-dir --require-hashes -r requirements.txt
 
 COPY src/* ./
 

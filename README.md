@@ -21,7 +21,7 @@ $ docker run -it --rm relbot ...command...
 ```sh
 python3 -m venv env
 source env/bin/activate
-pip install -r requirements.txt
+pip install --require-hashes -r requirements/base.txt
 pip install pytest pre-commit
 pre-commit install --install-hooks
 ```
@@ -46,3 +46,12 @@ pytest
 ```
 
 Note: testing might fail due to changing upstream repositories.
+
+
+### Update dependencies
+
+```
+maintenance/pin.sh
+```
+
+Then review and commit the changes. Create a new pull requests.
