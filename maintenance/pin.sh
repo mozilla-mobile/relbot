@@ -10,8 +10,8 @@ PYTHON_VERSION='3.9'
 read -ra REQUIREMENTS <<<$(find "$REPO_DIR/requirements" -name '*.in' -exec basename {} '.in' \;)
 PIP_COMMANDS="pip install pip-compile-multi && pip-compile-multi --allow-unsafe ${REQUIREMENTS[*]/#/--generate-hashes }"
 
+docker pull "python:$PYTHON_VERSION"
 docker run \
-	--pull \
 	--tty \
 	--volume "$PWD:/src" \
 	--workdir /src \
