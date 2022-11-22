@@ -4,7 +4,7 @@ set -ex
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 REPO_DIR="$(dirname -- "$SCRIPT_DIR")"
 
-PYTHON_VERSION='3.9'
+PYTHON_VERSION='3.11'
 
 # shellcheck disable=SC2046
 read -ra REQUIREMENTS <<<$(find "$REPO_DIR/requirements" -name '*.in' -exec basename {} '.in' \;)
