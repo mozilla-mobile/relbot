@@ -21,8 +21,8 @@ $ docker run -it --rm relbot ...command...
 ```sh
 python3 -m venv env
 source env/bin/activate
-pip install --require-hashes -r requirements/base.txt
-pip install pytest pre-commit
+pip install --require-hashes -r requirements/test.txt
+pip install pre-commit
 pre-commit install --install-hooks
 ```
 
