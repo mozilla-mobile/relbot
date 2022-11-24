@@ -80,13 +80,13 @@ toml==0.10.2 \
     --hash=sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b \
     --hash=sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f
     # via pre-commit
-virtualenv==20.16.7 \
-    --hash=sha256:8691e3ff9387f743e00f6bb20f70121f5e4f596cae754531f2b3b3a1b1ac696e \
-    --hash=sha256:efd66b00386fdb7dbe4822d172303f40cd05e50e01740b19ea42425cbe653e29
+virtualenv==20.17.0 \
+    --hash=sha256:40a7e06a98728fd5769e1af6fd1a706005b4bb7e16176a272ed4292473180389 \
+    --hash=sha256:7d6a8d55b2f73b617f684ee40fd85740f062e1f2e379412cb1879c7136f05902
     # via pre-commit
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==65.6.0 \
-    --hash=sha256:6211d2f5eddad8757bd0484923ca7c0a6302ebc4ab32ea5e94357176e0ca0840 \
-    --hash=sha256:d1eebf881c6114e51df1664bc2c9133d022f78d12d5f4f665b9191f084e2862d
+setuptools==65.6.3 \
+    --hash=sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54 \
+    --hash=sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75
     # via nodeenv
