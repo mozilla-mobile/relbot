@@ -7,6 +7,7 @@ import logging
 import re
 
 from github import GithubException
+from mozilla_version.mobile import MobileVersion
 
 from util import (
     compare_as_versions,
@@ -24,7 +25,6 @@ from util import (
     get_next_ac_version,
     get_recent_ac_releases,
     get_relevant_ac_versions,
-    major_ac_version_from_version,
     major_as_version_from_version,
     major_gv_version_from_version,
 )
@@ -431,7 +431,7 @@ def _update_application_services(
 def update_main(ac_repo, author, dry_run):
     branch_name = "main"
     current_ac_version = get_current_ac_version(ac_repo, branch_name)
-    ac_major_version = int(major_ac_version_from_version(current_ac_version))
+    ac_major_version = MobileVersion.parse(current_ac_version).major_number
     _update_application_services(
         ac_repo, branch_name, ac_major_version, author, dry_run
     )

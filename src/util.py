@@ -11,6 +11,7 @@ import re
 import requests
 import xmltodict
 from github import GithubException
+from mozilla_version.mobile import MobileVersion
 
 log = logging.getLogger(__name__)
 
@@ -31,19 +32,6 @@ def get_dependencies_file_path(ac_major_version):
         if ac_major_version >= 109
         else "android-components/buildSrc/src/main/java/Dependencies.kt"
     )
-
-
-def validate_ac_version(v):
-    """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
-    if not re.match(r"^\d+\.\d+\.\d+$", v):
-        raise Exception(f"Invalid AC version format {v}")
-    return v
-
-
-def major_ac_version_from_version(v):
-    """Return the major version for the given AC version"""
-    c = validate_ac_version(v).split(".")
-    return c[0]
 
 
 def validate_gv_version(v):
@@ -69,7 +57,9 @@ def major_gv_version_from_version(v):
 
 def match_ac_version(src):
     if match := re.compile(r'VERSION = "([^"]*)"', re.MULTILINE).search(src):
-        return validate_ac_version(match[1])
+        version = match[1]
+        MobileVersion.parse(version)
+        return version
     raise Exception("Could not match the VERSION in AndroidComponents.kt")
 
 
@@ -118,7 +108,8 @@ def get_current_ac_version(repo, release_branch_name):
     """Return the current ac version used on the given release branch"""
     content_file = repo.get_contents("version.txt", ref=release_branch_name)
     content = content_file.decoded_content.decode("utf8")
-    ac_version = validate_ac_version(content.strip())
+    ac_version = content.strip()
+    MobileVersion.parse(ac_version)
     log.info(f"Fetched A-C version {ac_version} from {repo.full_name}")
     return ac_version
 
@@ -255,7 +246,9 @@ def ac_version_from_tag(tag):
     """Return the AC version from a release tag. Like v63.0.2 returns 63.0.2."""
     if tag[0] != "v":
         raise Exception(f"Invalid AC tag format {tag}")
-    return validate_ac_version(tag[1:])
+    version = tag[1:]
+    MobileVersion.parse(version)
+    return version
 
 
 def get_recent_ac_releases(repo):
@@ -331,7 +324,7 @@ def get_relevant_ac_versions(fenix_repo, ac_repo):
         ac_version = get_current_embedded_ac_version(
             fenix_repo, release_branch_name, ""
         )
-        releases.append(int(major_ac_version_from_version(ac_version)))
+        releases.append(MobileVersion.parse(ac_version).major_number)
     return sorted(releases)
 
 
