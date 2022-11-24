@@ -26,13 +26,11 @@ from util import (
     get_recent_ac_releases,
     get_recent_fenix_versions,
     get_relevant_ac_versions,
-    major_ac_version_from_version,
     major_gv_version_from_version,
     major_version_from_fenix_release_branch_name,
     match_ac_version,
     match_gv_channel,
     match_gv_version,
-    validate_ac_version,
     validate_gv_channel,
     validate_gv_version,
 )
@@ -188,19 +186,6 @@ def test_validate_gv_channel_bad():
         assert validate_gv_channel("Something")
 
 
-def test_validate_ac_version_bad():
-    with pytest.raises(Exception):
-        validate_ac_version("")
-    with pytest.raises(Exception):
-        validate_ac_version("lol")
-    with pytest.raises(Exception):
-        validate_ac_version("63")
-    with pytest.raises(Exception):
-        validate_ac_version("63.0")
-    with pytest.raises(Exception):
-        validate_ac_version("63.0-beta.2")
-
-
 def test_major_gv_version_from_version_bad():
     with pytest.raises(Exception):
         major_gv_version_from_version("")
@@ -219,34 +204,6 @@ def test_major_gv_version_from_version_bad():
 def test_major_gv_version_from_version_good():
     assert major_gv_version_from_version("81.0.20201012085804") == "81"
     assert major_gv_version_from_version("123.0.20231012085804") == "123"
-
-
-def test_validate_ac_version_good():
-    assert validate_ac_version("64.0.20201027143116") == "64.0.20201027143116"
-    assert validate_ac_version("63.0.0") == "63.0.0"
-    assert validate_ac_version("63.0.1") == "63.0.1"
-    assert validate_ac_version("63.1.2") == "63.1.2"
-    assert validate_ac_version("12.34.56") == "12.34.56"
-
-
-def test_major_ac_version_from_version_bad():
-    with pytest.raises(Exception):
-        major_ac_version_from_version("")
-    with pytest.raises(Exception):
-        major_ac_version_from_version("lol")
-    with pytest.raises(Exception):
-        major_ac_version_from_version("63")
-    with pytest.raises(Exception):
-        major_ac_version_from_version("63.0")
-    with pytest.raises(Exception):
-        major_ac_version_from_version("63.0-beta.2")
-
-
-def test_major_ac_version_from_version_good():
-    assert major_ac_version_from_version("63.0.0") == "63"
-    assert major_ac_version_from_version("64.0.1") == "64"
-    assert major_ac_version_from_version("65.1.2") == "65"
-    assert major_ac_version_from_version("123.0.8") == "123"
 
 
 def test_get_latest_gv_version_release():
@@ -293,12 +250,8 @@ def test_ac_version_from_tag_bad():
 
 
 def test_get_recent_ac_releases(gh):
-    # No releases on the test repo
-    assert get_recent_ac_releases(gh.get_repo("st3fan/android-components")) == []
     # But plenty releases on the actual repo
-    assert (
-        get_recent_ac_releases(gh.get_repo("mozilla-mobile/android-components")) != []
-    )
+    assert get_recent_ac_releases(gh.get_repo("mozilla-mobile/firefox-android")) != []
 
 
 def test_compare_ac_versions():
