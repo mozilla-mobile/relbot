@@ -10,7 +10,6 @@ import pytest
 
 from util import (
     ac_version_from_tag,
-    compare_ac_versions,
     compare_gv_versions,
     get_current_ac_version,
     get_current_embedded_ac_version,
@@ -252,14 +251,6 @@ def test_ac_version_from_tag_bad():
 def test_get_recent_ac_releases(gh):
     # But plenty releases on the actual repo
     assert get_recent_ac_releases(gh.get_repo("mozilla-mobile/firefox-android")) != []
-
-
-def test_compare_ac_versions():
-    assert compare_ac_versions("63.0.0", "63.0.0") == 0
-    assert compare_ac_versions("63.0.1", "63.0.0") > 0
-    assert compare_ac_versions("63.0.1", "63.0.2") < 0
-    assert compare_ac_versions("63.0.10", "63.0.9") > 0
-    assert compare_ac_versions("63.0.9", "63.0.10") < 0
 
 
 def test_compare_gv_versions():

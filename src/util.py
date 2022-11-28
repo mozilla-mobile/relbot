@@ -262,14 +262,6 @@ def ts():
     return str(datetime.datetime.now())
 
 
-def compare_ac_versions(a, b):
-    a = a.split(".")
-    a = int(a[0]) * 1000000 + int(a[1]) * 1000 + int(a[2])
-    b = b.split(".")
-    b = int(b[0]) * 1000000 + int(b[1]) * 1000 + int(b[2])
-    return a - b
-
-
 def compare_gv_versions(a, b):
     a = a.split(".")
     a = int(a[0]) * 10000000000000000000 + int(a[1]) * 1000000000000000 + int(a[2])
@@ -452,7 +444,10 @@ def update_android_components_nightly(
 
     latest_ac_nightly_version = get_latest_ac_nightly_version()
 
-    if compare_ac_versions(current_ac_version, latest_ac_nightly_version) >= 0:
+    parsed_current_ac = MobileVersion.parse(current_ac_version)
+    parsed_latest_ac = MobileVersion.parse(latest_ac_nightly_version)
+
+    if parsed_current_ac >= parsed_latest_ac:
         log.warning(f"No need to upgrade; {target_repo} is on A-C {current_ac_version}")
         return
 
@@ -529,14 +524,12 @@ def update_android_components_release(
     )
     log.info(f"Current A-C version in {target_product} is {current_ac_version}")
 
-    ac_major_version = int(current_ac_version.split(".", 1)[0])  # TODO Util & Test!
-    latest_ac_version = get_latest_ac_version(ac_major_version)
+    parsed_current_ac = MobileVersion.parse(current_ac_version)
+    latest_ac_version = get_latest_ac_version(parsed_current_ac.major_number)
     log.info(f"Latest A-C version available is {latest_ac_version}")
 
-    if (
-        len(current_ac_version) != 19
-        and compare_ac_versions(current_ac_version, latest_ac_version) >= 0
-    ):
+    parsed_latest_ac = MobileVersion.parse(latest_ac_version)
+    if len(current_ac_version) != 19 and parsed_current_ac >= parsed_latest_ac:
         log.warning(
             f"No need to upgrade; {target_product} {major_version} is on A-C"
             f"{current_ac_version}"
