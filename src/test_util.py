@@ -21,7 +21,6 @@ from util import (
     get_latest_ac_version,
     get_latest_glean_version,
     get_latest_gv_version,
-    get_next_ac_version,
     get_recent_ac_releases,
     get_recent_fenix_versions,
     get_relevant_ac_versions,
@@ -221,11 +220,6 @@ def test_get_latest_gv_version_release_too_new():
 def test_get_latest_gv_version_beta_too_new():
     with pytest.raises(Exception):
         get_latest_gv_version(500, "beta")
-
-
-def test_get_next_ac_version():
-    assert get_next_ac_version("1.0.0") == "1.0.1"
-    assert get_next_ac_version("57.0.1") == "57.0.2"
 
 
 def test_ac_version_from_tag_good():

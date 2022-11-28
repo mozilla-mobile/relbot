@@ -237,11 +237,6 @@ def get_latest_ac_nightly_version():
     return metadata["metadata"]["versioning"]["latest"]
 
 
-def get_next_ac_version(current_version):
-    c = current_version.split(".")
-    return f"{c[0]}.{c[1]}.{int(c[2])+1}"
-
-
 def ac_version_from_tag(tag):
     """Return the AC version from a release tag. Like v63.0.2 returns 63.0.2."""
     if tag[0] != "v":
