@@ -22,7 +22,6 @@ from util import (
     get_latest_as_version,
     get_latest_glean_version,
     get_latest_gv_version,
-    get_next_ac_version,
     get_recent_ac_releases,
     get_relevant_ac_versions,
     major_as_version_from_version,
@@ -274,32 +273,6 @@ def _update_geckoview(
                 author,
                 ac_major_version,
             )
-
-        #
-        # If we are updating a release branch then update also update
-        # version.txt to increment the patch version.
-        #
-        # TODO Remove this code when 103 is EOL
-        current_ac_version = get_current_ac_version(ac_repo, release_branch_name)
-        major = int(major_ac_version_from_version(current_ac_version))
-        if major < 104:
-            next_ac_version = get_next_ac_version(current_ac_version)
-
-            log.info(
-                f"Create an A-C {next_ac_version} release with GV "
-                f"{gv_channel.capitalize()} {latest_gv_version}"
-            )
-
-            log.info("Updating version.txt")
-            _update_ac_version(
-                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
-            )
-
-            log.info("Updating buildconfig.yml")
-            _update_ac_buildconfig(
-                ac_repo, current_ac_version, next_ac_version, pr_branch_name, author
-            )
-
         #
         # Create the pull request
         #
