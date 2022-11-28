@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 
-import datetime
 import json
 import logging
 import re
@@ -251,10 +250,6 @@ def get_recent_ac_releases(repo):
     if releases.totalCount == 0:
         return []
     return [ac_version_from_tag(release.tag_name) for release in releases[:50]]
-
-
-def ts():
-    return str(datetime.datetime.now())
 
 
 def compare_gv_versions(a, b):
