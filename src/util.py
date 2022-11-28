@@ -223,7 +223,7 @@ def get_latest_ac_version(ac_major_version):
             "releases on maven.mozilla.org"
         )
 
-    return max(versions, key=ac_version_sort_key)
+    return max(versions, key=MobileVersion.parse)
 
 
 def get_latest_ac_nightly_version():
@@ -268,11 +268,6 @@ def compare_gv_versions(a, b):
     b = b.split(".")
     b = int(b[0]) * 10000000000000000000 + int(b[1]) * 1000000000000000 + int(b[2])
     return a - b
-
-
-def ac_version_sort_key(a):
-    a = a.split(".")
-    return int(a[0]) * 1000000 + int(a[1]) * 1000 + int(a[2])
 
 
 def gv_version_sort_key(a):
