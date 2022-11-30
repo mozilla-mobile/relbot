@@ -280,9 +280,9 @@ def _update_geckoview(
         log.info("Creating pull request")
         pr = ac_repo.create_pull(
             title=f"Update to GeckoView {gv_channel.capitalize()} {latest_gv_version} "
-            "on {release_branch_name}",
+            f"on {release_branch_name}",
             body=f"This (automated) patch updates GV {gv_channel.capitalize()} "
-            "on main to {latest_gv_version}.",
+            f"on main to {latest_gv_version}.",
             head=pr_branch_name,
             base=release_branch_name,
         )
