@@ -19,7 +19,7 @@ def get_gecko_file_path(ac_major_version):
     """Return the file path to Gecko.kt"""
     return (
         "android-components/plugins/dependencies/src/main/java/Gecko.kt"
-        if ac_major_version >= 109
+        if ac_major_version >= 108
         else "android-components/buildSrc/src/main/java/Gecko.kt"
     )
 
@@ -28,7 +28,7 @@ def get_dependencies_file_path(ac_major_version):
     """Return the file path to dependencies file"""
     return (
         "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
-        if ac_major_version >= 109
+        if ac_major_version >= 108
         else "android-components/buildSrc/src/main/java/Dependencies.kt"
     )
 
