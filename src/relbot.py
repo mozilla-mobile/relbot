@@ -102,7 +102,6 @@ def main(
 
 
 if __name__ == "__main__":
-
     debug = os.getenv("DEBUG") is not None
     if debug:
         enable_console_debug_logging()
