@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     ac_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
     rb_repo = github.get_repo(f"{organization}/{repo_name_prefix}reference-browser")
-    fenix_repo = github.get_repo(f"{organization}/{repo_name_prefix}fenix")
+    fenix_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
     focus_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
 
     author_name = os.getenv("AUTHOR_NAME") or DEFAULT_AUTHOR_NAME

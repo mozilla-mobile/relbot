@@ -26,7 +26,7 @@ def update_android_components(ac_repo, fenix_repo, author, debug, dry_run):
         dry_run=dry_run,
     )
     for fenix_version in get_recent_fenix_versions(fenix_repo):
-        release_branch_name = f"releases_v{fenix_version}.0.0"
+        release_branch_name = f"releases_v{fenix_version}"
         update_android_components_release(
             ac_repo,
             fenix_repo,
