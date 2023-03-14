@@ -23,7 +23,6 @@ from util import (
     get_latest_gv_version,
     get_recent_ac_releases,
     get_recent_fenix_versions,
-    get_relevant_ac_versions,
     major_gv_version_from_version,
     major_version_from_fenix_release_branch_name,
     match_ac_version,
@@ -309,12 +308,6 @@ def test_major_version_from_fenix_release_branch_name():
 
 def test_get_recent_fenix_versions(gh):
     assert get_recent_fenix_versions(gh.get_repo("st3fan/fenix")) == [95, 96]
-
-
-def test_get_relevant_ac_versions(gh):
-    assert get_relevant_ac_versions(
-        gh.get_repo("st3fan/fenix"), gh.get_repo("st3fan/android-components")
-    ) == [95, 96]
 
 
 def test_get_current_glean_version(gh):

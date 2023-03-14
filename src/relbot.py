@@ -28,8 +28,6 @@ import sys
 from github import Github, InputGitAuthor, enable_console_debug_logging
 
 import android_components
-import fenix
-import focus_android
 import reference_browser
 
 log = logging.getLogger(__name__)
@@ -42,11 +40,11 @@ logging.basicConfig(
 DEFAULT_ORGANIZATION = "st3fan"
 DEFAULT_AUTHOR_NAME = "MickeyMoz"
 DEFAULT_AUTHOR_EMAIL = "sebastian@mozilla.com"
-USAGE = "usage: relbot <android-components|fenix|focus-android|reference-browser> command..."  # noqa E501
+USAGE = "usage: relbot <android-components|reference-browser> command..."  # noqa E501
 
 
 def main(
-    argv, ac_repo, rb_repo, fenix_repo, focus_repo, author, debug=False, dry_run=False
+    argv, firefox_repo, rb_repo, author, debug=False, dry_run=False
 ):
     if len(argv) < 2:
         print(USAGE)
@@ -55,16 +53,12 @@ def main(
     # Android Components
     if argv[1] == "android-components":
         if argv[2] == "update-main":
-            android_components.update_main(ac_repo, author, dry_run)
+            android_components.update_main(firefox_repo, author, dry_run)
         elif argv[2] == "update-releases":
-            android_components.update_releases(ac_repo, fenix_repo, author, dry_run)
-        elif argv[2] == "create-releases" or argv[2] == "create-release":
-            android_components.create_releases(
-                ac_repo, fenix_repo, author, debug, dry_run
-            )
+            android_components.update_releases(firefox_repo, author, dry_run)
         else:
             print(
-                "usage: relbot android-components <update-{main,releases}|create-releases>"  # noqa E501
+                "usage: relbot android-components <update-{main,releases}>"  # noqa E501
             )
             sys.exit(1)
 
@@ -72,28 +66,10 @@ def main(
     elif argv[1] == "reference-browser":
         if argv[2] == "update-android-components":
             reference_browser.update_android_components_in_rb(
-                ac_repo, rb_repo, author, debug
+                firefox_repo, rb_repo, author, debug
             )
         else:
             print("usage: relbot reference-browser <update-android-components>")
-            sys.exit(1)
-
-    # Fenix
-    elif argv[1] == "fenix":
-        if argv[2] == "update-android-components":
-            fenix.update_android_components(ac_repo, fenix_repo, author, debug, dry_run)
-        else:
-            print("usage: relbot fenix <update-android-components>")
-            sys.exit(1)
-
-    # Focus Android
-    elif argv[1] == "focus-android":
-        if argv[2] == "update-android-components":
-            focus_android.update_android_components_in_focus(
-                ac_repo, focus_repo, author, debug, dry_run
-            )
-        else:
-            print("usage: relbot focus-android <update-android-components>")
             sys.exit(1)
 
     else:
@@ -123,10 +99,8 @@ if __name__ == "__main__":
 
     repo_name_prefix = "staging-" if organization == "mozilla-releng" else ""
 
-    ac_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
+    firefox_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
     rb_repo = github.get_repo(f"{organization}/{repo_name_prefix}reference-browser")
-    fenix_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
-    focus_repo = github.get_repo(f"{organization}/{repo_name_prefix}firefox-android")
 
     author_name = os.getenv("AUTHOR_NAME") or DEFAULT_AUTHOR_NAME
     author_email = os.getenv("AUTHOR_EMAIL") or DEFAULT_AUTHOR_EMAIL
@@ -137,4 +111,4 @@ if __name__ == "__main__":
         f"as {author_email} / {author_name}"
     )
 
-    main(sys.argv, ac_repo, rb_repo, fenix_repo, focus_repo, author, debug, dry_run)
+    main(sys.argv, firefox_repo, rb_repo, author, debug, dry_run)
