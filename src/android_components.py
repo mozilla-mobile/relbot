@@ -22,8 +22,7 @@ from util import (
     get_latest_as_version,
     get_latest_glean_version,
     get_latest_gv_version,
-    get_recent_ac_releases,
-    get_relevant_ac_versions,
+    get_recent_fenix_versions,
     major_as_version_from_version,
     major_gv_version_from_version,
 )
@@ -416,78 +415,7 @@ def update_main(ac_repo, author, dry_run):
 #
 
 
-def update_releases(ac_repo, fenix_repo, author, dry_run):
-    for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
+def update_releases(firefox_repo, author, dry_run):
+    for ac_version in get_recent_fenix_versions(firefox_repo):
         release_branch_name = f"releases_v{ac_version}"
-        _update_geckoview(ac_repo, release_branch_name, ac_version, author, dry_run)
-
-
-#
-# Create an Android-Components release on the current release branch,
-# if it does not already exist. The logic is as follows:
-#
-#  - Determine the "relevant" release branches
-#  - Check the version by looking at version.txt
-#  - If no github release exists, create it
-#
-# This basically means the trigger for a release is a change of the
-# version.txt file.
-#
-# This can be run periodically, manually or triggered by a change
-# on version.txt.
-#
-# TODO Instead of looking at the latest release branch, check all
-# relevant branches - those used by live products?
-#
-
-
-def _create_release(ac_repo, fenix_repo, ac_major_version, author, debug, dry_run):
-    release_branch_name = f"releases_v{ac_major_version}"
-    current_version = get_current_ac_version(ac_repo, release_branch_name)
-    release_branch = ac_repo.get_branch(release_branch_name)
-
-    if current_version.endswith(".0"):
-        log.warning(
-            f"Current version {current_version} is not a dot release. Exiting. "
-        )
-        return
-
-    log.info(
-        f"Checking if android-components release {current_version} already exists."
-    )
-
-    releases = get_recent_ac_releases(ac_repo)
-    if len(releases) == 0:
-        log.warning("No releases found. Exiting. ")
-        return
-
-    if current_version in releases:
-        log.warning(f"Release {current_version} already exists. Exiting. ")
-        return
-
-    log.info(f"Creating android-components release {current_version}")
-
-    if dry_run:
-        log.warning("Dry-run so not continuing.")
-        return
-
-    ac_repo.create_git_tag_and_release(
-        f"v{current_version}",
-        current_version,
-        current_version,
-        f"Release {current_version}",
-        release_branch.commit.sha,
-        "commit",
-    )
-
-
-def create_releases(ac_repo, fenix_repo, author, debug, dry_run):
-    for ac_version in get_relevant_ac_versions(fenix_repo, ac_repo):
-        if ac_version >= 104:
-            log.warning(
-                f"Skipping Android-Components {ac_version}: "
-                "releases are now created on ship-it"
-            )
-            continue
-
-        _create_release(ac_repo, fenix_repo, ac_version, author, debug, dry_run)
+        _update_geckoview(firefox_repo, release_branch_name, ac_version, author, dry_run)

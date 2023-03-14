@@ -17,20 +17,12 @@ log = logging.getLogger(__name__)
 
 def get_gecko_file_path(ac_major_version):
     """Return the file path to Gecko.kt"""
-    return (
-        "android-components/plugins/dependencies/src/main/java/Gecko.kt"
-        if ac_major_version >= 108
-        else "android-components/buildSrc/src/main/java/Gecko.kt"
-    )
+    return "android-components/plugins/dependencies/src/main/java/Gecko.kt"
 
 
 def get_dependencies_file_path(ac_major_version):
     """Return the file path to dependencies file"""
-    return (
-        "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
-        if ac_major_version >= 108
-        else "android-components/buildSrc/src/main/java/Dependencies.kt"
-    )
+    return "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
 
 
 def validate_gv_version(v):
@@ -238,9 +230,9 @@ def get_latest_ac_nightly_version():
 
 def ac_version_from_tag(tag):
     """Return the AC version from a release tag. Like v63.0.2 returns 63.0.2."""
-    if tag[0] != "v":
-        raise Exception(f"Invalid AC tag format {tag}")
-    version = tag[1:]
+    if not tag.startswith("components-v"):
+        return
+    version = tag[len("components-v"):]
     MobileVersion.parse(version)
     return version
 
@@ -249,7 +241,7 @@ def get_recent_ac_releases(repo):
     releases = repo.get_releases()
     if releases.totalCount == 0:
         return []
-    return [ac_version_from_tag(release.tag_name) for release in releases[:50]]
+    return [ac_version_from_tag(release.tag_name) for release in releases[:50] if ac_version_from_tag(release.tag_name)]
 
 
 def compare_gv_versions(a, b):
@@ -269,12 +261,12 @@ def get_fenix_release_branches(repo):
     return [
         branch.name
         for branch in repo.get_branches()
-        if re.match(r"^releases[_/]v\d+\.0\.0$", branch.name)
+        if re.match(r"^releases[_/]v\d+$", branch.name)
     ]
 
 
 def major_version_from_fenix_release_branch_name(branch_name):
-    if matches := re.match(r"^releases[_/]v(\d+)\.0\.0$", branch_name):
+    if matches := re.match(r"^releases[_/]v(\d+)$", branch_name):
         return int(matches[1])
     raise Exception(f"Unexpected release branch name: {branch_name}")
 
@@ -285,24 +277,6 @@ def get_recent_fenix_versions(repo):
         for branch_name in get_fenix_release_branches(repo)
     ]
     return sorted(major_fenix_versions, reverse=False)[-2:]
-
-
-#
-# Return "relevant" A-C versions that could use a GeckoView update check.
-#
-# Right now we find these by looking at the last two Fenix releases.
-#
-
-
-def get_relevant_ac_versions(fenix_repo, ac_repo):
-    releases = []
-    for fenix_version in get_recent_fenix_versions(fenix_repo):
-        release_branch_name = f"releases_v{fenix_version}.0.0"
-        ac_version = get_current_embedded_ac_version(
-            fenix_repo, release_branch_name, ""
-        )
-        releases.append(MobileVersion.parse(ac_version).major_number)
-    return sorted(releases)
 
 
 def validate_as_version(v):

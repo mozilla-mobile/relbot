@@ -23,7 +23,6 @@ from util import (
     get_latest_gv_version,
     get_recent_ac_releases,
     get_recent_fenix_versions,
-    get_relevant_ac_versions,
     major_gv_version_from_version,
     major_version_from_fenix_release_branch_name,
     match_ac_version,
@@ -223,23 +222,18 @@ def test_get_latest_gv_version_beta_too_new():
 
 
 def test_ac_version_from_tag_good():
-    assert ac_version_from_tag("v63.0.0") == "63.0.0"
-    assert ac_version_from_tag("v63.0.1") == "63.0.1"
-    assert ac_version_from_tag("v63.1.2") == "63.1.2"
-    assert ac_version_from_tag("v12.34.56") == "12.34.56"
+    assert ac_version_from_tag("components-v63.0.0") == "63.0.0"
+    assert ac_version_from_tag("components-v63.0.1") == "63.0.1"
+    assert ac_version_from_tag("components-v63.1.2") == "63.1.2"
+    assert ac_version_from_tag("components-v12.34.56") == "12.34.56"
 
 
 def test_ac_version_from_tag_bad():
-    with pytest.raises(Exception):
-        ac_version_from_tag("")
-    with pytest.raises(Exception):
-        ac_version_from_tag("lol")
-    with pytest.raises(Exception):
-        ac_version_from_tag("63")
-    with pytest.raises(Exception):
-        ac_version_from_tag("63.0")
-    with pytest.raises(Exception):
-        ac_version_from_tag("63.0-beta.2")
+    assert ac_version_from_tag("") is None
+    assert ac_version_from_tag("lol") is None
+    assert ac_version_from_tag("63") is None
+    assert ac_version_from_tag("63.0") is None
+    assert ac_version_from_tag("63.0-beta.2") is None
 
 
 def test_get_recent_ac_releases(gh):
@@ -270,6 +264,7 @@ def test_get_latest_ac_nightly_version():
     assert get_latest_ac_nightly_version() is not None
 
 
+@pytest.mark.skip("branch names changed, need to switch to a different test repo")
 def test_get_fenix_release_branches(gh):
     branches = get_fenix_release_branches(gh.get_repo("st3fan/fenix"))
 
@@ -288,17 +283,18 @@ def test_get_fenix_release_branches(gh):
 
 
 def test_major_version_from_fenix_release_branch_name():
-    assert major_version_from_fenix_release_branch_name("releases/v79.0.0") == 79
-    assert major_version_from_fenix_release_branch_name("releases/v83.0.0") == 83
+    assert major_version_from_fenix_release_branch_name("releases_v110") == 110
+    assert major_version_from_fenix_release_branch_name("releases_v83") == 83
     with pytest.raises(Exception):
         major_version_from_fenix_release_branch_name("releases/v83.1.0")
     with pytest.raises(Exception):
         major_version_from_fenix_release_branch_name("releases/Cheese")
     with pytest.raises(Exception):
         major_version_from_fenix_release_branch_name("releases/v84.0.0-beta.1")
-    # New style branch names
-    assert major_version_from_fenix_release_branch_name("releases_v79.0.0") == 79
-    assert major_version_from_fenix_release_branch_name("releases_v83.0.0") == 83
+    with pytest.raises(Exception):
+        major_version_from_fenix_release_branch_name("releases_v79.0.0")
+    with pytest.raises(Exception):
+        major_version_from_fenix_release_branch_name("releases_v83.0.0")
     with pytest.raises(Exception):
         major_version_from_fenix_release_branch_name("releases_v83.1.0")
     with pytest.raises(Exception):
@@ -307,14 +303,9 @@ def test_major_version_from_fenix_release_branch_name():
         major_version_from_fenix_release_branch_name("releases_v84.0.0-beta.1")
 
 
+@pytest.mark.skip("branch names changed since 95/96, need to use a different test repo")
 def test_get_recent_fenix_versions(gh):
     assert get_recent_fenix_versions(gh.get_repo("st3fan/fenix")) == [95, 96]
-
-
-def test_get_relevant_ac_versions(gh):
-    assert get_relevant_ac_versions(
-        gh.get_repo("st3fan/fenix"), gh.get_repo("st3fan/android-components")
-    ) == [95, 96]
 
 
 def test_get_current_glean_version(gh):
@@ -323,7 +314,7 @@ def test_get_current_glean_version(gh):
         get_current_glean_version(repo, "do-not-delete-use-for-relbot-tests", 109)
         == "51.8.0"
     )
-    assert get_current_glean_version(repo, "releases_v106", 106) == "51.2.0"
+    assert get_current_glean_version(repo, "releases_v108", 108) == "51.8.2"
 
 
 def test_get_latest_glean_version_release(gh):
