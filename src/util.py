@@ -421,7 +421,6 @@ def _update_ac_version(
 def update_android_components_nightly(
     ac_repo, target_repo, target_path, author, debug, release_branch_name, dry_run
 ):
-
     current_ac_version = get_current_embedded_ac_version(
         target_repo, release_branch_name, target_path
     )
