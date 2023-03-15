@@ -232,7 +232,7 @@ def ac_version_from_tag(tag):
     """Return the AC version from a release tag. Like v63.0.2 returns 63.0.2."""
     if not tag.startswith("components-v"):
         return
-    version = tag[len("components-v"):]
+    version = tag[len("components-v") :]
     MobileVersion.parse(version)
     return version
 
@@ -241,7 +241,11 @@ def get_recent_ac_releases(repo):
     releases = repo.get_releases()
     if releases.totalCount == 0:
         return []
-    return [ac_version_from_tag(release.tag_name) for release in releases[:50] if ac_version_from_tag(release.tag_name)]
+    return [
+        ac_version_from_tag(release.tag_name)
+        for release in releases[:50]
+        if ac_version_from_tag(release.tag_name)
+    ]
 
 
 def compare_gv_versions(a, b):

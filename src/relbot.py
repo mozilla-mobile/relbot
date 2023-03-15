@@ -43,9 +43,7 @@ DEFAULT_AUTHOR_EMAIL = "sebastian@mozilla.com"
 USAGE = "usage: relbot <android-components|reference-browser> command..."  # noqa E501
 
 
-def main(
-    argv, firefox_repo, rb_repo, author, debug=False, dry_run=False
-):
+def main(argv, firefox_repo, rb_repo, author, debug=False, dry_run=False):
     if len(argv) < 2:
         print(USAGE)
         sys.exit(1)

@@ -418,4 +418,6 @@ def update_main(ac_repo, author, dry_run):
 def update_releases(firefox_repo, author, dry_run):
     for ac_version in get_recent_fenix_versions(firefox_repo):
         release_branch_name = f"releases_v{ac_version}"
-        _update_geckoview(firefox_repo, release_branch_name, ac_version, author, dry_run)
+        _update_geckoview(
+            firefox_repo, release_branch_name, ac_version, author, dry_run
+        )
