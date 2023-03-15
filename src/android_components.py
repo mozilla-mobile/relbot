@@ -178,7 +178,7 @@ def _update_geckoview(
             f"{ac_repo.full_name}:{release_branch_name} is {current_gv_version}"
         )
 
-        if ac_major_version == "main":
+        if release_branch_name == "main":
             # We always want to be on the latest geckoview version on the main branch
             current_gv_major_version = None
         else:
