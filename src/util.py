@@ -5,7 +5,9 @@
 
 import json
 import logging
+import os.path
 import re
+from urllib.parse import quote_plus
 
 import requests
 import xmltodict
@@ -23,6 +25,13 @@ def get_gecko_file_path(ac_major_version):
 def get_dependencies_file_path(ac_major_version):
     """Return the file path to dependencies file"""
     return "android-components/plugins/dependencies/src/main/java/DependenciesPlugin.kt"
+
+
+def get_app_services_version_path(ac_major_version):
+    """Return the file path to dependencies file"""
+    return (
+        "android-components/plugins/dependencies/src/main/java/ApplicationServices.kt"
+    )
 
 
 def validate_gv_version(v):
@@ -110,6 +119,14 @@ def get_latest_ac_version_for_major_version(ac_repo, ac_major_version):
 
 
 MAVEN = "https://maven.mozilla.org/maven2"
+
+
+def taskcluster_indexed_artifact_url(index_name, artifact_path):
+    artifact_path = quote_plus(artifact_path)
+    return (
+        "https://firefox-ci-tc.services.mozilla.com/"
+        f"api/index/v1/task/{index_name}/artifacts/{artifact_path}"
+    )
 
 
 def get_latest_glean_version(gv_version, channel):
@@ -283,29 +300,100 @@ def get_recent_fenix_versions(repo):
     return sorted(major_fenix_versions, reverse=False)[-2:]
 
 
+"""
+Starting with Fx 114, application-services switched to a new system for
+releases and nightlies.  This function checks if we're on an older
+android-components version and should therefore use the legacy handling.
+"""
+
+
+def use_legacy_as_handling(ac_major_version):
+    return ac_major_version < 114
+
+
 def validate_as_version(v):
-    """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
-    if not re.match(r"^\d+\.\d+\.\d+$", v):
-        raise Exception(f"Invalid version format {v}")
-    return v
+    """Validate that v is in the format of 100.0 Returns v or raises an exception."""
+
+    if match := re.match(r"(^\d+)\.\d+\.\d+$", v):
+        # application-services used to have its own 3-component version system,
+        # ending with version 97
+        if int(match.group(1)) <= 97:
+            return v
+
+    if match := re.match(r"(^\d+)\.\d+$", v):
+        # Application-services switched to following the 2-component the
+        # Firefox version number in v114
+        if int(match.group(1)) >= 114:
+            return v
+    raise Exception(f"Invalid version format {v}")
 
 
-def match_as_version(src):
-    """Find the A-S version in the contents of the given DependenciesPlugin.kt file."""
-    if match := re.compile(
-        r'const val mozilla_appservices = "([^"]*)"', re.MULTILINE
-    ).search(src):
-        return validate_as_version(match[1])
-    raise Exception("Could not match mozilla_appservices in DependenciesPlugin.kt")
+def validate_as_channel(c):
+    """Validate that c is a valid app-services channel."""
+    if c in ("staging", "nightly_staging"):
+        # These are channels are valid, but only used for preview builds.  We don't have
+        # any way of auto-updating them
+        raise Exception(f"Can't update AS channel {c}")
+    if c not in ("release", "nightly"):
+        raise Exception(f"Invalid AS channel {c}")
+    return c
 
 
 def get_current_as_version(ac_repo, release_branch_name, ac_major_version):
     """Return the current as version used on the given release branch"""
-    content_file = ac_repo.get_contents(
-        get_dependencies_file_path(ac_major_version),
-        ref=release_branch_name,
+    if use_legacy_as_handling(ac_major_version):
+        # The version used to be listed in `DependenciesPlugin.kt`
+        path = get_dependencies_file_path(ac_major_version)
+        regex = re.compile(
+            r'const val mozilla_appservices = "([^"]*)"',
+            re.MULTILINE,
+        )
+    else:
+        # The version is now stored in `ApplicationServices.kt`
+        path = get_app_services_version_path(ac_major_version)
+        regex = re.compile(r'val VERSION = "([\d\.]+)"', re.MULTILINE)
+
+    content_file = ac_repo.get_contents(path, ref=release_branch_name)
+    src = content_file.decoded_content.decode("utf8")
+    if match := regex.search(src):
+        return validate_as_version(match[1])
+    raise Exception(
+        f"Could not find application services version in {os.path.basename(path)}"
     )
-    return match_as_version(content_file.decoded_content.decode("utf8"))
+
+
+def match_as_channel(src):
+    """
+    Find the ApplicationServicesChannel channel in the contents of the given
+    ApplicationServicesChannel.kt file.
+    """
+    if match := re.compile(
+        r"val CHANNEL = ApplicationServicesChannel."
+        r"(NIGHTLY|NIGHTLY_STAGING|STAGING|RELEASE)",
+        re.MULTILINE,
+    ).search(src):
+        return validate_as_channel(match[1].lower())
+    raise Exception("Could not match the channel in ApplicationServices.kt")
+
+
+def get_current_as_channel(ac_repo, release_branch_name, ac_major_version):
+    """Return the current as channel used on the given release branch"""
+    if use_legacy_as_handling(ac_major_version):
+        # app-services used to only have a release channel
+        return "release"
+    else:
+        # The channel is now stored in the `ApplicationServices.kt` file
+        content_file = ac_repo.get_contents(
+            get_app_services_version_path(ac_major_version), ref=release_branch_name
+        )
+        return match_as_channel(content_file.decoded_content.decode("utf8"))
+
+
+def validate_glean_version(v):
+    """Validate that v is in the format of 63.0.2. Returns v or raises an exception."""
+    if not re.match(r"^\d+\.\d+.\d+$", v):
+        raise Exception(f"Invalid version format {v}")
+    return v
 
 
 def match_glean_version(src):
@@ -314,7 +402,7 @@ def match_glean_version(src):
     if match := re.compile(r'const val mozilla_glean = "([^"]*)"', re.MULTILINE).search(
         src
     ):
-        return validate_as_version(match[1])
+        return validate_glean_version(match[1])
     raise Exception("Could not match glean in DependenciesPlugin.kt")
 
 
@@ -338,10 +426,28 @@ def as_version_sort_key(v):
     return int(a[0]) * 1000000 + int(a[1]) * 1000 + int(a[2])
 
 
-def get_latest_as_version(as_major_version):
+def get_latest_as_version(as_major_version, as_channel):
     """Find the last A-S version on Maven for the given major version"""
 
-    # Find the latest release in the multi-arch .aar
+    if int(as_major_version) <= 97:
+        return get_latest_as_version_legacy(as_major_version)
+
+    if as_channel == "nightly":
+        r = requests.get(
+            taskcluster_indexed_artifact_url(
+                "project.application-services.v2.nightly.latest",
+                "public/build/nightly.json",
+            )
+        )
+        r.raise_for_status()
+        return r.json()["version"]
+    else:
+        raise NotImplementedError("Only the AS nightly channel is currently supported")
+
+
+def get_latest_as_version_legacy(as_major_version):
+    # For App-services versions up until v97, we need to get the version number
+    # from the multi-arch .aar
 
     # TODO What is the right package to check here? full-megazord metadata seems broken.
     r = requests.get(f"{MAVEN}/org/mozilla/appservices/nimbus/maven-metadata.xml")
@@ -364,11 +470,12 @@ def get_latest_as_version(as_major_version):
 
 
 def compare_as_versions(a, b):
-    a = validate_as_version(a).split(".")
-    a = int(a[0]) * 1000000 + int(a[1]) * 1000 + int(a[2])
-    b = validate_as_version(b).split(".")
-    b = int(b[0]) * 1000000 + int(b[1]) * 1000 + int(b[2])
-    return a - b
+    # Tricky cmp()-style function for application services versions.  Note that
+    # this works with both 2-component versions and 3-component ones, Since
+    # python compares tuples element by element.
+    a = tuple(int(x) for x in validate_as_version(a).split("."))
+    b = tuple(int(x) for x in validate_as_version(b).split("."))
+    return (a > b) - (a < b)
 
 
 def _update_ac_version(
