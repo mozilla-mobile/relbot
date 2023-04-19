@@ -12,7 +12,9 @@ from mozilla_version.mobile import MobileVersion
 from util import (
     compare_as_versions,
     compare_gv_versions,
+    get_app_services_version_path,
     get_current_ac_version,
+    get_current_as_channel,
     get_current_as_version,
     get_current_glean_version,
     get_current_gv_channel,
@@ -25,6 +27,7 @@ from util import (
     get_recent_fenix_versions,
     major_as_version_from_version,
     major_gv_version_from_version,
+    use_legacy_as_handling,
 )
 
 log = logging.getLogger(__name__)
@@ -108,14 +111,19 @@ def _update_gv_version(
 def _update_as_version(
     ac_repo, old_as_version, new_as_version, branch, author, ac_major_version
 ):
-    contents = ac_repo.get_contents(
-        get_dependencies_file_path(ac_major_version), ref=branch
-    )
+    if use_legacy_as_handling(ac_major_version):
+        path = get_dependencies_file_path(ac_major_version)
+        current_version_string = f'mozilla_appservices = "{old_as_version}"'
+        new_version_string = f'mozilla_appservices = "{new_as_version}"'
+    else:
+        path = get_app_services_version_path(ac_major_version)
+        current_version_string = f'val VERSION = "{old_as_version}"'
+        new_version_string = f'val VERSION = "{new_as_version}"'
+    log.info(f"Updating app-services version in {path}")
+
+    contents = ac_repo.get_contents(path, ref=branch)
     content = contents.decoded_content.decode("utf-8")
-    new_content = content.replace(
-        f'mozilla_appservices = "{old_as_version}"',
-        f'mozilla_appservices = "{new_as_version}"',
-    )
+    new_content = content.replace(current_version_string, new_version_string)
     if content == new_content:
         raise Exception(
             "Update to DependenciesPlugin.kt resulted in no changes: "
@@ -297,24 +305,37 @@ def _update_application_services(
     try:
         log.info(f"Updating A-S on {ac_repo.full_name}:{release_branch_name}")
 
+        as_channel = get_current_as_channel(
+            ac_repo, release_branch_name, ac_major_version
+        )
+        log.info(f"Current A-S channel is {as_channel}")
+
         current_as_version = get_current_as_version(
             ac_repo, release_branch_name, ac_major_version
         )
         log.info(
-            f"Current A-S version on A-C {release_branch_name} is {current_as_version}"
+            f"Current A-S {as_channel.capitalize()} version in A-C "
+            f"{ac_repo.full_name}:{release_branch_name} is {current_as_version}"
         )
 
         latest_as_version = get_latest_as_version(
-            major_as_version_from_version(current_as_version)
+            major_as_version_from_version(current_as_version),
+            as_channel,
         )
-        log.info(f"Latest A-S version available is {latest_as_version}")
+        log.info(
+            f"Latest A-S {as_channel.capitalize()} version available "
+            f"is {latest_as_version}"
+        )
 
         if compare_as_versions(current_as_version, latest_as_version) >= 0:
-            log.warning("No newer A-S release found. Exiting.")
+            log.warning(
+                f"No newer A-S {as_channel.capitalize()} release found. Exiting."
+            )
             return
 
         log.info(
-            f"We should update A-C {release_branch_name} with A-S {latest_as_version}"
+            f"We should update A-C {release_branch_name} with A-S "
+            f"{as_channel.capitalize()} {latest_as_version}"
         )
 
         if dry_run:
@@ -351,10 +372,6 @@ def _update_application_services(
         )
         log.info(f"Created branch {pr_branch_name} on {release_branch.commit.sha}")
 
-        log.info(
-            "Updating android-components/plugins/dependencies/src"
-            "/main/java/DependenciesPlugin.kt"
-        )
         _update_as_version(
             ac_repo,
             current_as_version,
