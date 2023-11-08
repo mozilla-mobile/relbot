@@ -92,6 +92,11 @@ def _update_gv_version(
         f'const val version = "{old_gv_version}"',
         f'const val version = "{new_gv_version}"',
     )
+    new_content = new_content.replace(
+        f'fun version() = "{old_gv_version}"',
+        f'fun version() = "{new_gv_version}"',
+    )
+
     if content == new_content:
         raise Exception(
             "Update to Gecko.kt resulted in no changes: "

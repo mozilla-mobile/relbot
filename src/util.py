@@ -74,7 +74,7 @@ def get_current_embedded_ac_version(repo, release_branch_name, target_path=""):
 
 def match_gv_version(src):
     """Find the GeckoView version in the contents of the given Gecko.kt file."""
-    if match := re.compile(r'version = "([^"]*)"', re.MULTILINE).search(src):
+    if match := re.compile(r'version\(?\)? = "([^"]*)"', re.MULTILINE).search(src):
         return validate_gv_version(match[1])
     raise Exception("Could not match the version in Gecko.kt")
 
@@ -90,7 +90,7 @@ def get_current_gv_version(ac_repo, release_branch_name, ac_major_version):
 def match_gv_channel(src):
     """Find the GeckoView channel in the contents of the given Gecko.kt file."""
     if match := re.compile(
-        r"val channel = GeckoChannel.(NIGHTLY|BETA|RELEASE)", re.MULTILINE
+        r"channel\(?\)? = GeckoChannel.(NIGHTLY|BETA|RELEASE)", re.MULTILINE
     ).search(src):
         return validate_gv_channel(match[1].lower())
     raise Exception("Could not match the channel in Gecko.kt")
