@@ -1,3 +1,9 @@
+# ⚠️ Update, Feb 2025 
+
+As of Firefox 128, all releases are fully managed in Mozilla Central. We are archiving this Github repository as of Feb 7, 2025. Please refer to our [Wiki announcement](https://github.com/mozilla-mobile/firefox-android/wiki#upcoming-migration-to-mozilla-central) for more context.
+
+
+
 # RelBot
 __Stefan Arentz, October 2020__
 
